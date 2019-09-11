@@ -4,7 +4,7 @@
     background-image: url(https://utemplates.net/wp-content/uploads/2017/07/White-Textured-Background.jpg);
 }
 
-h1, h2,h3,h4, h5, h6, p{
+h1, h2,h3,h4, h5, h6, p,form{
   font-family: 'Ubuntu';
   color: maroon;
 }
@@ -18,18 +18,17 @@ h1, h2,h3,h4, h5, h6, p{
     display: block;
 }
 
-#navBtn
+#buttons
 {
     color: gold;
     background-color: maroon;
-    float:left;
     border-color: black;
     border-radius: 12px;
     font-size:16px;
     margin: 4px 2px;
 }
 
-#navBtn:hover {
+#buttons:hover {
   color: #f1f1f1;
 }
 

@@ -9,7 +9,7 @@
         <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
     </head>
     <body id="background">
-        <button type="button" onclick = "openNav()" onHover = ""id="navBtn">Navigation Menu</button>
+        <button style = "float:left"type="button" onclick = "openNav()" id="buttons">Navigation Menu</button>
         <div>
             <h1 id = "title">FRC 6321 Scouting</h1>
         </div>
@@ -23,5 +23,12 @@
         </div>
 
         <h2 style="text-align: center">Season Configuration</h2>
+        <br><br><h3>Enter the name of the a season (Ex. 'Deep Space').</h3>
+        <input type="text" name = "newSeasonInputBox">
+        <button id = "buttons" onclick="addNewSeason()">Submit</button>
+        <h3 id="newSeasonConfirmation"></h3><br><br><br>
+        <h3>or select a saved season:</h3>
+        <br><br><br><br><br>
+        <button id="buttons">Clear Seasons</button>        
     </body>
 </html>
