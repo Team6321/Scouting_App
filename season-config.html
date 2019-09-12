@@ -8,7 +8,7 @@
         <!--Importing fonts-->
         <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
     </head>
-    <body id="background">
+    <body id="background" onload="loadSeasons()">
         <button style = "float:left"type="button" onclick = "openNav()" id="buttons">Navigation Menu</button>
         <div>
             <h1 id = "title">FRC 6321 Scouting</h1>
@@ -28,9 +28,9 @@
         <button id = "buttons" onclick="addNewSeason()">Submit</button>
         <h3 id="newSeasonConfirmation"></h3><br><br><br>
         <h3>... and/or select a season to continue to entering event data.</h3>
-        <div id="seasonRadioList">
+        <form id="seasonRadioList" style="font-size:18px">
 
-        </div>
+        </form>
         <br><br><br><br><br>
         <a href="event-data.html">
             <button id="buttons">Continue to Event Data with Selected Season</button>        
