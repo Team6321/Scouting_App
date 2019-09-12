@@ -23,12 +23,19 @@
         </div>
 
         <h2 style="text-align: center">Season Configuration</h2>
-        <br><br><h3>Enter the name of the a season (Ex. 'Deep Space').</h3>
+        <br><br><h3>Enter the name of a new season (Ex. 'Deep Space')...</h3>
         <input type="text" name = "newSeasonInputBox">
         <button id = "buttons" onclick="addNewSeason()">Submit</button>
         <h3 id="newSeasonConfirmation"></h3><br><br><br>
-        <h3>or select a saved season:</h3>
+        <h3>... and/or select a season to continue to entering event data.</h3>
+        <div id="seasonRadioList">
+
+        </div>
         <br><br><br><br><br>
-        <button id="buttons">Clear Seasons</button>        
+        <a href="event-data.html">
+            <button id="buttons">Continue to Event Data with Selected Season</button>        
+        </a>
+        <br><br><br><br>
+        <button id="buttons" onclick="clearSeasons()">Clear Seasons</button>        
     </body>
 </html>
