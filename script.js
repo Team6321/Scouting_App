@@ -39,25 +39,32 @@ function setCookie(name, value)
     document.cookie = name + "=" + value + ";";
 }
 
+/*
 function getCookie(name)
 {
     var re = new RegExp(name + "=([^;]+)");
     var value = re.exec(document.cookie);
     return (value != null) ? unescape(value[1]) : null;
-}
+}*/
 
-//meant for the startup of the page, not when a new season gets displayed
+//meant for only the startup of the page
 function loadSeasons()
 {
+    var cookies = decodeURIComponent(document.cookie);
     var formSpace = document.getElementById("seasonRadioList");
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var cookieList = decodedCookie.split(";");
+    var cookieList = cookies.split(';');
     for (var i = 0; i < cookieList.length; i++)
     {
-        var season = cookieList[i].split("=")[1];
-        formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> "
+        var season = cookieList[i].split('=')[1];
+        formSpace.innerHTML = "<input type=\"radio\" name=\"seasonListItem\"> "
         + season + "<br>";
     }
+    /*for (var i = 0; i < seasonList.length; i++)
+    {
+        formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> "
+        + seasonList[i] + "<br>";
+        console.log(seasonList[i]);
+    }*/
 }
 
 //clears all seasons from formspace
