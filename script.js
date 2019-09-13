@@ -1,3 +1,5 @@
+//credit to w3schools for js tutorials
+
 //navbar on all pages//
 //open navbar
 function openNav(){
@@ -26,6 +28,8 @@ function addNewSeason()
         document.getElementById("newSeasonConfirmation").innerHTML=
         "<i>Season " + "\'"+ newSeason +"\'"+" has been added.</i>";
         var formSpace = document.getElementById("seasonRadioList");
+        if (formSpace.innterHTML.equals("<i>No seasons saved.<br></i>"))
+            formSpace.innerHTML = " ";
         formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> "
         + newSeason + "<br>";
 
@@ -39,6 +43,25 @@ function setCookie(name, value)
     document.cookie = name + "=" + value + ";";
 }
 
+function getCookie(cname)
+{
+    var name = cname +"=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for (var i=0; i<ca.length;i++)
+    {
+        var c=ca[i];
+        while (c.charAt(0) == ' ')
+        {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name)==0)
+        {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
 /*
 function getCookie(name)
 {
@@ -50,14 +73,21 @@ function getCookie(name)
 //meant for only the startup of the page
 function loadSeasons()
 {
-    var cookies = decodeURIComponent(document.cookie);
     var formSpace = document.getElementById("seasonRadioList");
-    var cookieList = cookies.split(';');
-    for (var i = 0; i < cookieList.length; i++)
+
+    if (formSpace.innerHTML == " ")
     {
-        var season = cookieList[i].split('=')[1];
-        formSpace.innerHTML = "<input type=\"radio\" name=\"seasonListItem\"> "
-        + season + "<br>";
+        var cookieList = document.cookie.split(';');
+        var aString = '';
+        for (var i=1;i<=cookieList.length;i++)
+        {
+            aString = i + ' ' + cookieList[i] + "\n";
+            formSpace.innerHTML = "<input type=\"radio\" name=\"seasonListItem\"> "
+            + season + "<br>";
+        }
+    } else
+    {
+        formSpace.innerHTML = "<i>No seasons saved.<br></i>";
     }
     /*for (var i = 0; i < seasonList.length; i++)
     {
