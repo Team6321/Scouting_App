@@ -28,6 +28,16 @@ h1, h2,h3,h4, h5, h6, p,form{
     margin: 4px 2px;
 }
 
+.buttons
+{
+  color: gold;
+  background-color: maroon;
+  border-color: black;
+  border-radius: 12px;
+  font-size:16px;
+  margin: 4px 2px;
+}
+
 #buttons:hover {
   color: #f1f1f1;
 }

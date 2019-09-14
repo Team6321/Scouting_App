@@ -46,8 +46,8 @@ function addNewSeason()
         document.getElementById("newSeasonConfirmation").innerHTML=
         "<i>Season " + "\'"+ newSeason +"\'"+" has been added.</i>"; //confirmation text
         var formSpace = document.getElementById("seasonRadioList");
-        formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> " //add to radiolist
-        + newSeason + "<br>";
+        //formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> " + newSeason + "<br>"; //add to radiolist
+        formSpace.insertAdjacentHTML("afterbegin","<input type=\"radio\" name=\"seasonListItem\" value=\"" + newSeason + "\">" + newSeason + "<br>"); //add to radiolist
 
         //save newSeason in cookie
         document.cookie = "season:" + newSeason + "=" + newSeason + "; expires=Wed, 1 Jan 2038 12:00:00 UTC; path=/";
@@ -64,8 +64,8 @@ function loadSeasons()
         for (var i=0;i<cookieList.length;i++)
         {
             var cookieVal = cookieList[i].split("=")[1];
-            formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> "
-            + cookieVal + "<br>";
+            //formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> " + cookieVal + "<br>";
+            formSpace.insertAdjacentHTML("afterbegin","<input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal+ "<br>");
         }
     }
 }
@@ -92,29 +92,28 @@ function deleteCookie(name)
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC';   
 }
 
-function getCookie(cname)
-{
-    var name = cname +"=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for (var i=0; i<ca.length;i++)
-    {
-        var c=ca[i];
-        while (c.charAt(0) == ' ')
-        {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name)==0)
-        {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
-/*
 function getCookie(name)
 {
     var re = new RegExp(name + "=([^;]+)");
     var value = re.exec(document.cookie);
     return (value != null) ? unescape(value[1]) : null;
-}*/
+}
+
+$(document).ready(function()
+{
+    $("#seasonSubmitButton").click(function(){
+        var season = "";
+        var radioButtons = document.getElementsByName("seasonListItem");
+        for (var i = 0; i < radioButtons.length; i++)
+            if (radioButtons[i].checked) 
+            {
+                season = radioButtons[i].value;
+                break;
+            }
+
+        $("#seasonQuestionsTitle").text("Season specific data for \'" + 
+        season + "\'.");
+        console.log("form value: " + season);
+    })
+
+})

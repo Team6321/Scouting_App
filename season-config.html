@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> <!--jquery library-->
 <script src="script.js"></script> <!--js script-->
 <html>
     <head>
@@ -30,12 +31,15 @@
         <h3 id="newSeasonConfirmation"></h3><br><br><br>
         <h3>... and/or select a season to continue to entering season specific data.</h3>
         <form id="seasonRadioList" style="font-size:18px">
+            <input type = "button" id="seasonSubmitButton" class="buttons" value = "Check season to continue">
+        </form> <br><br>
+        <br><br><br><br>
+        <h3 id = "seasonQuestionsTitle" style = "text-align: center"></h3>
 
-        </form>
-        <br><br><br><br><br>
+
         <a href="event-data.html">
+            <br><br>
             <button id="buttons">Continue to Event Data with Selected Season</button>        
         </a>
-        <br><br><br><br>
     </body>
 </html>
