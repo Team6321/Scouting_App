@@ -1,4 +1,4 @@
-//credit to w3schools for js tutorials
+//credit to w3schools for js tutorials, stackoverflow
 
 //**********navbar on all pages*************//
 //open navbar
@@ -70,17 +70,26 @@ function loadSeasons()
     }
 }
 
-//clears all seasons from formspace
+/*//clears all seasons from radiolist 'formspace' and document.cookies
 function clearSeasons()
 {
-    console.log("doc.cookie: " + document.cookie);
-    //var divSpace = document.getElementById("seasonRadioList");
-    //divSpace.innerHTML = " ";
-
     //clearing all cookies
     var cookies = document.cookie.split(";");
-    var x = document.cookie.toString();
-    console.log(x);
+    for (var i = 0; i < cookies.length; i++) 
+    {
+        var cookie = cookies[i];
+        var name = cookie.split("=")[0].toString().trim();
+        console.log("name: " + name);
+        deleteCookie(name);
+    }
+    console.log("document.cookie: " + document.cookie);
+    var formSpace = document.getElementById("seasonRadioList");
+    formSpace.innerHTML = " ";
+}*/
+
+function deleteCookie(name)
+{
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC';   
 }
 
 function getCookie(cname)
