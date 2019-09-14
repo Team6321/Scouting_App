@@ -28,8 +28,6 @@ function addNewSeason()
         document.getElementById("newSeasonConfirmation").innerHTML=
         "<i>Season " + "\'"+ newSeason +"\'"+" has been added.</i>";
         var formSpace = document.getElementById("seasonRadioList");
-        if (formSpace.innterHTML.equals("<i>No seasons saved.<br></i>"))
-            formSpace.innerHTML = " ";
         formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> "
         + newSeason + "<br>";
 
@@ -40,7 +38,7 @@ function addNewSeason()
 
 function setCookie(name, value)
 {
-    document.cookie = name + "=" + value + ";";
+    document.cookie += name + "=" + value + ";";
 }
 
 function getCookie(cname)
@@ -74,27 +72,12 @@ function getCookie(name)
 function loadSeasons()
 {
     var formSpace = document.getElementById("seasonRadioList");
-
-    if (formSpace.innerHTML == " ")
-    {
-        var cookieList = document.cookie.split(';');
-        var aString = '';
-        for (var i=1;i<=cookieList.length;i++)
-        {
-            aString = i + ' ' + cookieList[i] + "\n";
-            formSpace.innerHTML = "<input type=\"radio\" name=\"seasonListItem\"> "
-            + season + "<br>";
-        }
-    } else
-    {
-        formSpace.innerHTML = "<i>No seasons saved.<br></i>";
-    }
-    /*for (var i = 0; i < seasonList.length; i++)
+    var cookieList = document.cookie.split("seasonName=");
+    for (var i=1;i<cookieList.length;i++)
     {
         formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> "
-        + seasonList[i] + "<br>";
-        console.log(seasonList[i]);
-    }*/
+        + cookieList[i] + "<br>";
+    }
 }
 
 //clears all seasons from formspace
