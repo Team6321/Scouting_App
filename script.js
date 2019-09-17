@@ -102,6 +102,7 @@ function getCookie(name)
 $(document).ready(function()
 {
     $("#seasonSubmitButton").click(function(){
+        //setting header for the season elements section
         var season = "";
         var radioButtons = document.getElementsByName("seasonListItem");
         for (var i = 0; i < radioButtons.length; i++)
@@ -112,8 +113,12 @@ $(document).ready(function()
             }
 
         $("#seasonQuestionsTitle").text("Season specific data for \'" + 
-        season + "\'.");
-        console.log("form value: " + season);
+        season + "\'.");        
+    })
+
+    $("#newTR").click(function(){
+        var newRowHtml = "<tr> <th><input type=\"text\" name=\"seasonElement\"></th> <th><input type=\"text\" name=\"seasonPoints\"></th> </tr>";
+        document.getElementById("scoringTable").innerHTML += newRowHtml;  
     })
 
 })

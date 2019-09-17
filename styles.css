@@ -4,7 +4,7 @@
     background-image: url(https://utemplates.net/wp-content/uploads/2017/07/White-Textured-Background.jpg);    ;
 }
 
-h1, h2,h3,h4, h5, h6, p,form{
+h1, h2,h3,h4, h5, h6, p,form,div,table{
   font-family: 'Ubuntu';
   color: maroon;
 }
@@ -39,6 +39,10 @@ h1, h2,h3,h4, h5, h6, p,form{
 }
 
 #buttons:hover {
+  color: #f1f1f1;
+}
+
+.buttons:hover {
   color: #f1f1f1;
 }
 
@@ -123,4 +127,13 @@ h1, h2,h3,h4, h5, h6, p,form{
 {
   display: inline-block;
   text-align:  center;
+}
+
+table, th, td
+{
+  font-size: 15px;
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 5px;
+  text-align: left;
 }

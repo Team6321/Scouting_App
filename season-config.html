@@ -30,16 +30,35 @@
         <button id = "buttons" onclick="addNewSeason()">Submit</button>
         <h3 id="newSeasonConfirmation"></h3><br><br><br>
         <h3>... and/or select a season to continue to entering season specific data.</h3>
-        <form id="seasonRadioList" style="font-size:18px">
-            <input type = "button" id="seasonSubmitButton" class="buttons" value = "Check season to continue">
-        </form> <br><br>
+        <fieldset>
+            <form id="seasonRadioList" style="font-size:18px">
+                    <input type = "button" id="seasonSubmitButton" class="buttons" value = "Check season to continue">
+            </form>
+        </fieldset>
         <br><br><br><br>
         <h3 id = "seasonQuestionsTitle" style = "text-align: center"></h3>
 
+        <h3>Enter in any scoring opportunities along with how many
+            points the actions are worth:
+        </h3>
+
+        <fieldset id = "scoringOpportunities">
+            <table id = "scoringTable">
+                <tr> 
+                    <th><b>Scoring Method</b></th> 
+                    <th><b>Points Worth</b></th> 
+                </tr>
+            </table>
+            <button id = "newTR" class="buttons">New table row</button>
+        </fieldset>
+        <button id="scoringSubmitButton" class="buttons">Save</button>
+
+
+
 
         <a href="event-data.html">
-            <br><br>
-            <button id="buttons">Continue to Event Data with Selected Season</button>        
-        </a>
+                <br><br>
+                <button id="buttons">Continue to Event Data with Selected Season</button>        
+            </a>
     </body>
 </html>
