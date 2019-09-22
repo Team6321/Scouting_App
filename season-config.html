@@ -39,20 +39,23 @@
         <h3 id = "seasonQuestionsTitle" style = "text-align: center"></h3>
 
         <h3>Enter in any scoring opportunities along with how many
-            points the actions are worth:
+            points the actions are worth. Please enter only words/phrases 
+            for the 'Scoring Method' section and only integers for the
+            'Points Worth' section.
         </h3>
 
         <fieldset id = "scoringOpportunities">
-            <table id = "scoringTable">
-                <tr> 
-                    <th><b>Scoring Method</b></th> 
-                    <th><b>Points Worth</b></th> 
-                </tr>
-            </table>
-            <button id = "newTR" class="buttons">New table row</button>
+            <form id="seasonSubmitForm">
+                <table id = "scoringTable">
+                    <tr>
+                        <th><b>Scoring Method</b></th> 
+                        <th><b>Points Worth</b></th> 
+                    </tr>
+                </table>
+            </form>
         </fieldset>
-        <button id="scoringSubmitButton" class="buttons">Save</button>
-
+        <input type="submit" id="scoringSaveButton" class="buttons" value = "Save">
+        <button id = "newTR" class="buttons">New table row</button>
 
 
 

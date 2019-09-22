@@ -99,26 +99,37 @@ function getCookie(name)
     return (value != null) ? unescape(value[1]) : null;
 }
 
+function currentCheckedSeason()
+{
+
+}
+
 $(document).ready(function()
 {
     $("#seasonSubmitButton").click(function(){
-        //setting header for the season elements section
-        var season = "";
-        var radioButtons = document.getElementsByName("seasonListItem");
-        for (var i = 0; i < radioButtons.length; i++)
-            if (radioButtons[i].checked) 
-            {
-                season = radioButtons[i].value;
-                break;
-            }
-
+        var season = $("input[name=seasonListItem]:checked","#seasonRadioList").val();
         $("#seasonQuestionsTitle").text("Season specific data for \'" + 
         season + "\'.");        
     })
 
     $("#newTR").click(function(){
-        var newRowHtml = "<tr> <th><input type=\"text\" name=\"seasonElement\"></th> <th><input type=\"text\" name=\"seasonPoints\"></th> </tr>";
-        document.getElementById("scoringTable").innerHTML += newRowHtml;  
+        var newRowHtml = "<tr> <th><input type=\"text\" name=\"seasonElement\"></th> <th><input type=\"number\" name=\"seasonPoints\"></th> </tr>";
+        $("#scoringTable").append(newRowHtml);
+    })
+
+    /*
+    $("#scoringSaveButton").click(function(){
+        var $inputs = $("#seasonSubmitForm :input");
+        var values = {};
+        $inputs.each(function(){
+            values[this.name] = $(this).val();
+            console.log($(this).val);
+        });*/
+
+    $("#seasonSubmitForm").submit(function(){
+        //var $inputs = $("#seasonSubmitForm :input");
+        var allInputs = $(":input");
+        console.log(allInputs.val());
     })
 
 })

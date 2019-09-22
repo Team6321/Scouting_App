@@ -129,6 +129,7 @@ h1, h2,h3,h4, h5, h6, p,form,div,table{
   text-align:  center;
 }
 
+/*
 table, th, td
 {
   font-size: 15px;
@@ -136,4 +137,17 @@ table, th, td
   border-collapse: collapse;
   padding: 5px;
   text-align: left;
+}*/
+
+DIV.table
+{
+  display: table;
+}
+FORM.tr, DIV.tr
+{
+  display: table-row;
+}
+SPAN.td
+{
+  display:table-cell;
 }
