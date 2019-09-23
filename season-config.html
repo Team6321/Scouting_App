@@ -39,24 +39,26 @@
         <h3 id = "seasonQuestionsTitle" style = "text-align: center"></h3>
 
         <h3>Enter in any scoring opportunities along with how many
-            points the actions are worth. Please enter only words/phrases 
-            for the 'Scoring Method' section and only integers for the
-            'Points Worth' section.
+            points the actions are worth. <br>
+            Enter in the format <code>element,points</code>. <br>
+            Ex.: <code>ball,6</code>. <br>
+            Please enter only phrases before the comma
+            and an integer after the comma.
         </h3>
 
         <fieldset id = "scoringOpportunities">
-            <form id="seasonSubmitForm">
-                <table id = "scoringTable">
-                    <tr>
-                        <th><b>Scoring Method</b></th> 
-                        <th><b>Points Worth</b></th> 
-                    </tr>
-                </table>
-            </form>
-        </fieldset>
-        <input type="submit" id="scoringSaveButton" class="buttons" value = "Save">
-        <button id = "newTR" class="buttons">New table row</button>
+            <input type="text" id="seasonElement">
+            <button id="scoringSaveButton" class="buttons">Save</button>             
 
+            <br>
+            <table id = "scoringTable">
+                <tr>
+                    <th><b>Scoring Method</b></th> 
+                    <th><b>Points Worth</b></th> 
+                </tr>
+            </table>
+            <h3 id="elementConfirmationBox"></h3>
+        </fieldset>
 
 
         <a href="event-data.html">

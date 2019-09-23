@@ -104,32 +104,34 @@ function currentCheckedSeason()
 
 }
 
-$(document).ready(function()
-{
+$(document).ready(function(){
     $("#seasonSubmitButton").click(function(){
         var season = $("input[name=seasonListItem]:checked","#seasonRadioList").val();
         $("#seasonQuestionsTitle").text("Season specific data for \'" + 
         season + "\'.");        
-    })
+    });
 
-    $("#newTR").click(function(){
-        var newRowHtml = "<tr> <th><input type=\"text\" name=\"seasonElement\"></th> <th><input type=\"number\" name=\"seasonPoints\"></th> </tr>";
-        $("#scoringTable").append(newRowHtml);
-    })
 
-    /*
+    /*$("#newTR").click(function(){
+        var newRowHtml = "<input type=\"text\" name=\"seasonElement\">";
+        $("#scoringSubmitForm").insertAdjacentHTML("afterbegin",newRowHtml);
+    })*/
+
+    
     $("#scoringSaveButton").click(function(){
-        var $inputs = $("#seasonSubmitForm :input");
+        var newElementName = $("#seasonElement").val().split(',')[0];
+        var newElementPoints = $("#seasonElement").val().split(',')[1];
+
+        console.log("elementName: " + newElementName);
+        console.log("elementPoints: " + newElementPoints);
+        var newTRHtml = "<tr><td>" + newElementName + 
+        "</td><td>" + newElementPoints + "</td></tr>";
+        
+        $("#scoringTable").append(newTRHtml);
+        /*var $inputs = $("#seasonSubmitForm :input");
         var values = {};
         $inputs.each(function(){
             values[this.name] = $(this).val();
-            console.log($(this).val);
-        });*/
-
-    $("#seasonSubmitForm").submit(function(){
-        //var $inputs = $("#seasonSubmitForm :input");
-        var allInputs = $(":input");
-        console.log(allInputs.val());
-    })
-
-})
+            console.log($(this).val);*/
+    });
+});
