@@ -40,10 +40,13 @@
 
         <h3>Enter in any scoring opportunities along with how many
             points the actions are worth. <br>
-            Enter in the format <code>element,points</code>. <br>
+            Enter in the format <code>element,points</code>. 
             Ex.: <code>ball,6</code>. <br>
             Please enter only phrases before the comma
-            and an integer after the comma.
+            and an integer after the comma.<br><br>
+            Note that you will have to refresh the page, 
+            select a different radio button <i>and</i> press the "Check season to continue" button
+            <u>if you want to enter scoring opportunities for a different season.</u>
         </h3>
 
         <fieldset id = "scoringOpportunities">
@@ -51,13 +54,15 @@
             <button id="scoringSaveButton" class="buttons">Save</button>             
 
             <br>
+            <h3 id="elementsTableTitle"></h3>
             <table id = "scoringTable">
                 <tr>
                     <th><b>Scoring Method</b></th> 
                     <th><b>Points Worth</b></th> 
                 </tr>
             </table>
-            <h3 id="elementConfirmationBox"></h3>
+            <h3 id="elementConfirmationBox"></h3> <br><br>
+
         </fieldset>
 
 

@@ -19,7 +19,7 @@ document.getElementById("mySidenav").style.width="0";
 //adds new season from input box
 function addNewSeason()
 {
-    var newSeason = document.getElementsByName("newSeasonInputBox")[0].value.toString();
+    var newSeason = document.getElementsByName("newSeasonInputBox")[0].value.trim().toString();
 
     var cookieList = document.cookie.split(";");
     var isAlreadyStored = false;
@@ -27,11 +27,15 @@ function addNewSeason()
     {
         for (var i=0;i<cookieList.length;i++)
         {
-            var val = cookieList[i].split("=")[1];
-            if (newSeason==val.toString())
+            var val = cookieList[i].split("=")[1].trim();
+            var cName = cookieList[i].split("=")[0].trim();
+            if (cName.trim().startsWith("season:"))
             {
-                isAlreadyStored = true;
-                break;
+                if (newSeason==val.toString())
+                {
+                    isAlreadyStored = true;
+                    break;
+                }
             }
         }
     }
@@ -63,9 +67,13 @@ function loadSeasons()
         var cookieList = document.cookie.split(";");
         for (var i=0;i<cookieList.length;i++)
         {
-            var cookieVal = cookieList[i].split("=")[1];
+            var cookieName = cookieList[i].split("=")[0].trim();
+            var cookieVal = cookieList[i].split("=")[1].trim();
+            if (cookieName.startsWith("season:"))
+            {
+                formSpace.insertAdjacentHTML("afterbegin","<input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal+ "<br>");
+            }
             //formSpace.innerHTML += "<input type=\"radio\" name=\"seasonListItem\"> " + cookieVal + "<br>";
-            formSpace.insertAdjacentHTML("afterbegin","<input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal+ "<br>");
         }
     }
 }
@@ -99,39 +107,122 @@ function getCookie(name)
     return (value != null) ? unescape(value[1]) : null;
 }
 
-function currentCheckedSeason()
-{
-
-}
 
 $(document).ready(function(){
+
     $("#seasonSubmitButton").click(function(){
         var season = $("input[name=seasonListItem]:checked","#seasonRadioList").val();
         $("#seasonQuestionsTitle").text("Season specific data for \'" + 
-        season + "\'.");        
+        season + "\'.");
+
+        $("#elementsTableTitle").text("Scoring table for season \'" + season + "\'");
+        
+        $("input[name=seasonListItem]:checked","#seasonRadioList").setCurrCheckedSeason();
+        
+        $("#scoringTable").setTable();
     });
 
 
-    /*$("#newTR").click(function(){
-        var newRowHtml = "<input type=\"text\" name=\"seasonElement\">";
-        $("#scoringSubmitForm").insertAdjacentHTML("afterbegin",newRowHtml);
-    })*/
+    $.fn.setTable = function(){
+        var cookieList = document.cookie.split(";");
+        for (var i = 0; i < cookieList.length; i++)
+        {
+            cookieList[i] = cookieList[i].trim();
+            if (cookieList[i].startsWith("element"))
+            {
+                var cookieSeason = cookieList[i].substring(cookieList[i].indexOf(":")+1,cookieList[i].indexOf("="));
+                console.log(cookieSeason);
+                var season = getCookie("currCheckedSeason");
+                $(this).val(" ");
+                if (cookieSeason == season)
+                {
+                    var elementName = cookieList[i].split("=")[1].split(",")[0].trim();
+                    var elementPoints = cookieList[i].split("=")[1].split(",")[1].trim();
 
-    
+                    var newTRHtml = "<tr><td>" + elementName + 
+                    "</td><td>" + elementPoints + "</td></tr>";
+
+                    if ($(this).html().indexOf(newTRHtml) < 0)
+                    {
+                        $(this).append(newTRHtml);
+                    }
+                } else
+                {
+                    $(this).val(" ");
+                }
+            }
+        }
+    }
+
+    $.fn.setCurrCheckedSeason = function(){
+        var currCheckedSeason = this.val();
+        if (typeof(currCheckedSeason) !== "undefined")
+        {
+            document.cookie = "currCheckedSeason="+currCheckedSeason+
+            "; expires=Wed, 1 Jan 2038 12:00:00 UTC; path=/";
+        }
+    };
+    /*
+    function setCurrCheckedSeason(){
+        var currCheckedSeason = $("input[name=seasonListItem]:checked","#seasonRadioList").val();
+        if (typeof(currCheckedSeason) !== "undefined")
+        {
+            document.cookie = "currCheckedSeason="+currCheckedSeason+
+            "; expires=Wed, 1 Jan 2038 12:00:00 UTC; path=/";
+        }
+    };*/
+
+    function getCurrCheckedSeason($param) {
+        var currCheckedSeason = $param.val();
+        if (typeof(currCheckedSeason) !== "undefined")
+        {
+            return currCheckedSeason;
+        }
+    }
+
+
     $("#scoringSaveButton").click(function(){
-        var newElementName = $("#seasonElement").val().split(',')[0];
-        var newElementPoints = $("#seasonElement").val().split(',')[1];
-
-        console.log("elementName: " + newElementName);
-        console.log("elementPoints: " + newElementPoints);
-        var newTRHtml = "<tr><td>" + newElementName + 
-        "</td><td>" + newElementPoints + "</td></tr>";
+        var newElementName = $("#seasonElement").val().split(',')[0].trim().toString();
+        var newElementPoints = $("#seasonElement").val().split(',')[1].trim();
         
-        $("#scoringTable").append(newTRHtml);
-        /*var $inputs = $("#seasonSubmitForm :input");
-        var values = {};
-        $inputs.each(function(){
-            values[this.name] = $(this).val();
-            console.log($(this).val);*/
+        var season = $("input[name=seasonListItem]:checked","#seasonRadioList").val();
+        if (typeof(season) !== "undefined")
+        {
+            var cookieName = "element " + newElementName + ":" +season;
+            var cookieValue = newElementName+","+newElementPoints;
+            
+            var cookieList = document.cookie.split(";");
+            var elementAlreadyStored = false;
+            for (var i = 0; i < cookieList.length; i++)
+            {
+                if (cookieList[i].trim().startsWith("element"))
+                {
+                    var checkerCName = cookieList[i].split("=")[1].trim().split(",")[0].toString();
+                    if (checkerCName == newElementName)
+                    {
+                        elementAlreadyStored = true;
+                        break;
+                    }
+                }
+            }
+            if (!elementAlreadyStored)
+            {
+                $("#elementConfirmationBox").text(" ");
+                document.cookie = cookieName + "=" + cookieValue + 
+                "; expires=Wed, 1 Jan 2038 12:00:00 UTC; path=/";
+                //doc.cookie --> element:deep space= ball,6; element:deep space = hatch,2;...;
+
+                var newTRHtml = "<tr><td>" + newElementName + 
+                "</td><td>" + newElementPoints + "</td></tr>";
+                
+                $("#scoringTable").append(newTRHtml);
+            } else
+            {
+                $("#elementConfirmationBox").text("Please enter an element not already in the table.");
+            }
+        } else
+        {
+            $("#elementConfirmationBox").text("Please check a season.");
+        }      
     });
 });
