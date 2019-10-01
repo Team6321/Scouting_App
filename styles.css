@@ -138,3 +138,9 @@ table, th, td
   padding: 5px;
   text-align: left;
 }
+
+#pitScoutingTextBox
+{
+  width: 100%;
+  resize:none;
+}

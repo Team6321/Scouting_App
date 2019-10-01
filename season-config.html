@@ -28,7 +28,7 @@
         <br><br><h3>Enter the name of a new season (Ex. 'Deep Space')...</h3>
         <input type="text" name = "newSeasonInputBox">
         <button id = "buttons" onclick="addNewSeason()">Submit</button>
-        <h3 id="newSeasonConfirmation"></h3><br><br><br>
+        <h3 id="newSeasonConfirmation"></h3><br><br>
         <h3>... and/or select a season to continue to entering season specific data.</h3>
         <fieldset>
             <form id="seasonRadioList" style="font-size:18px">
@@ -43,7 +43,8 @@
             Enter in the format <code>element,points</code>. 
             Ex.: <code>ball,6</code>. <br>
             Please enter only phrases before the comma
-            and an integer after the comma.<br><br>
+            and an integer after the comma. Make sure that 
+            a season is checked before entering any elements.x<br><br>
             Note that you will have to refresh the page, 
             select a different radio button <i>and</i> press the "Check season to continue" button
             <u>if you want to enter scoring opportunities for a different season.</u>
@@ -66,9 +67,27 @@
         </fieldset>
 
 
+        <br><br><br>
+        <!--Pit scouting questionnaire section-->
+        <h3>In the section below, please input the questionnaire data. Each question should be a line followed by a <code>.</code> or <code>?</code>
+        For example, a valid question would be:<br>
+        <code>How many balls can you score in Autonomous?</code><br>
+        Each line should be a separate question.</h3>
+
+        <fieldset>
+                <textarea id = "pitScoutingTextBox" rows = "10" placeholder = "How many balls can you score in Autonomous?">
+
+                </textarea>
+                <button id = "buttons">Enter pit scouting questions</button>
+        </fieldset>
+        
+
+
+
+
         <a href="event-data.html">
-                <br><br>
-                <button id="buttons">Continue to Event Data with Selected Season</button>        
-            </a>
+            <br><br>
+            <button id="buttons">Continue to Event Data with Selected Season</button>        
+        </a>
     </body>
 </html>
