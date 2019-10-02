@@ -25,33 +25,29 @@
         </div>
 
         <h2 style="text-align: center">Season Configuration</h2>
-        <br><br><h3>Enter the name of a new season (Ex. 'Deep Space')...</h3>
-        <input type="text" name = "newSeasonInputBox">
+        <br><br><h3>Enter the name of a new season...</h3>
+        <input type="text" name = "newSeasonInputBox" placeholder="Deep Space">
         <button id = "buttons" onclick="addNewSeason()">Submit</button>
         <h3 id="newSeasonConfirmation"></h3><br><br>
         <h3>... and/or select a season to continue to entering season specific data.</h3>
         <fieldset>
-            <form id="seasonRadioList" style="font-size:18px">
-                    <input type = "button" id="seasonSubmitButton" class="buttons" value = "Check season to continue">
+            <form id="seasonRadioList" style="font-size:18px" onchange="seasonSubmit()">
             </form>
         </fieldset>
         <br><br><br><br>
         <h3 id = "seasonQuestionsTitle" style = "text-align: center"></h3>
 
-        <h3>Enter in any scoring opportunities along with how many
-            points the actions are worth. <br>
-            Enter in the format <code>element,points</code>. 
-            Ex.: <code>ball,6</code>. <br>
-            Please enter only phrases before the comma
-            and an integer after the comma. Make sure that 
-            a season is checked before entering any elements.x<br><br>
-            Note that you will have to refresh the page, 
-            select a different radio button <i>and</i> press the "Check season to continue" button
-            <u>if you want to enter scoring opportunities for a different season.</u>
+        <h3>Enter in any scoring opportunities in the first text box
+            and how many points that scoring opportunity is
+            worth in the second text box. <br><br>
+            Please enter only phrases for the element name and
+            integers for the points. Make sure that 
+            a season is checked before entering any elements.<br><br>
         </h3>
 
         <fieldset id = "scoringOpportunities">
-            <input type="text" id="seasonElement">
+            <input type="text" id="elementKey" placeholder="ball">
+            <input type="text" id="elementPoints" placeholder = "10">
             <button id="scoringSaveButton" class="buttons">Save</button>             
 
             <br>
@@ -69,16 +65,16 @@
 
         <br><br><br>
         <!--Pit scouting questionnaire section-->
-        <h3>In the section below, please input the questionnaire data. Each question should be a line followed by a <code>.</code> or <code>?</code>
+        <h3>In the section below, please input the questionnaire data. Each question should be separated by a line.
         For example, a valid question would be:<br>
-        <code>How many balls can you score in Autonomous?</code><br>
-        Each line should be a separate question.</h3>
+        <code>How many balls can you score in Autonomous?</code>
+        Remember to <b>check a season in the radio list above</b> before
+        entering any season specific questions<br></h3>
 
         <fieldset>
-                <textarea id = "pitScoutingTextBox" rows = "10" placeholder = "How many balls can you score in Autonomous?">
-
-                </textarea>
-                <button id = "buttons">Enter pit scouting questions</button>
+                <textarea id = "pitScoutingTextBox" rows = "10" placeholder = "How many balls can you score in Autonomous?"></textarea>
+                <h2 id="pitScoutConfirmationBox"></h2>
+                <button class = "buttons" id="pitScoutingSubmit">Enter pit scouting questions</button>
         </fieldset>
         
 
@@ -87,7 +83,7 @@
 
         <a href="event-data.html">
             <br><br>
-            <button id="buttons">Continue to Event Data with Selected Season</button>        
+            <button class="buttons">Continue to Event Data with Selected Season</button>        
         </a>
     </body>
 </html>
