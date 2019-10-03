@@ -207,7 +207,7 @@ $(document).ready(function(){
         var newElementName = $("#elementKey").val().trim().toString();
         var newElementPoints = $("#elementPoints").val().trim();
         
-        if (newElementName !== "")
+        if (newElementName !== "" || newElementPoints !== "")
         {
             var season = $("input[name=seasonListItem]:checked","#seasonRadioList").val();
             if (typeof(season) !== "undefined")
@@ -254,6 +254,9 @@ $(document).ready(function(){
             {
                 $("#elementConfirmationBox").html("<i>Please check a season.<\i>");
             }
+        } else
+        {
+            $('#elementConfirmationBox').html("<i>Please fill in both fields.<\i>");
         }      
     });
 
