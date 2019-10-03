@@ -186,6 +186,21 @@ $(document).ready(function(){
         }
     }
 
+    //if hits enter during season text box, trigger button
+    $('#newSeasonInputBox').keypress(function(e){
+        if (e.keyCode == 13)
+        {
+            addNewSeason();
+        }
+    });
+
+    //if hits enter while entering points, trigger save button
+    $('#elementPoints').keypress(function(e){
+        if (e.keyCode == 13)
+        {
+            $('#scoringSaveButton').click();
+        }
+    });
 
     //adds new element to table, handles things like element already exists and season not checked
     $("#scoringSaveButton").click(function(){
@@ -233,7 +248,7 @@ $(document).ready(function(){
                     $("#elementPoints").val("");
                 } else
                 {
-                    $("#elementConfirmationBox").html("<i>Please enter an element not already in the table.<\i>");
+                    $("#elementConfirmationBox").html('<i>Element "' + newElementName + '" already exists.<\i>');
                 }
             } else
             {
