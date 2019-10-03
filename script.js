@@ -77,6 +77,8 @@ function loadSeasons()
     $("#newSeasonConfirmation").html(" ");
     $("#elementKey").val("");
     $("#elementPoints").val("");
+    $("#pitScoutConfirmationBox").html("");
+    $("#pitScoutingTextBox").val("");
 }
 
 /*//clears all seasons from radiolist 'formspace' and document.cookies
@@ -126,6 +128,21 @@ function seasonSubmit()
 
     $("#elementKey").val("");
     $("#elementPoints").val("");
+    $("#pitScoutConfirmationBox").html("");
+    setPitQuestionTextBox(season);
+}
+
+//after onchange, show saved cookie questions of new season to the text box
+function setPitQuestionTextBox(season)
+{
+    $('#pitScoutingTextBox').val('');
+    var allQuestions = getCookie(season + ' pitQuestions').trim().split(',');
+    for (var i = 0; i < allQuestions.length;i++)
+    {
+        var question = allQuestions[i].trim();
+        var currText = $("#pitScoutingTextBox").val();
+        $("#pitScoutingTextBox").val(currText + question + '\n');
+    }
 }
 
 function getElementName(str)
@@ -263,28 +280,44 @@ $(document).ready(function(){
 
     //start of questionnaire js code
     $("#pitScoutingSubmit").click(function(){
-        var allQuestions = $("#pitScoutingTextBox").val();
-        var questionsArr = allQuestions.split("\n");
+        var allQuestions = $("#pitScoutingTextBox").val().split('\n');
 
         var currSeason = getCookie("currCheckedSeason");
-        console.log(currSeason);
+        console.log(allQuestions);
+        //console.log(currSeason);
         //console.log(currSeason);
         //console.log(questionsArr);
-        
-        if (currSeason === "null")
+      
+        if (currSeason === "null" || currSeason ===" ")
         {
             $("#pitScoutConfirmationBox").html("<i>Please check a season.<\i>");
         } else
         {
-            for (var i = 0; i < 1;i++)
+            for (var i = 0; i < allQuestions.length;i++)
             {
                 // pit scouting cookies should be in the format:
                 // (currCheckedSeason) pitScout Q(i): question; expiry date...
-                var question = questionsArr[i].toString();
+                var question = allQuestions[i].toString();
+                var cookieName = currSeason + " pitQuestions";
                 if (question != "")
                 {
-                    document.cookie =  currSeason + " pitScout Q"+i+":" + question +
-                    "; expires=Wed, 1 Jan 2038 12:00:00 UTC; path=/";
+                    if (!getCookie(cookieName).includes(question))
+                    {
+                        //cookie --> {season} questions = {q1},{q2},{q3}
+                        document.cookie = cookieName + '=' + getCookie(cookieName) + question + ',; expires=Wed, 1 Jan 2038 12:00:00 UTC; path=/';
+                        var confirmationText = '<i>Question "' + question + '" saved.<\i><br>';
+                        if (!$("#pitScoutConfirmationBox").html().includes(confirmationText))
+                        {
+                            $("#pitScoutConfirmationBox").append(confirmationText);
+                        }
+                    } else
+                    {
+                        var confirmationText = '<i>Question "' + question + '" already exists.<\i><br>';
+                        if (!$("#pitScoutConfirmationBox").html().includes(confirmationText))
+                        {
+                            $("#pitScoutConfirmationBox").append(confirmationText);
+                        }
+                    }
                 }
             }
         }
