@@ -2,7 +2,7 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> <!--jquery library-->
-<script src="script.js"></script> <!--js script-->
+<script src="seasonConfigScript.js"></script> <!--js script-->
 <html>
     <head>
         <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon" />
@@ -11,7 +11,7 @@
         <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
     </head>
     <body id="background" onload="loadSeasons()">
-        <button style = "float:left"type="button" onclick = "openNav()" id="buttons">Navigation Menu</button>
+        <button style = "float:left" onclick = "openNav()" class="r3-button">Navigation Menu</button>
         <div>
             <h1 id = "title">FRC 6321 Scouting</h1>
         </div>
@@ -26,8 +26,8 @@
 
         <h2 style="text-align: center">Season Configuration</h2>
         <br><br><h3>Enter the name of a new season...</h3>
-        <input type="text" id = "newSeasonInputBox" placeholder="Deep Space">
-        <button id = "buttons" onclick="addNewSeason()">Submit</button>
+        <input type="text" id = "newSeasonInputBox" class='js_clear_on_load' placeholder="Deep Space">
+        <button class = "r3-button" onclick="addNewSeason()">Submit</button>
         <h3 id="newSeasonConfirmation"></h3><br><br>
         <h3>... and/or select a season to continue to entering season specific data.</h3>
         <fieldset>
@@ -45,9 +45,9 @@
         </h3>
 
         <fieldset id = "scoringOpportunities">
-            <input type="text" id="elementKey" placeholder="ball">
-            <input type="text" id="elementPoints" placeholder = "10">
-            <button id="scoringSaveButton" class="buttons">Save</button>             
+            <input type="text" id="elementKey" class='js_clear_on_load' placeholder="ball">
+            <input type="text" id="elementPoints" class='js_clear_on_load' placeholder = "10">
+            <button id="scoringSaveButton" class="r3-button">Save</button>             
 
             <br>
             <h3 id="elementsTableTitle"></h3>
@@ -57,7 +57,7 @@
                     <th><b>Points Worth</b></th> 
                 </tr>
             </table>
-            <h3 id="elementConfirmationBox"></h3> <br><br>
+            <h3 id="elementConfirmationBox" class='js_clear_on_load'></h3> <br><br>
 
         </fieldset>
 
@@ -69,9 +69,9 @@
         <code>How many balls can you score in Autonomous?</code><br></h3>
 
         <fieldset>
-                <textarea id = "pitScoutingTextBox" rows = "10" placeholder = "How many balls can you score in Autonomous?"></textarea>
-                <h3 id="pitScoutConfirmationBox"></h3>
-                <button class = "buttons" id="pitScoutingSubmit">Save</button>
+                <textarea id = "pitScoutingTextBox" class='js_clear_on_load' rows = "10" placeholder = "How many balls can you score in Autonomous?"></textarea>
+                <h3 id="pitScoutConfirmationBox" class='js_clear_on_load'></h3>
+                <button class = "r3-button" id="pitScoutingSubmit">Save</button>
         </fieldset>
         
 
@@ -80,7 +80,7 @@
 
         <a href="event-data.html">
             <br><br>
-            <button class="buttons">Continue to Event Data with Selected Season</button>        
+            <button class="r3-button">Continue to Event Data with Selected Season</button>        
         </a>
     </body>
 </html>

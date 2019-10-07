@@ -18,17 +18,7 @@ h1, h2,h3,h4, h5, h6, p,form,div,table{
     display: block;
 }
 
-#buttons
-{
-    color: gold;
-    background-color: maroon;
-    border-color: black;
-    border-radius: 12px;
-    font-size:16px;
-    margin: 4px 2px;
-}
-
-.buttons
+.r3-button
 {
   color: gold;
   background-color: maroon;
@@ -38,11 +28,11 @@ h1, h2,h3,h4, h5, h6, p,form,div,table{
   margin: 4px 2px;
 }
 
-#buttons:hover {
+.r3-button:hover {
   color: #f1f1f1;
 }
 
-.buttons:hover {
+.r3-button:hover {
   color: #f1f1f1;
 }
 
