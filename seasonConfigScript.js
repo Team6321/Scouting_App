@@ -66,7 +66,10 @@ function loadSeasons()
             for (var i=0;i<seasonList.length-1;i++) //length-1 because last will always be "" because name,name,
             {
                 var cookieVal = seasonList[i];
-                $("#seasonRadioList").append("<label><input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal+ "</label><br>");
+                if (!$('#seasonRadioList').html().includes(cookieVal))
+                {
+                    $("#seasonRadioList").append("<label><input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal+ "</label><br>");
+                }
             }
         }
     }
@@ -76,7 +79,7 @@ function loadSeasons()
 
 function deleteCookie(name)
 {
-    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC';   
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';   
 }
 
 function setCookie(cname, cvalue, exdays=750) {
@@ -114,6 +117,38 @@ function seasonSubmit()
     $("#elementPoints").val("");
     $("#pitScoutConfirmationBox").html("");
     setPitQuestionTextBox(season);
+}
+
+//onclick function for the 'delete all seasons' button
+function deleteSeasons()
+{
+    //delete all of the season elements
+    var seasonList = getCookie('seasonList').trim().split(',');
+    for (var i = 0; i < seasonList; i++)
+    {
+        deleteAllElements(seasonList[i]);
+    }
+
+    //delete all of the seasons
+    deleteCookie('seasonList');
+    document.location.reload();
+}
+
+//onclick function for the 'delete all elements' button
+function deleteAllElements()
+{
+    var currSeason = getCookie('currCheckedSeason');
+
+    var cookieList = document.cookie.split(';');
+    for (var i = 0; i < cookieList.length;i++)
+    {
+        var whatWeWant = '/season_config/' + currSeason + '/'; //if its an element of currSeason
+        var currCookieName = cookieList[i].trim();
+        if (!currCookieName.startsWith(whatWeWant)) continue;
+
+        deleteCookie(currCookieName);
+    }
+    document.location.reload();
 }
 
 //after onchange, show saved cookie questions of new season to the text box
