@@ -53,6 +53,11 @@ h1, h2,h3,h4, h5, h6, p,form,div,table{
   color:maroon;
 }
 
+.clickableXText
+{
+  text-decoration:none;
+}
+
 /* The side navigation menu */
 .sidenav {
     height: 100%; /* 100% Full-height */

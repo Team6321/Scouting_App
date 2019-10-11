@@ -33,7 +33,7 @@
         <fieldset>
             <form id="seasonRadioList" style="font-size:18px" onchange="seasonSubmit()">
             </form>
-            <button class='r3-button' onclick="deleteSeasons()">Delete all Seasons</button>
+            <button class='r3-button' onclick="deleteCheckedSeason()">Delete Checked Season</button>
         </fieldset>
         <br><br><br><br>
         <h3 id = "seasonQuestionsTitle" style = "text-align: center"></h3>
@@ -59,7 +59,7 @@
                 </tr>
             </table>
             <h3 id="elementConfirmationBox" class='js_clear_on_load'></h3> <br><br>
-            <button class='r3-button' onclick='deleteAllElements()'>Delete all Elements for Current Season</button>
+            <button class='r3-button' onclick='deleteAllElements()'>Delete *all* Elements for Checked Season</button>
         </fieldset>
 
 

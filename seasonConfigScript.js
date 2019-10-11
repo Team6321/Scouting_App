@@ -22,7 +22,7 @@ function addNewSeason()
     {
         if (getCookie("seasonList") !== "")
         {
-            var seasonNames = getCookie("seasonList").split(",");
+            var seasonNames = getCookie("seasonList").split("§"); //§ is an uncommon separator that user can't type
             for (var i=0;i<seasonNames.length;i++)
             {
                 var val = seasonNames[i].trim();
@@ -42,13 +42,12 @@ function addNewSeason()
     {
         //add to radioList
         $("#newSeasonConfirmation").html("<i>Season " + "\'"+ newSeason +"\'"+" has been added.</i>"); //confirmation text
-        $("#seasonRadioList").append("<label><input type=\"radio\" name=\"seasonListItem\" value=\"" + newSeason + "\">" + newSeason + "</label><br>"); //add to radiolist
+        $("#seasonRadioList").append("<label><input type=\"radio\" name=\"seasonListItem\" value=\"" + newSeason + "\">" + newSeason +"</label><br>"); //add to radiolist
 
         //save newSeason in cookie
         var cname = 'seasonList';
-        var cvalue = getCookie('seasonList') + newSeason + ',';
+        var cvalue = getCookie('seasonList') + newSeason + '§';
         setCookie(cname,cvalue,750);
-        //document.cookie = "seasonList=" + getCookie("seasonList") + newSeason + "," + "; expires=Wed, 1 Jan 2038 12:00:00 UTC; path=/";
 
         $("#newSeasonInputBox").val("");
     }
@@ -61,14 +60,14 @@ function loadSeasons()
     {
         if (getCookie("seasonList") !== " ")
         {
-            var seasonList = getCookie('seasonList').split(",");
+            var seasonList = getCookie('seasonList').split("§");
             //console.log('seasonList:' + seasonList);
             for (var i=0;i<seasonList.length-1;i++) //length-1 because last will always be "" because name,name,
             {
                 var cookieVal = seasonList[i];
                 if (!$('#seasonRadioList').html().includes(cookieVal))
                 {
-                    $("#seasonRadioList").append("<label><input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal+ "</label><br>");
+                    $("#seasonRadioList").append("<label><input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal + "</label><br>");
                 }
             }
         }
@@ -119,18 +118,17 @@ function seasonSubmit()
     setPitQuestionTextBox(season);
 }
 
-//onclick function for the 'delete all seasons' button
-function deleteSeasons()
+function deleteCheckedSeason()
 {
-    //delete all of the season elements
-    var seasonList = getCookie('seasonList').trim().split(',');
-    for (var i = 0; i < seasonList; i++)
-    {
-        deleteAllElements(seasonList[i]);
-    }
-
-    //delete all of the seasons
-    deleteCookie('seasonList');
+    var currCheckedSeason = getCookie('currCheckedSeason');
+    var seasonList = getCookie('seasonList').trim();
+    var startIndex = seasonList.indexOf(currCheckedSeason);
+    var endIndex = startIndex + currCheckedSeason.length;
+    var newText = seasonList.substring(0,startIndex) + seasonList.substring(endIndex+1);
+    
+    setCookie('seasonList',newText,750);
+    deleteAllElements(currCheckedSeason); //clear elements
+    deleteCookie(currCheckedSeason + ' pitQuestions'); //clear pit questions cookie
     document.location.reload();
 }
 
