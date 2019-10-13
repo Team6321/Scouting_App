@@ -1,7 +1,12 @@
 /*credit to w3schools.com for tutorials on web design*/
 #background {
     height: 100%;
-    background-image: url(https://utemplates.net/wp-content/uploads/2017/07/White-Textured-Background.jpg);
+    background-image: url(https://utemplates.net/wp-content/uploads/2017/07/White-Textured-Background.jpg);    ;
+}
+
+h1, h2,h3,h4, h5, h6, p,form,div,table{
+  font-family: 'Ubuntu';
+  color: maroon;
 }
 
 #title {
@@ -9,18 +14,48 @@
     text-align: center;
     font-family: 'Ubuntu';
     border-width: 5px;
-    margin-top: 2%;
+    margin-right: 10%;
+    display: block;
 }
 
-#navBtn
+.r3-button
 {
-    color: gold;
-    background-color: maroon;
-    font-family: 'Ubuntu';
-    float:left;
-    display:block;
-    margin-left:auto;
-    margin-right:auto;
+  color: gold;
+  background-color: maroon;
+  border-color: black;
+  border-radius: 12px;
+  font-size:16px;
+  margin: 4px 2px;
+}
+
+.r3-button:hover {
+  color: #f1f1f1;
+}
+
+.r3-button:hover {
+  color: #f1f1f1;
+}
+
+#instructionsHeader
+{
+  font-family: 'Ubuntu';
+  text-align: center;
+  font-size:20px;
+  color:maroon;
+}
+
+#instructions
+{
+  display: inline-block;
+  font-family: 'Ubuntu';
+  text-align: left;
+  font-size:20px;
+  color:maroon;
+}
+
+.clickableXText
+{
+  text-decoration:none;
 }
 
 /* The side navigation menu */
@@ -72,3 +107,35 @@
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
   }
+
+.teamProfileImages
+{
+  width: 4%;
+  height: 4%;
+  border: none;
+}
+.teamProfileImages:hover
+{
+  opacity: .7;
+}
+#teamProfileImages
+{
+  display: inline-block;
+  text-align:  center;
+}
+
+
+table, th, td
+{
+  font-size: 15px;
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 5px;
+  text-align: left;
+}
+
+#pitScoutingTextBox
+{
+  width: 100%;
+  resize:none;
+}

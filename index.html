@@ -1,23 +1,58 @@
 <!DOCTYPE html>
+<meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
-<script src="script.js"></script> <!--js script-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> <!--jquery library-->
+<script src="seasonConfigScript.js"></script> <!--js script-->
 <html>
     <head>
+        <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon" />
         <title>FRC 6321 Scouting</title>
         <!--Importing fonts-->
         <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
     </head>
     <body id = "background">
+        <button style = "float:left" onclick = "openNav()" class="r3-button">Navigation Menu</button>
         <div>
             <h1 id = "title">FRC 6321 Scouting</h1>
         </div>
-        <button type="button" onclick = "openNav()" id="navBtn">Navigation Menu</button>
-
         <div id = "mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn"
             onclick = "closeNav()">&times;</a>
-            <a href="seasons">Seasons</a>
-            <a href="config">Configuration</a>
+            <a href="home.html">Home</a>
+            <a href="season-config.html">Season Configuration</a>
+            <a href="event-data.html">Event Data</a>
+            <a href="team-data.html">Team Data</a>
         </div>
+
+        <h3 id="instructionsHeader">
+            Welcome to the Rouse Robotics Scouting Web App!
+            <br><br><br><br>Click "Navigation Menu" to see the different parts of the site.
+        </h3>
+        <div style="text-align:center">
+            <h3 id="instructions">
+                <br><br>● Click the "Season Configuration" to enter custom data about this season,
+                such as game elements and point systems.
+                <br><br>● Click the "Event Data" to upload team data from
+                The Blue Alliance for a given event.
+                <br><br>● Click the "Team Data" to enter and view team data
+                for a given event.
+            </h3>
+        </div>
+        <br><br><br><br><br>
+        <div id="teamProfileImages">            
+            <a href="https://github.com/Team6321" target="_blank">
+                <img src="images/github_logo.png" alt="Team Github Profile"  class="teamProfileImages">
+            </a>
+
+            <a href="https://twitter.com/roborouse?lang=en" target="_blank">
+                <img src="images/twitter_logo.png" alt="Team Twitter Profile" class="teamProfileImages">
+            </a>
+
+            <a href="https://www.instagram.com/rouse_robotics/" target="_blank">
+                <img src="images/instagram_logo.png" alt="Team Instagram Profile" class="teamProfileImages">
+            </a>
+        
+        </div>
+
     </body>
 </html>
