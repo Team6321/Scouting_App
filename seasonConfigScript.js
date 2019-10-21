@@ -126,7 +126,8 @@ function deleteCheckedSeason()
     var endIndex = startIndex + currCheckedSeason.length;
     var newText = seasonList.substring(0,startIndex) + seasonList.substring(endIndex+1);
     
-    setCookie('seasonList',newText,750);
+    setCookie('seasonList',newText,750); //update season list cookie
+    setCookie('currCheckedSeason','',750); //last checked season was deleted, restart that cookie
     deleteAllElements(currCheckedSeason); //clear elements
     deleteCookie(currCheckedSeason + ' pitQuestions'); //clear pit questions cookie
     document.location.reload();

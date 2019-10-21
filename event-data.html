@@ -28,5 +28,16 @@
         <h2 style="text-align: center">Event Data</h2>
 
         <h3 style = "text-align: center" id='eventDataIntroText'> </h3>
+
+        <br><h3>Enter the name of a new element or select an existing season to continue to team data.</h3>
+        <input type="text" id = "newEventInputBox" class='js_clear_on_load' placeholder="Austin District Event">
+        <button class = "r3-button" onclick="addNewEvent()">Submit</button>
+        <h3 id="newEventConfirmation"></h3><br>
+        <fieldset>
+            <form id="eventRadioList" style="font-size:18px" onchange="changeCurrEvent()">
+            </form>
+            <button class='r3-button' onclick="deleteCheckedEvent()">Delete Checked Event</button>
+        </fieldset>
+        <br>        
     </body>
 </html>
