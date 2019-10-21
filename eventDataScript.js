@@ -62,7 +62,7 @@ function changeCurrEvent()
     var cvalue = '/'+getCookie('currCheckedSeason')+'/'+currEvent;
     setCookie(cname,cvalue,750);
 
-    
+
 }
 
 
@@ -159,6 +159,14 @@ $(document).ready(function(){
     const Enter_key_code = 13;
     $('#newEventInputBox').keypress(function(e){
         if (e.keyCode == Enter_key_code) addNewEvent();
+    });
+
+    //event specific teams code
+    $('#teamName').keypress(function(e){
+        if (e.keyCode == Enter_key_code) $('#teamSaveButton').click();
+    });
+
+    $('#teamSaveButton').click(function(){
     });
 
 });

@@ -38,6 +38,25 @@
             </form>
             <button class='r3-button' onclick="deleteCheckedEvent()">Delete Checked Event</button>
         </fieldset>
-        <br>        
+        <br>
+        
+        <h3>Here, enter the team numbers and names for the checked event.</h3>
+
+        <fieldset id = "eventSpecificTeams">
+            <input type="text" id="teamNumber" class='js_clear_on_load' placeholder="6321">
+            <input type="text" id="teamName" class='js_clear_on_load' placeholder = "R-Cubed Rouse Raider Robotics">
+            <button id="teamSaveButton" class="r3-button">Save</button>             
+
+            <br>
+            <h3 id="teamTableTitle"></h3>
+            <table id = "eventSpecificTeamTable">
+                <tr>
+                    <th><b>Team Number</b></th> 
+                    <th><b>Team Name</b></th> 
+                </tr>
+            </table>
+            <h3 id="teamConfirmationBox" class='js_clear_on_load'></h3> <br>
+            <button class='r3-button' onclick='deleteAllTeams()'>Delete *all* Elements for Checked Season</button>
+        </fieldset>
     </body>
 </html>
