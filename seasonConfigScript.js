@@ -20,7 +20,7 @@ function addNewSeason()
     var isAlreadyStored = false;
     if (document.cookie.length > 0) //if cookies are stored at all
     {
-        if (getCookie("seasonList") !== "")
+        if (getCookie("seasonList") !== " ")
         {
             var seasonNames = getCookie("seasonList").split("§"); //§ is an uncommon separator that user can't type
             for (var i=0;i<seasonNames.length;i++)
@@ -247,7 +247,7 @@ $(document).ready(function()
         if (newElementName !== "" || newElementPoints !== "")
         {
             var season = getCookie('currCheckedSeason');//$("input[name=seasonListItem]:checked","#seasonRadioList").val();
-            if (typeof(season) !== "undefined")
+            if (season !== " ")
             {
                 var cookieName = season_config_cookie_name(season,newElementName);
                 var cookieValue = newElementPoints;

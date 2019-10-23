@@ -37,7 +37,7 @@ function displayEventsInRadioList()
     if (isSeasonSaved)
     {
         var currSeason = getCookie('currCheckedSeason');
-        var cname = '/eventData/'+currSeason+'/';
+        var cname = currSeason + ' events';
         if (getCookie(cname) !== ' ')
         {
             var eventList = getCookie(cname).split('Δ');
@@ -62,7 +62,10 @@ function changeCurrEvent()
     var cvalue = '/'+getCookie('currCheckedSeason')+'/'+currEvent;
     setCookie(cname,cvalue,750);
 
-
+    var currEvent = getCurrEvent();
+    var currSeason = getCookie('currCheckedSeason');
+    setTeamTable(currSeason,currEvent);
+    $("#teamConfirmationBox").text('');
 }
 
 
@@ -79,9 +82,10 @@ function addNewEvent()
     }
 
     var isAlreadyStored = false;
+    var cookieName = currSeason + ' events';
+
     if (document.cookie.length > 0) //if cookies are stored at all
     {
-        var cookieName = '/eventData/'+currSeason+'/';
         if (cookieName !== "")
         {
             var eventNames = getCookie(cookieName).split("Δ"); //Δ is an uncommon separator that user can't type
@@ -107,9 +111,8 @@ function addNewEvent()
         $("#eventRadioList").append("<label><input type=\"radio\" name=\"eventListItem\" value=\"" + newEvent + "\">" + newEvent +"</label><br>"); //add to radiolist
 
         //save newSeason in cookie
-        var cname = '/eventData/'+currSeason+'/';
-        var cvalue = getCookie(cname) + newEvent + 'Δ';
-        setCookie(cname,cvalue,750);
+        var cvalue = getCookie(cookieName) + newEvent + 'Δ';
+        setCookie(cookieName,cvalue,750);
 
         $("#newEventInputBox").val("");
     }
@@ -119,10 +122,10 @@ function addNewEvent()
 function deleteCheckedEvent()
 {
     var currCheckedSeason = getCookie('currCheckedSeason');
-    var cookieName = '/eventData/'+currCheckedSeason+'/';
-    currEvCookie = getCookie('currCheckedEvent');
-    //currEvCookie --> /deep space/pasadena
-    var currCheckedEvent = currEvCookie.substring(currEvCookie.lastIndexOf('/')+1);
+    var cookieName = currCheckedSeason + ' events';
+    var cookieVal = getCookie(cookieName);
+    //currEvCookie --> deep space events=pasadena
+    var currCheckedEvent = getCurrEvent();
     
     //splices the eventList cookie and gets rid of the function to be delted
     var eventList = getCookie(cookieName).trim();
@@ -154,6 +157,53 @@ function getCookie(name)
     return (value != null) ? unescape(value[1]) : " ";
 }
 
+function event_data_cookie_name(season,event)
+{
+    return `/event_data teams/${ season }/${ event }`;
+}
+
+//cookie format: /event_data teams/{season}/{event}=1Ψteam1θ2Ψteam2θ...
+function getTeamNumber(cookie)
+{
+    return cookie.substring(0,cookie.indexOf('Ψ'));
+}
+
+function getTeamName(cookie)
+{
+    return cookie.substring(cookie.indexOf('Ψ')+1);
+}
+
+function getCurrEvent()
+{
+    var cookieEv = getCookie('currCheckedEvent');
+    return cookieEv.substring(cookieEv.lastIndexOf('/')+1);
+}
+
+function setTeamTable(season, event)
+{
+    $("#eventSpecificTeamTable").html('<tr><th><b>Team Number</b></th> <th><b>Team Name</b></th> </tr>');
+    var cookieList = document.cookie.split(';');
+    for (var i = 0; i < cookieList.length; i++)
+    {
+        if (!cookieList[i].trim().startsWith(event_data_cookie_name(season,event))) continue;
+
+        var teamList = cookieList[i].split('=')[1].split('θ');
+        for (var j = 0; j < teamList.length;j++)
+        {
+            var teamNumber = getTeamNumber(teamList[j]);
+            var teamName = getTeamName(teamList[j]);
+    
+            var newTRHtml = "<tr><td>" + teamNumber + 
+            "</td><td>" + teamName + "</td></tr>";
+    
+            if ($('#eventSpecificTeamTable').html().indexOf(newTRHtml) < 0 &&
+            (teamNumber != '' || teamName != ''))
+            {
+                $('#eventSpecificTeamTable').append(newTRHtml);
+            }
+        }
+    }
+}
 
 $(document).ready(function(){
     const Enter_key_code = 13;
@@ -167,6 +217,62 @@ $(document).ready(function(){
     });
 
     $('#teamSaveButton').click(function(){
+        var teamNumber = $("#teamNumber").val().trim();
+        var teamName = $("#teamName").val().trim();
+        var currEvent = getCurrEvent();
+        
+        if (teamNumber !== "" || teamName !== "")
+        {
+            var season = getCookie('currCheckedSeason');
+            if (season !== " ")
+            {
+                if (currEvent !== ' ')
+                {
+                    var cookieName = event_data_cookie_name(season,currEvent);
+                    //Ψ separates team number and team name, θ separates diff teams
+                    var cookieValue = teamNumber + 'Ψ' + teamName + 'θ';
+                    
+                    var cookieList = document.cookie.split(";");
+                    var teamAlreadyStored = false;
+                    for (var i = 0; i < cookieList.length;i++)
+                    {
+                        if (!cookieList[i].startsWith(cookieName)) continue;
+
+                        var str = cookieList[i].split('=')[1].split('θ');
+                        //check if team is stored yet
+                        for (var j = 0; j < str.length;j++)
+                        {
+                            if (str[j].contains(teamNumber) || str[j].contains(teamName))
+                            teamAlreadyStored = true;
+                            break;
+                        }
+                    }
+
+                    $("#teamConfirmationBox").text(" ");
+                    if (!teamAlreadyStored)
+                    {
+                        //add new team to cookie
+                        setCookie(cookieName,getCookie(cookieName)+cookieValue,750);
+                        $("#teamConfirmationBox").html('<i>Team ' + teamNumber + ': ' + teamName + ' has been added.<\i>');
+                        setTeamTable(season,currEvent);   
+                    } else
+                    {
+                        $("#teamConfirmationBox").html('<i>Team ' + teamNumber + ': ' + teamName + ' already exists.<\i>');
+                    }
+                    $("#teamNumber").val("").focus();
+                    $("#teamName").val("");
+                } else
+                {
+                    $("#teamConfirmationBox").html("<i>Please check an event.<\i>");
+                }
+            } else
+            {
+                $("#teamConfirmationBox").html("<i>Please check a season.<\i>");
+            }
+        } else
+        {
+            $('#teamConfirmationBox').html("<i>Please fill in both fields.<\i>");
+        }     
     });
 
 });
