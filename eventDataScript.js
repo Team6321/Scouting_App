@@ -126,6 +126,7 @@ function deleteCheckedEvent()
     var cookieName = currCheckedSeason + ' events';
     var cookieVal = getCookie(cookieName);
     var currCheckedEvent = getCurrEvent();
+    var cnameEnding = currCheckedSeason + '/' + currCheckedEvent;
     
     //splices the eventList cookie and gets rid of the function to be deleted
     var eventList = cookieVal.trim();
@@ -135,6 +136,20 @@ function deleteCheckedEvent()
     
     setCookie(cookieName,newText,750); //updates event data cookie
     setCookie('currCheckedEvent','',750); //last checked event was deleted, restart cookie
+    
+    //delete team names for that event
+    var cname = '';
+    var cookieList = document.cookie.split(';');
+    for (var i = 0; i < cookieList.length;i++)
+    {
+        var currCname = cookieList[i].trim().split('=')[0];
+        if (currCname.endsWith(cnameEnding))
+        {
+            cname = currCname;
+        }
+    }
+    deleteCookie(cname);
+
     document.location.reload();
 }
 
