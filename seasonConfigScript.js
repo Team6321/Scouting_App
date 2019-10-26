@@ -74,6 +74,7 @@ function loadSeasons()
     }
 
     $('.js_clear_on_load').val("").html("");
+    setCookie('currCheckedSeason','',750);
 }
 
 function deleteCookie(name)
