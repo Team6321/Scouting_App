@@ -43,7 +43,7 @@
         <h3>Here, enter the team numbers and names for the checked event.</h3>
 
         <fieldset id = "eventSpecificTeams">
-            <input type="text" id="teamNumber" class='js_clear_on_load' placeholder="6321">
+            <input type="number" id="teamNumber" class='js_clear_on_load' placeholder="6321">
             <input type="text" id="teamName" class='js_clear_on_load' placeholder = "R-Cubed Rouse Raider Robotics">
             <button id="teamSaveButton" class="r3-button">Save</button>             
 
@@ -59,8 +59,6 @@
             <h3>To delete a specific team, enter either the team number or name in the following box:</h3>
             <input type="text" id="deleteSpecificTeamTextBox" class='js_clear_on_load' placeholder="123">
             <button class='r3-button' onclick='deleteSpecificTeam()'>Delete</button>
-            <br><br>
-            <button class='r3-button' onclick='deleteAllTeams()'>Delete *all* Elements for Checked Season</button>
         </fieldset>
     </body>
 </html>

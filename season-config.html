@@ -47,7 +47,7 @@
 
         <fieldset id = "scoringOpportunities">
             <input type="text" id="elementKey" class='js_clear_on_load' placeholder="ball">
-            <input type="text" id="elementPoints" class='js_clear_on_load' placeholder = "10">
+            <input type="number" id="elementPoints" class='js_clear_on_load' placeholder = "10">
             <button id="scoringSaveButton" class="r3-button">Save</button>             
 
             <br>
@@ -58,8 +58,11 @@
                     <th><b>Points Worth</b></th> 
                 </tr>
             </table>
-            <h3 id="elementConfirmationBox" class='js_clear_on_load'></h3> <br><br>
-            <button class='r3-button' onclick='deleteAllElements()'>Delete *all* Elements for Checked Season</button>
+            <h3 id="elementConfirmationBox" class='js_clear_on_load'></h3> <br>
+            
+            <h3>To delete a specific element, enter the element name in the following box:</h3>
+            <input type="text" id="elementToDelete" class='js_clear_on_load' placeholder="ball">
+            <button onclick='deleteSpecificElement()' class="r3-button">Save</button><br><br>             
         </fieldset>
 
 

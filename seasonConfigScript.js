@@ -134,21 +134,24 @@ function deleteCheckedSeason()
     document.location.reload();
 }
 
-//onclick function for the 'delete all elements' button
-function deleteAllElements()
+//onclick for delete specific element
+function deleteSpecificElement()
 {
-    var currSeason = getCookie('currCheckedSeason');
-
+    var elementToDelete = $('#elementToDelete').val().trim();
     var cookieList = document.cookie.split(';');
-    for (var i = 0; i < cookieList.length;i++)
-    {
-        var whatWeWant = '/season_config/' + currSeason + '/'; //if its an element of currSeason
-        var currCookieName = cookieList[i].trim();
-        if (!currCookieName.startsWith(whatWeWant)) continue;
 
-        deleteCookie(currCookieName);
+    var cnameToDelete = '';
+    for (var i = 0; i < cookieList.length; i++)
+    {
+        var currCname = cookieList[i].split('=')[0];
+        if (!currCname.endsWith(elementToDelete)) continue;
+
+        cnameToDelete = currCname;
     }
-    document.location.reload();
+    deleteCookie(cnameToDelete);
+    var season = getCookie('currCheckedSeason');
+    setTable(season);
+    $('#elementToDelete').val('').focus();
 }
 
 //after onchange, show saved cookie questions of new season to the text box
@@ -237,6 +240,10 @@ $(document).ready(function()
 
     $('#elementPoints').keypress(function(e){
         if (e.keyCode == Enter_key_code) $('#scoringSaveButton').click();
+    });
+    
+    $('#elementToDelete').keypress(function(e){
+        if (e.keyCode == Enter_key_code) deleteSpecificElement();
     });
 
     //adds new element to table, handles things like element already exists and season not checked

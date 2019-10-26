@@ -170,17 +170,6 @@ function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlre
     return revisedString;
 }
 
-//deletes all teams for current season/event
-function deleteAllTeams()
-{
-    var season = getCookie('currCheckedSeason');
-    var event = getCurrEvent();
-    var cname = event_data_cookie_name(season,event);
-
-    setCookie(cname,'',750);
-    document.location.reload();
-}
-
 function deleteCookie(name)
 {
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';   
