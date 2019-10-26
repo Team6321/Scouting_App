@@ -159,7 +159,6 @@ function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlre
 
     //add all teams + θ except the pair with the repeated info
     var teamList = allEventsString.split('θ'); //split all teams
-    console.log(teamList);
     for (var i = 0; i < teamList.length-1;i++) //split makes last arr item ''
     {
         var pair = teamList[i].trim();
@@ -250,6 +249,22 @@ function setTeamTable(season, event)
     }
 }
 
+//onclick for deleting a specific team
+function deleteSpecificTeam()
+{
+    var input = $('#deleteSpecificTeamTextBox').val().trim();
+    var teamToDelete = input + 'Ψ' + input + 'θ';//just to make the deleteTeamOfEventsCookie usable
+    var season = getCookie('currCheckedSeason');
+    var currEvent = getCurrEvent(); 
+    var cname = event_data_cookie_name(season,currEvent);
+    
+    var revisedString = deleteTeamOfEventsCookie(season, currEvent, teamToDelete,true,false);
+    setCookie(cname,revisedString,750);
+    setTeamTable(season,currEvent);
+
+    $("#deleteSpecificTeamTextBox").val("").focus();
+}
+
 $(document).ready(function(){
     const Enter_key_code = 13;
     $('#newEventInputBox').keypress(function(e){
@@ -259,6 +274,10 @@ $(document).ready(function(){
     //event specific teams code
     $('#teamName').keypress(function(e){
         if (e.keyCode == Enter_key_code) $('#teamSaveButton').click();
+    });
+
+    $('#deleteSpecificTeamTextBox').keypress(function(e){
+        if (e.keyCode == Enter_key_code) deleteSpecificTeam();
     });
 
     $('#teamSaveButton').click(function(){

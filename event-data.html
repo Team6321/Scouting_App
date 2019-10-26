@@ -29,7 +29,7 @@
 
         <h3 style = "text-align: center" id='eventDataIntroText'> </h3>
 
-        <br><h3>Enter the name of a new element or select an existing season to continue to team data.</h3>
+        <br><h3>Enter the name of a new event or select an existing event.</h3>
         <input type="text" id = "newEventInputBox" class='js_clear_on_load' placeholder="Austin District Event">
         <button class = "r3-button" onclick="addNewEvent()">Submit</button>
         <h3 id="newEventConfirmation"></h3><br>
@@ -55,7 +55,11 @@
                     <th><b>Team Name</b></th> 
                 </tr>
             </table>
-            <h3 id="teamConfirmationBox" class='js_clear_on_load'></h3> <br>
+            <h4 id="teamConfirmationBox" class='js_clear_on_load'></h4> <br>
+            <h3>To delete a specific team, enter either the team number or name in the following box:</h3>
+            <input type="text" id="deleteSpecificTeamTextBox" class='js_clear_on_load' placeholder="123">
+            <button class='r3-button' onclick='deleteSpecificTeam()'>Delete</button>
+            <br><br>
             <button class='r3-button' onclick='deleteAllTeams()'>Delete *all* Elements for Checked Season</button>
         </fieldset>
     </body>
