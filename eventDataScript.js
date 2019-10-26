@@ -2,7 +2,7 @@
 
 function loadPage()
 {
-    showTopText();
+    showTopText(); // 'showing event data for...
     displayEventsInRadioList();
     setCookie('currCheckedEvent','',750);
     $('.js_clear_on_load').val("").html("");
@@ -35,7 +35,7 @@ function showTopText()
 
 function displayEventsInRadioList()
 {
-    if (isSeasonSaved)
+    if (isSeasonSaved())
     {
         var currSeason = getCookie('currCheckedSeason');
         var cname = currSeason + ' events';
@@ -59,12 +59,11 @@ function changeCurrEvent()
 {
     //curr event cookie --> currCheckedEvent = /{currCheckedSeason}/{currEvent}/
     var currEvent = $("input[name=eventListItem]:checked","#eventRadioList").val();
+    var currSeason = getCookie('currCheckedSeason');
     var cname = 'currCheckedEvent';
-    var cvalue = '/'+getCookie('currCheckedSeason')+'/'+currEvent;
+    var cvalue = '/'+currSeason+'/'+currEvent;
     setCookie(cname,cvalue,750);
 
-    var currEvent = getCurrEvent();
-    var currSeason = getCookie('currCheckedSeason');
     setTeamTable(currSeason,currEvent);
     $("#teamConfirmationBox").text('');
 }
@@ -123,19 +122,19 @@ function addNewEvent()
 function deleteCheckedEvent()
 {
     var currCheckedSeason = getCookie('currCheckedSeason');
+    //cookie --> 'deep space events=austinΔfit champsΔ...'
     var cookieName = currCheckedSeason + ' events';
     var cookieVal = getCookie(cookieName);
-    //currEvCookie --> deep space events=pasadena
     var currCheckedEvent = getCurrEvent();
     
-    //splices the eventList cookie and gets rid of the function to be delted
-    var eventList = getCookie(cookieName).trim();
+    //splices the eventList cookie and gets rid of the function to be deleted
+    var eventList = cookieVal.trim();
     var startIndex = eventList.indexOf(currCheckedEvent);
     var endIndex = startIndex + currCheckedEvent.length;
     var newText = eventList.substring(0,startIndex) + eventList.substring(endIndex+1);
     
     setCookie(cookieName,newText,750); //updates event data cookie
-    setCookie('currCheckedEvent','',750); //last checked event was deleted, restart
+    setCookie('currCheckedEvent','',750); //last checked event was deleted, restart cookie
     document.location.reload();
 }
 
@@ -147,7 +146,7 @@ function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlre
     var allEventsString = getCookie(cname);
     var revisedString = '';
 
-    var storedTeamInfo;
+    var storedTeamInfo; //either number or name
     if (isNumberAlreadyStored)
         storedTeamInfo = getTeamNumber(cookieValAddOn);
     else
@@ -159,7 +158,7 @@ function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlre
 
     //add all teams + θ except the pair with the repeated info
     var teamList = allEventsString.split('θ'); //split all teams
-    for (var i = 0; i < teamList.length-1;i++) //split makes last arr item ''
+    for (var i = 0; i < teamList.length-1;i++) //length-1 as split makes last arr item ''
     {
         var pair = teamList[i].trim();
         if (pair.includes(storedTeamInfo) || pair === ' ' || typeof(pair) === 'undefined') continue;
@@ -168,48 +167,6 @@ function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlre
     }
     
     return revisedString;
-}
-
-function deleteCookie(name)
-{
-    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';   
-}
-
-function setCookie(cname, cvalue, exdays=750) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires="+ d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-
-function getCookie(name)
-{
-    var re = new RegExp(name + "=([^;]+)");
-    var value = re.exec(document.cookie);
-    return (value != null) ? unescape(value[1]) : " ";
-}
-
-function event_data_cookie_name(season,event)
-{
-    return `/event_data teams/${ season }/${ event }`;
-}
-
-//input format for this function: {teamNumber}Ψ{teamName}
-function getTeamNumber(cookieVal)
-{
-    return cookieVal.substring(0,cookieVal.indexOf('Ψ'));
-}
-
-//input format for this function: {teamNumber}Ψ{teamName}
-function getTeamName(cookieVal)
-{
-    return cookieVal.substring(cookieVal.indexOf('Ψ')+1);
-}
-
-function getCurrEvent()
-{
-    var cookieEv = getCookie('currCheckedEvent');
-    return cookieEv.substring(cookieEv.lastIndexOf('/')+1);
 }
 
 function setTeamTable(season, event)
@@ -296,6 +253,7 @@ $(document).ready(function(){
                         if (!cookieList[i].trim().startsWith(cookieName)) continue;
 
                         var str = cookieList[i].split('=')[1].split('θ');
+                        
                         //check if team is stored yet
                         for (var j = 0; j < str.length;j++)
                         {
@@ -340,7 +298,7 @@ $(document).ready(function(){
 
                             //skips over team num/name pair with prev stored info and returns new cookie val string
                             var revisedString = deleteTeamOfEventsCookie(season,currEvent,cookieValueAddOn,isNumberAlreadyStored,isNameAlreadyStored);
-                            setCookie(cookieName,revisedString + cookieValueAddOn);
+                            setCookie(cookieName,revisedString + cookieValueAddOn,750);
                             setTeamTable(season,currEvent);   
                         } else
                         {
@@ -368,5 +326,48 @@ $(document).ready(function(){
             $('#teamConfirmationBox').html("<i>Please fill in both fields.<\i>");
         }     
     });
-
 });
+
+// helper methods below
+
+function deleteCookie(name)
+{
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';   
+}
+
+function setCookie(cname, cvalue, exdays=750) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(name)
+{
+    var re = new RegExp(name + "=([^;]+)");
+    var value = re.exec(document.cookie);
+    return (value != null) ? unescape(value[1]) : " ";
+}
+
+function event_data_cookie_name(season,event)
+{
+    return `/event_data teams/${ season }/${ event }`;
+}
+
+//input format for this function: {teamNumber}Ψ{teamName}
+function getTeamNumber(cookieVal)
+{
+    return cookieVal.substring(0,cookieVal.indexOf('Ψ'));
+}
+
+//input format for this function: {teamNumber}Ψ{teamName}
+function getTeamName(cookieVal)
+{
+    return cookieVal.substring(cookieVal.indexOf('Ψ')+1);
+}
+
+function getCurrEvent()
+{
+    var cookieEv = getCookie('currCheckedEvent');
+    return cookieEv.substring(cookieEv.lastIndexOf('/')+1);
+}
