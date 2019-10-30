@@ -214,6 +214,8 @@ function setTeamTable(season, event)
 function deleteSpecificTeam()
 {
     var input = $('#deleteSpecificTeamTextBox').val().trim();
+    if (input === '') return;
+    
     var teamToDelete = input + 'Ψ' + input + 'θ';//just to make the deleteTeamOfEventsCookie usable
     var season = getCookie('currCheckedSeason');
     var currEvent = getCurrEvent(); 

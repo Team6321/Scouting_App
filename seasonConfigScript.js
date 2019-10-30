@@ -139,6 +139,7 @@ function deleteSpecificElement()
 {
     var elementToDelete = $('#elementToDelete').val().trim();
     var cookieList = document.cookie.split(';');
+    if (elementToDelete === '') return;
 
     var cnameToDelete = '';
     for (var i = 0; i < cookieList.length; i++)
