@@ -229,6 +229,8 @@ function deleteSpecificTeam()
 }
 
 $(document).ready(function(){
+    loadPage();
+
     const Enter_key_code = 13;
     $('#newEventInputBox').keypress(function(e){
         if (e.keyCode == Enter_key_code) addNewEvent();
