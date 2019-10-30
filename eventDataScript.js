@@ -153,9 +153,9 @@ function deleteCheckedEvent()
     document.location.reload();
 }
 
-//deletes a team number/team event pair of all events cookie value
+//deletes (skips over) a team number/team event pair of all events cookie value
 //returns string w/ value of events string, to use for setCookie
-function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlreadyStored,isNameAlreadyStored)
+function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlreadyStored)
 {
     var cname = event_data_cookie_name(season,currEvent);
     var allEventsString = getCookie(cname);
@@ -163,13 +163,7 @@ function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlre
 
     var storedTeamInfo; //either number or name
     if (isNumberAlreadyStored)
-        storedTeamInfo = getTeamNumber(cookieValAddOn);
-    else
-    {
-        //{teamNumber}Ψ{teamName}θ is format of cookieValAddOn
-        var withTheta = getTeamName(cookieValAddOn);
-        storedTeamInfo = withTheta.split('θ')[0];
-    }
+        storedTeamInfo = getTeamNumber(cookieValAddOn); //{teamNumber}Ψ{teamName}θ is format of cookieValAddOn
 
     //add all teams + θ except the pair with the repeated info
     var teamList = allEventsString.split('θ'); //split all teams
@@ -213,15 +207,16 @@ function setTeamTable(season, event)
 //onclick for deleting a specific team
 function deleteSpecificTeam()
 {
-    var input = $('#deleteSpecificTeamTextBox').val().trim();
+    var input = $('#deleteSpecificTeamTextBox').val().trim(); //should be team number
     if (input === '') return;
-    
-    var teamToDelete = input + 'Ψ' + input + 'θ';//just to make the deleteTeamOfEventsCookie usable
+
+    //just to make the deleteTeamOfEventsCookie usable as {teamNumber}Ψ{teamName}θ is format of cookieValAddOn
+    var teamToDelete = input + 'Ψ' + input + 'θ';
     var season = getCookie('currCheckedSeason');
     var currEvent = getCurrEvent(); 
     var cname = event_data_cookie_name(season,currEvent);
     
-    var revisedString = deleteTeamOfEventsCookie(season, currEvent, teamToDelete,true,false);
+    var revisedString = deleteTeamOfEventsCookie(season, currEvent, teamToDelete,true);
     setCookie(cname,revisedString,750);
     setTeamTable(season,currEvent);
 
@@ -264,7 +259,7 @@ $(document).ready(function(){
                     var cookieList = document.cookie.split(";");
                     var teamAlreadyStored = false;
                     var isNameAlreadyStored = false;
-                    var storedName; //only used if isNameAlreadyStored
+                    var storedName;
                     var isNumberAlreadyStored = false;
                     var storedNumber; //only used if isNumberAlreadyStored
                     for (var i = 0; i < cookieList.length;i++)
@@ -276,24 +271,25 @@ $(document).ready(function(){
                         //check if team is stored yet
                         for (var j = 0; j < str.length;j++)
                         {
-                            //both stored
-                            if (str[j].includes(teamNumber) && str[j].includes(teamName))
+                            //if only name exists
+                            if (str[j].includes(teamName))
+                            {
+                                isNameAlreadyStored = true;
+                                teamAlreadyStored = true;
+                                storedName = getTeamName(str[j]);
+                                break;
+                            }
+                            //both stored or name already stored
+                            else if (str[j].includes(teamNumber) && str[j].includes(teamName))
                             {
                                 teamAlreadyStored = true;
                                 break;
-                            } 
+                            }
                             //number exists but want to change name,
                             else if (str[j].includes(teamNumber) && !str[j].includes(teamName))
                             {
                                 isNumberAlreadyStored = true;
                                 storedNumber = getTeamNumber(str[j]);
-                                break;
-                            }
-                            //name exists but want to change number
-                            else if (!str[j].includes(teamNumber) && str[j].includes(teamName))
-                            {
-                                isNameAlreadyStored = true;
-                                storedName = getTeamName(str[j]);
                                 break;
                             }
                         }
@@ -302,21 +298,13 @@ $(document).ready(function(){
                     $("#teamConfirmationBox").text(" ");
                     if (!teamAlreadyStored)
                     {
-                        if (isNumberAlreadyStored || isNameAlreadyStored)
+                        if (isNumberAlreadyStored)
                         {
-                            if (isNumberAlreadyStored)
-                            {
-                                //keep number, change name
-                                cookieValueAddOn = storedNumber + 'Ψ' + teamName + 'θ';
-                            }
-                            else //isNameAlreadyStored is true
-                            {
-                                //change number, keep name
-                                cookieValueAddOn = teamNumber + 'Ψ' + storedName + 'θ';
-                            }
+                            //keep number, change name
+                            cookieValueAddOn = storedNumber + 'Ψ' + teamName + 'θ';
 
                             //skips over team num/name pair with prev stored info and returns new cookie val string
-                            var revisedString = deleteTeamOfEventsCookie(season,currEvent,cookieValueAddOn,isNumberAlreadyStored,isNameAlreadyStored);
+                            var revisedString = deleteTeamOfEventsCookie(season,currEvent,cookieValueAddOn,isNumberAlreadyStored);
                             setCookie(cookieName,revisedString + cookieValueAddOn,750);
                             setTeamTable(season,currEvent);   
                         } else
@@ -328,7 +316,10 @@ $(document).ready(function(){
                         $("#teamConfirmationBox").html('<i>Team ' + teamNumber + ': ' + teamName + ' has been added.<\i>');
                     } else
                     {
-                        $("#teamConfirmationBox").html('<i>Team ' + teamNumber + ': ' + teamName + ' already exists.<\i>');
+                        if (!isNameAlreadyStored) //name and number already exists
+                            $("#teamConfirmationBox").html('<i>Team ' + teamNumber + ': ' + teamName + ' already exists.<\i>');
+                        else //only name already exists
+                            $("#teamConfirmationBox").html('<i>Team ' + storedName + ' already exists.<\i>');
                     }
                     $("#teamNumber").val("").focus();
                     $("#teamName").val("");
