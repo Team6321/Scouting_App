@@ -180,6 +180,11 @@ function deleteTeamOfEventsCookie(season, currEvent, cookieValAddOn,isNumberAlre
 
 function setTeamTable(season, event)
 {
+    var currEvent = getCurrEvent();
+    if (currEvent !== ' ')
+    {
+        $('#teamTableTitle').text('Teams for event "' + currEvent + '."');
+    }
     $("#eventSpecificTeamTable").html('<tr><th><b>Team Number</b></th> <th><b>Team Name</b></th> </tr>');
     var cookieList = document.cookie.split(';');
     for (var i = 0; i < cookieList.length; i++)
