@@ -1,7 +1,7 @@
 /*credit to w3schools.com for tutorials on web design*/
 #background {
     height: 100%;
-    background-image: url(https://utemplates.net/wp-content/uploads/2017/07/White-Textured-Background.jpg);    ;
+    background-image: url('images/background.jpg');
 }
 
 h1, h2,h3,h4, h5, h6, p,form,div,table{
