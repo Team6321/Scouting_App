@@ -3,6 +3,7 @@
 function loadTDataPage()
 {
     show_TDataModal_Or_IntroText();
+    displayTeamRadioList();
 }
 
 //shows modal box or displays regular instruction text at top of page
@@ -49,6 +50,23 @@ function show_TDataModal_Or_IntroText()
 function closeTDataModal() //onclick for x button in modal
 {
     $('#teamDataAlertModal').hide();
+}
+
+function displayTeamRadioList()
+{
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    if (season.trim().length == 0 || event.trim().length == 0) return;
+
+    var teamsJSON = getTeams(season,event);
+    var keys = Object.keys(teamsJSON);
+    for (var i = 0; i < keys.length; i++)
+    {
+        var teamNumber = keys[i];
+        var teamName = teamsJSON[teamNumber];
+
+        $("#teamRadioList").append("<label><input type=\"radio\" name=\"teamListItem\" value=\"" + teamNumber + "\">" + `${teamNumber}: ${teamName}` + "</label><br>"); //add to radiolist
+    }
 }
 
 $(document).ready(function(){

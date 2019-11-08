@@ -16,3 +16,21 @@ function getCookie(name)
     var value = re.exec(document.cookie);
     return (value != null) ? unescape(value[1]) : " ";
 }
+
+function event_data_cookie_name(season,event)
+{
+    return `/event_data teams/${ season }/${ event }`;
+}
+
+function getCurrEvent()
+{
+    var cookieEv = getCookie('currCheckedEvent');
+    return cookieEv.substring(cookieEv.lastIndexOf('/')+1);
+}
+
+function getTeams(season, currEvent)
+{
+    var cname = event_data_cookie_name(season,currEvent);
+    var result = JSON.parse(getCookie(cname));
+    return result;
+}
