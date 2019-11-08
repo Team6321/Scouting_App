@@ -2,7 +2,7 @@
 
 function loadPage()
 {
-    showTopText(); // 'showing event data for...
+    showModalOrIntroText();
     displayEventsInRadioList();
     setCookie('currCheckedEvent','',750);
     $('.js_clear_on_load').val("").html("");
@@ -17,20 +17,25 @@ function isSeasonSaved()
         return false;
 }
 
-//shows intro text for page
-function showTopText()
+// 'showing event data for... or display modal box
+function showModalOrIntroText()
 {
-    var finalText;
     if (isSeasonSaved())
     {
         var currSeason = getCookie('currCheckedSeason');
-        finalText = 'Here, enter all the events that the team will attend for season "' + currSeason + '".';
-    } else
-    {
-        finalText = 'No season is currently checked. Go back to the Season Configuration page ' + 
-        'to enter new seasons and season-specific elements/pit scouting questions. Make sure you check the new season you enter.'
+        var finalText = 'Here, enter all the events that the team will be scouting from for season "' + currSeason + '".';
+        $("#eventDataIntroText").text(finalText);
+        $('.disableIfNoSeason').prop("disabled", false) //remove disable on inputs
+        return;
     }
-    $("#eventDataIntroText").text(finalText);
+
+    $('#seasonAlertModal').show(); //show modal
+    $('.disableIfNoSeason').prop("disabled", true); //disable all inputs on page
+}
+
+function closeSeasonModal() //onclick for x button on modal
+{
+    $('#seasonAlertModal').hide();
 }
 
 function displayEventsInRadioList()
