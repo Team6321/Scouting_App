@@ -17,6 +17,8 @@ function addNewSeason()
 {
     var newSeason = $("#newSeasonInputBox").val().trim().toString();
 
+    if (newSeason == '') return;
+
     var isAlreadyStored = false;
     if (document.cookie.length > 0) //if cookies are stored at all
     {
@@ -110,7 +112,6 @@ function deleteCheckedSeason()
     
     setCookie('seasonList',newText,750); //update season list cookie
     setCookie('currCheckedSeason','',750); //last checked season was deleted, restart that cookie
-    deleteAllElements(currCheckedSeason); //clear elements
     deleteCookie(currCheckedSeason + ' pitQuestions'); //clear pit questions cookie
     document.location.reload();
 }
