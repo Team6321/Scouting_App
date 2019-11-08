@@ -4,6 +4,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> <!--jquery library-->
 <script src="scripts/seasonConfigScript.js"></script> <!--js script-->
 <script src="scripts/eventDataScript.js"></script> <!--js script-->
+<script src="scripts/teamDataScript.js"></script> <!--js script-->
 <script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
 <html>
     <head>
@@ -26,6 +27,13 @@
             <a href="team-data.html">Team Data</a>
         </div>
 
-        <h2 style="text-align: center">Team Data</h2>
+        <div id= 'teamDataAlertModal' class='modal'>
+            <div class='modal-content' id = 'tDataModalContent'>
+                <span class='close' onclick = 'closeTDataModal()'>&times;</span>
+            </div>
+        </div>
+
+        <h2 style="text-align:center">Team Data</h2>
+        <h3 style='text-align:center' id='tDataIntroText'></h3>
     </body>
 </html>

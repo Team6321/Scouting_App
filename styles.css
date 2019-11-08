@@ -140,7 +140,8 @@ table, th, td
   resize:none;
 }
 
-/*for the season alert on the event data page*/
+/*for modal boxes on all pages*/
+
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
