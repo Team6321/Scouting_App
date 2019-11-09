@@ -13,14 +13,18 @@ function show_TDataModal_Or_IntroText()
     var eventChecked = (event.trim().length != 0);
     var modalContentHTML = '';
     var introText = '';
+    var fieldsetText='';
 
     if (isSeasonSaved() && eventChecked) //everything is checked, show text at top of page
     {
         var season = getCookie('currCheckedSeason');
-        introText = `Select a team attending the event "${event}" in the season "${season}." Here, you can enter and view answers to ` +
+        introText = `Here, you can enter and view answers to ` +
         `pit scouting questions entered on the Season Configuration page. You can also add and view data from matches including game ` +
         `element stats and custom notes. These can be cross-referenced for all the events the selected team has attended in the season "${season}".`;
         $('#tDataIntroText').text(introText);
+
+        fieldsetText = `Select a team attending the event "${event}" in the season "${season}."`;
+        $('#fieldsetTitle').text(fieldsetText);
         // later, enable all inputs here
         return;
     }
@@ -67,6 +71,28 @@ function displayTeamRadioList()
 
         $("#teamRadioList").append("<label><input type=\"radio\" name=\"teamListItem\" value=\"" + teamNumber + "\">" + `${teamNumber}: ${teamName}` + "</label><br>"); //add to radiolist
     }
+}
+
+//onchange for the team radio list
+function changeCurrTeam()
+{
+    var currTeamNumber = $("input[name=teamListItem]:checked","#teamRadioList").val(); //in prev method, val of each radio item is the tNum
+    var currSeason = getCookie('currCheckedSeason');
+    var currEvent = getCurrEvent();
+    var cname = 'currCheckedTeam';
+    var currTeamName = getTeams(currSeason,currEvent)[currTeamNumber];
+
+    if (currSeason.trim().length == 0 || currEvent.trim().length==0 || currTeamNumber.trim().length == 0)
+    {
+        $("#teamStatsTitle").text('');
+        return;
+    }
+
+    var cvalue = `/${currSeason}/${currEvent}/${currTeamNumber}`;
+    setCookie(cname,cvalue,750);     //curr team cookie --> currCheckedTeam = /{season}/{event}/{currTeamNumber}
+
+    $("#teamStatsTitle").text(`Data for team ${currTeamNumber} : ${currTeamName}`);
+    $('.js_clear_on_load').val("").html("");
 }
 
 $(document).ready(function(){

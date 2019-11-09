@@ -28,9 +28,33 @@ function getCurrEvent()
     return cookieEv.substring(cookieEv.lastIndexOf('/')+1);
 }
 
+//returns JSON object of teams
 function getTeams(season, currEvent)
 {
     var cname = event_data_cookie_name(season,currEvent);
-    var result = JSON.parse(getCookie(cname));
+    var cvalue = getCookie(cname);
+    if (cvalue.trim().length == 0) return '';
+
+    var result = JSON.parse(cvalue);
     return result;
+}
+
+function getCurrTeamNumber()
+{
+    var cvalue = getCookie('currCheckedTeam'); //contains number of team
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+
+    if (cvalue.trim().length == 0 || season.length==0 || event.length==0) return '';
+
+    return cvalue.substring(cvalue.lastIndexOf('/')+1); //returns last part of /{season}/{event}/{teamNumber}
+}
+
+function getCurrTeamName()
+{
+    var teamNumber = getCurrTeamNumber();
+    if (teamNumber == '') return '';
+
+    var teamsJSON = getTeams();
+    return teamsJSON[teamNumber];
 }
