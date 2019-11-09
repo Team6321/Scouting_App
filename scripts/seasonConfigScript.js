@@ -17,10 +17,12 @@ function addNewSeason()
 {
     var newSeason = $("#newSeasonInputBox").val().trim().toString();
 
+    if (newSeason == '') return;
+
     var isAlreadyStored = false;
     if (document.cookie.length > 0) //if cookies are stored at all
     {
-        if (getCookie("seasonList") !== "")
+        if (getCookie("seasonList").trim().length > 0)
         {
             var seasonNames = getCookie("seasonList").split("§"); //§ is an uncommon separator that user can't type
             for (var i=0;i<seasonNames.length;i++)
@@ -74,25 +76,7 @@ function loadSeasons()
     }
 
     $('.js_clear_on_load').val("").html("");
-}
-
-function deleteCookie(name)
-{
-    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';   
-}
-
-function setCookie(cname, cvalue, exdays=750) {
-    var d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    var expires = "expires="+ d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
-
-function getCookie(name)
-{
-    var re = new RegExp(name + "=([^;]+)");
-    var value = re.exec(document.cookie);
-    return (value != null) ? unescape(value[1]) : " ";
+    setCookie('currCheckedSeason','',750);
 }
 
 //sets titles for different sections and adds checked season to cookie
@@ -126,27 +110,31 @@ function deleteCheckedSeason()
     var endIndex = startIndex + currCheckedSeason.length;
     var newText = seasonList.substring(0,startIndex) + seasonList.substring(endIndex+1);
     
-    setCookie('seasonList',newText,750);
-    deleteAllElements(currCheckedSeason); //clear elements
+    setCookie('seasonList',newText,750); //update season list cookie
+    setCookie('currCheckedSeason','',750); //last checked season was deleted, restart that cookie
     deleteCookie(currCheckedSeason + ' pitQuestions'); //clear pit questions cookie
     document.location.reload();
 }
 
-//onclick function for the 'delete all elements' button
-function deleteAllElements()
+//onclick for delete specific element
+function deleteSpecificElement()
 {
-    var currSeason = getCookie('currCheckedSeason');
-
+    var elementToDelete = $('#elementToDelete').val().trim();
     var cookieList = document.cookie.split(';');
-    for (var i = 0; i < cookieList.length;i++)
-    {
-        var whatWeWant = '/season_config/' + currSeason + '/'; //if its an element of currSeason
-        var currCookieName = cookieList[i].trim();
-        if (!currCookieName.startsWith(whatWeWant)) continue;
+    if (elementToDelete === '') return;
 
-        deleteCookie(currCookieName);
+    var cnameToDelete = '';
+    for (var i = 0; i < cookieList.length; i++)
+    {
+        var currCname = cookieList[i].split('=')[0];
+        if (!currCname.endsWith(elementToDelete)) continue;
+
+        cnameToDelete = currCname;
     }
-    document.location.reload();
+    deleteCookie(cnameToDelete);
+    var season = getCookie('currCheckedSeason');
+    setTable(season);
+    $('#elementToDelete').val('').focus();
 }
 
 //after onchange, show saved cookie questions of new season to the text box
@@ -236,6 +224,10 @@ $(document).ready(function()
     $('#elementPoints').keypress(function(e){
         if (e.keyCode == Enter_key_code) $('#scoringSaveButton').click();
     });
+    
+    $('#elementToDelete').keypress(function(e){
+        if (e.keyCode == Enter_key_code) deleteSpecificElement();
+    });
 
     //adds new element to table, handles things like element already exists and season not checked
     $("#scoringSaveButton").click(function()
@@ -246,7 +238,7 @@ $(document).ready(function()
         if (newElementName !== "" || newElementPoints !== "")
         {
             var season = getCookie('currCheckedSeason');//$("input[name=seasonListItem]:checked","#seasonRadioList").val();
-            if (typeof(season) !== "undefined")
+            if (season.trim().length > 0)
             {
                 var cookieName = season_config_cookie_name(season,newElementName);
                 var cookieValue = newElementPoints;

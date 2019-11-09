@@ -2,7 +2,9 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> <!--jquery library-->
-<script src="seasonConfigScript.js"></script> <!--js script-->
+<script src="scripts/seasonConfigScript.js"></script> <!--js script-->
+<script src="scripts/eventDataScript.js"></script> <!--js script-->
+<script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
 <html>
     <head>
         <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon" />
@@ -24,6 +26,56 @@
             <a href="team-data.html">Team Data</a>
         </div>
 
+        <!--for when user hasn't selected season yet-->
+        <div id= 'seasonAlertModal' class='modal'>
+            <div class='modal-content'>
+                <span class='close' onclick = 'closeSeasonModal()'>&times;</span>
+                <p>No season is currently checked. Go to the <a href="season-config.html">Season Configuration</a> page 
+                to enter new seasons and season-specific elements/pit scouting questions. 
+                <br><br>Make sure you check the new season you enter. </p>
+            </div>
+        </div>
+
         <h2 style="text-align: center">Event Data</h2>
+
+        <h3 style = "text-align: center" id='eventDataIntroText'> </h3>
+
+        <br><h3>Enter the name of a new event or select an existing event.</h3>
+        <input type="text" id = "newEventInputBox" class='js_clear_on_load disableIfNoSeason' placeholder="Austin District Event">
+        <button class = "r3-button" onclick="addNewEvent()">Submit</button>
+        <h3 id="newEventConfirmation"></h3><br>
+        <fieldset>
+            <form id="eventRadioList" style="font-size:18px" onchange="changeCurrEvent()">
+            </form>
+            <button class='r3-button' onclick="deleteCheckedEvent()">Delete Checked Event</button>
+        </fieldset>
+        <br>
+        
+        <h3>Here, enter the team numbers and names for the checked event.</h3>
+
+        <fieldset id = "eventSpecificTeams" class = 'disableIfNoSeason'>
+            <input type="text" id="teamNumber" class='js_clear_on_load' placeholder="6321">
+            <input type="text" id="teamName" class='js_clear_on_load' placeholder = "R-Cubed Rouse Raider Robotics">
+            <button id="teamSaveButton" class="r3-button" onclick='saveTeam()'>Save</button>             
+
+            <br>
+            <h3 id="teamTableTitle"></h3>
+            <table id = "eventSpecificTeamTable">
+                <tr>
+                    <th><b>Team Number</b></th> 
+                    <th><b>Team Name</b></th> 
+                </tr>
+            </table>
+            <h4 id="teamConfirmationBox" class='js_clear_on_load'></h4> <br>
+            <h3>To delete a specific team, enter the team number in the following box and press 'Delete':</h3>
+            <input type="text" id="deleteSpecificTeamTextBox" class='js_clear_on_load' placeholder="123">
+            <button class='r3-button' onclick='deleteSpecificTeam()'>Delete</button>
+        </fieldset>
+
+
+        <a href="team-data.html">
+            <br><br>
+            <button class="r3-button">Continue to Team Data with Selected Event</button>        
+        </a>
     </body>
 </html>
