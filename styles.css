@@ -180,3 +180,8 @@ table, th, td
   text-decoration: none;
   cursor: pointer;
 }
+
+.tabs
+{
+  font-size:20px;
+}

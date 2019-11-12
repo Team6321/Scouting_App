@@ -69,7 +69,8 @@ function displayTeamRadioList()
         var teamNumber = keys[i];
         var teamName = teamsJSON[teamNumber];
 
-        $("#teamRadioList").append("<label><input type=\"radio\" name=\"teamListItem\" value=\"" + teamNumber + "\">" + `${teamNumber}: ${teamName}` + "</label><br>"); //add to radiolist
+        var newItem = "<label><input type=\"radio\" name=\"teamListItem\" value=\"" + teamNumber + "\">" + `${teamNumber}: ${teamName}` + "</label><br>";
+        $("#teamRadioList").append(newItem); //add to radiolist
     }
 }
 
@@ -93,6 +94,22 @@ function changeCurrTeam()
 
     $("#teamStatsTitle").text(`Data for team ${currTeamNumber} : ${currTeamName}`);
     $('.js_clear_on_load').val("").html("");
+}
+
+//basically copy pasted from w3schools
+function displayTabContent(evt, tabName)
+{
+    var i, x, tablinks;
+    x = document.getElementsByClassName("tabContent");
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tabs");
+    for (i = 0; i < x.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" w3-bottombar-gold", " w3-bottombar-maroon");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.firstElementChild.className += " w3-bottombar-gold";
 }
 
 $(document).ready(function(){
