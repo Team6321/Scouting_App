@@ -4,6 +4,9 @@ function loadTDataPage()
 {
     show_TDataModal_Or_IntroText();
     displayTeamRadioList();
+    setCookie('currCheckedTeam','',750);
+
+    $('.js_clear_on_load').val("").html("");
 }
 
 //shows modal box or displays regular instruction text at top of page
@@ -94,9 +97,12 @@ function changeCurrTeam()
 
     $("#teamStatsTitle").text(`Data for team ${currTeamNumber} : ${currTeamName}`);
     $('.js_clear_on_load').val("").html("");
+
+    loadPit();
+    //loadMatch();
 }
 
-//basically copy pasted from w3schools
+//basically copy pasted from w3schools, onclick for a change in tabs
 function displayTabContent(evt, tabName)
 {
     var i, x, tablinks;
@@ -110,6 +116,52 @@ function displayTabContent(evt, tabName)
     }
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.firstElementChild.className += " w3-bottombar-gold";
+
+    if (tabName.startsWith('pit')) //function calls for pit page
+    {
+        loadPit();
+    } else //function calls for match page
+    {
+
+    }
+}
+
+function loadPit()
+{
+    $('#questionTable').html('');
+    displayQuestions();
+}
+
+function displayQuestions()
+{
+    var season = getCookie('currCheckedSeason');
+    var cname = season + ' pitQuestions';
+    var questions = getCookie(cname).split('Ω'); //Ω is separator for questions
+    var currTeam = getCookie('currCheckedTeam');
+
+    if (currTeam.trim().length == 0)
+    {
+        $('#qTableConfirmation').text('No team selected.');
+        return;
+    }
+
+    for (var i = 0; i < questions.length;i++)
+    {
+        var question = questions[i];
+        if (question.trim().length == 0) return;
+
+        var inputBoxID = `${season}/${event}/${currTeam}/q` + i; //will be useful when questions to answers
+        var inputHTML = `<input type="text" id = "${inputBoxID}" class="js_clear_on_load">`;
+        var newTRHtml = "<tr><td>" + question + "</td><td>" + inputHTML + "</td></tr>";
+        
+        if ($('#questionTable').html().indexOf(question) < 0) //if table doesn't already have it
+        {
+            $('#questionTable').append(newTRHtml);
+        }
+    }
+
+    //cookie will be a json object: /{season}/{event}/pit = {team}
+
 }
 
 $(document).ready(function(){
