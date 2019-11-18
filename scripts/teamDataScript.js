@@ -151,8 +151,8 @@ function displayQuestions()
         var question = questions[i];
         if (question.trim().length == 0) return;
 
-        var inputBoxID = `${season}/${event}/${currTeam}/q` + i; //will be useful when questions to answers
-        var inputHTML = `<input type="text" id = "${inputBoxID}" class="js_clear_on_load">`;
+        //var inputBoxID = `/${season}/${event}/${currTeam}/${question}`; //will be useful when questions to answers
+        var inputHTML = `<input type="text" class="js_clear_on_load">`;
         var newTRHtml = "<tr><td>" + question + "</td><td>" + inputHTML + "</td></tr>";
         
         if ($('#questionTable').html().indexOf(question) < 0) //if table doesn't already have it
@@ -162,9 +162,47 @@ function displayQuestions()
     }
 
     //cookie will be a json object: /{season}/{event}/pit = {team}
+}
 
+function pitAnswerObjName(season,event,team,question)
+{
+    return `/${season}/${event}/${team}/${question}`;
+}
+
+function savePitAnswers()
+{
+    //using local storage to save pit answers
+    // /{season}/{event}/{team}/pit answers/{question1} = {answer1}
+    // /{season}/{event}/{team}/pit answers/{question2} = {answer2}...
+
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+
+    $('#questionTable tr').each(function(){ //for each row
+        var question = $(this).find('td:first').text();
+        var answer = $(this).find('td:last').find('input').val();
+
+        var objName = pitAnswerObjName(season,event,team,question);
+        localStorage.setItem(objName,answer);
+        console.log('question: ' + question + '\t answer:' + answer);
+    });
+
+    /*var pitTable = $('#questionTable');
+    for (var i = 0; i < pitTable.length; i++) //iterating through each row
+    {
+        var cells = pitTable.rows[i].cells;
+        var question = cells[0].val();
+        var answer = cells[1].val();
+
+        var pitAnswerObjName = pitAnswerObjName(season,event,team,question);
+        localStorage.setItem(pitAnswerObjName,answer);
+        console.log('question: ' + question + '\t answer' + answer);
+    }*/
 }
 
 $(document).ready(function(){
     loadTDataPage();
+
+    $('#savePitAnswers').click(savePitAnswers); //button for saving pit answers
 });
