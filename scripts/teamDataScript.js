@@ -96,6 +96,7 @@ function changeCurrTeam()
     setCookie(cname,cvalue,750);     //curr team cookie --> currCheckedTeam = /{season}/{event}/{currTeamNumber}
 
     $("#teamStatsTitle").text(`Data for team ${currTeamNumber} : ${currTeamName}`);
+    $('#pitScoutingTitle').text(`Team ${currTeamNumber}: ${currTeamName}`);
     $('.js_clear_on_load').val("").html("");
 
     loadPit();
