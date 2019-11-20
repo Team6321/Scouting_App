@@ -96,7 +96,7 @@ function changeCurrTeam()
     setCookie(cname,cvalue,750);     //curr team cookie --> currCheckedTeam = /{season}/{event}/{currTeamNumber}
 
     $("#teamStatsTitle").text(`Data for team ${currTeamNumber} : ${currTeamName}`);
-    $('#pitScoutingTitle').text(`Team ${currTeamNumber}: ${currTeamName}`);
+    $('#pitScoutingTitle').text(`Pit Scouting Questions and Answers for team ${currTeamNumber}: ${currTeamName}`);
     $('.js_clear_on_load').val("").html("");
 
     loadPit();
@@ -125,6 +125,8 @@ function displayTabContent(evt, tabName)
     {
 
     }
+
+    $('.js_clear_on_load').val("").html("");
 }
 
 function loadPit()
@@ -137,8 +139,9 @@ function displayQuestions()
 {
     var season = getCookie('currCheckedSeason');
     var cname = season + ' pitQuestions';
+    var event = getCurrEvent();
     var questions = getCookie(cname).split('Ω'); //Ω is separator for questions
-    var currTeam = getCookie('currCheckedTeam');
+    var currTeam = getCurrTeamNumber();
 
     if (currTeam.trim().length == 0)
     {
@@ -146,13 +149,36 @@ function displayQuestions()
         return;
     }
 
+    var localStorageObjName = pitAnswerObjName(season,event,currTeam);
+    var team_QA_pairs = JSON.parse(localStorage.getItem(localStorageObjName)); //get QA pairs that may/may not have already been stored
+    var teamsAlreadyStoredBool = false;
+    if (checkForNull(team_QA_pairs))
+    {
+        teamsAlreadyStoredBool = true;
+    }
+
     for (var i = 0; i < questions.length;i++)
     {
         var question = questions[i];
         if (question.trim().length == 0) return;
+        
+        //loop through already stored local object: if question has an answer already stored then put that in the input box. Else, leave it empty (to fill in)
+        var potentialAnswer;
+        if (teamsAlreadyStoredBool == false) //len of loc storage obj == 0, nothing stored yet
+        {
+            potentialAnswer = '';
+        } else //len of loc storage obj = 1, something stored inside, now find answer to curr question
+        {
+            for (var j = 0; j < team_QA_pairs.length; j++)
+            {
+                var pair = team_QA_pairs[j];
+                var answer = pair[question];
+                if (!checkForNull(answer)) continue;
+                potentialAnswer = answer;
+            }
+        }
 
-        //var inputBoxID = `/${season}/${event}/${currTeam}/${question}`; //will be useful when questions to answers
-        var inputHTML = `<input type="text" class="js_clear_on_load">`;
+        var inputHTML = `<input type="text" value="${potentialAnswer}">`; //pot answer is either '' or what is stored
         var newTRHtml = "<tr><td>" + question + "</td><td>" + inputHTML + "</td></tr>";
         
         if ($('#questionTable').html().indexOf(question) < 0) //if table doesn't already have it
@@ -164,41 +190,39 @@ function displayQuestions()
     //cookie will be a json object: /{season}/{event}/pit = {team}
 }
 
-function pitAnswerObjName(season,event,team,question)
+function pitAnswerObjName(season,event,team)
 {
-    return `/${season}/${event}/${team}/${question}`;
+    return `/${season}/${event}/${team}/pit`;
 }
 
+function checkForNull(obj) //stack overflow, returns true if parameter ISNT null
+{
+    return obj && obj !== null && obj !== 'undefined';
+}
 function savePitAnswers()
 {
-    //using local storage to save pit answers
-    // /{season}/{event}/{team}/pit answers/{question1} = {answer1}
-    // /{season}/{event}/{team}/pit answers/{question2} = {answer2}...
+    //using local storage to save pit answers, one localStorage obj per team per event
+    // { '/{season}/{event}/{team}/pit answers' : {{question1}:{answer1}, {question2}:{answer2}...} }
+    //local storage obj will hold an array of q/a object pairs
 
     var season = getCookie('currCheckedSeason');
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
 
+    var all_team_QA_pairs_obj = [];
     $('#questionTable tr').each(function(){ //for each row
         var question = $(this).find('td:first').text();
         var answer = $(this).find('td:last').find('input').val();
 
-        var objName = pitAnswerObjName(season,event,team,question);
-        localStorage.setItem(objName,answer);
-        console.log('question: ' + question + '\t answer:' + answer);
+        var pair = {};
+        pair[question] = answer;
+        all_team_QA_pairs_obj.push(pair);
     });
 
-    /*var pitTable = $('#questionTable');
-    for (var i = 0; i < pitTable.length; i++) //iterating through each row
-    {
-        var cells = pitTable.rows[i].cells;
-        var question = cells[0].val();
-        var answer = cells[1].val();
-
-        var pitAnswerObjName = pitAnswerObjName(season,event,team,question);
-        localStorage.setItem(pitAnswerObjName,answer);
-        console.log('question: ' + question + '\t answer' + answer);
-    }*/
+    var objName = pitAnswerObjName(season,event,team);
+    localStorage.setItem(objName,JSON.stringify(all_team_QA_pairs_obj));
+    
+    $('#qTableConfirmation').text('Answers saved.');
 }
 
 $(document).ready(function(){
