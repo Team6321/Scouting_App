@@ -99,7 +99,7 @@ function changeCurrTeam()
     $('#pitScoutingTitle').text(`Pit Scouting Questions and Answers for team ${currTeamNumber}: ${currTeamName}`);
     $('.js_clear_on_load').val("").html("");
 
-    loadPit();
+    displayQuestionTable();
     //loadMatch();
 }
 
@@ -120,22 +120,15 @@ function displayTabContent(evt, tabName)
 
     if (tabName.startsWith('pit')) //function calls for pit page
     {
-        loadPit();
+        $('.js_clear_on_load').val('').html('');
+        displayQuestionTable();
     } else //function calls for match page
     {
 
     }
-
-    $('.js_clear_on_load').val("").html("");
 }
 
-function loadPit()
-{
-    $('#questionTable').html('');
-    displayQuestions();
-}
-
-function displayQuestions()
+function displayQuestionTable()
 {
     var season = getCookie('currCheckedSeason');
     var cname = season + ' pitQuestions';
@@ -145,9 +138,13 @@ function displayQuestions()
 
     if (currTeam.trim().length == 0)
     {
+        $('#questionTable').html('');
         $('#qTableConfirmation').text('No team selected.');
         return;
     }
+
+    var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Question</b></th> <th class="q-th"><b>Answer</b></th> </tr>';
+    $('#questionTable').html(tableHeader); //default start of table
 
     var localStorageObjName = pitAnswerObjName(season,event,currTeam);
     var team_QA_pairs = JSON.parse(localStorage.getItem(localStorageObjName)); //get QA pairs that may/may not have already been stored
@@ -163,7 +160,7 @@ function displayQuestions()
         if (question.trim().length == 0) return;
         
         //loop through already stored local object: if question has an answer already stored then put that in the input box. Else, leave it empty (to fill in)
-        var potentialAnswer;
+        var potentialAnswer = '';
         if (teamsAlreadyStoredBool == false) //len of loc storage obj == 0, nothing stored yet
         {
             potentialAnswer = '';
@@ -173,7 +170,10 @@ function displayQuestions()
             {
                 var pair = team_QA_pairs[j];
                 var answer = pair[question];
-                if (!checkForNull(answer)) continue;
+                if (!checkForNull(answer))
+                {
+                    continue;
+                }
                 potentialAnswer = answer;
             }
         }
@@ -195,10 +195,6 @@ function pitAnswerObjName(season,event,team)
     return `/${season}/${event}/${team}/pit`;
 }
 
-function checkForNull(obj) //stack overflow, returns true if parameter ISNT null
-{
-    return obj && obj !== null && obj !== 'undefined';
-}
 function savePitAnswers()
 {
     //using local storage to save pit answers, one localStorage obj per team per event

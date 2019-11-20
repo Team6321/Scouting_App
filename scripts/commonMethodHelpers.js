@@ -52,9 +52,16 @@ function getCurrTeamNumber()
 
 function getCurrTeamName()
 {
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
     var teamNumber = getCurrTeamNumber();
-    if (teamNumber == '') return '';
+    if (!checkForNull(teamNumber)) return '';
 
-    var teamsJSON = getTeams();
+    var teamsJSON = getTeams(season,event);
     return teamsJSON[teamNumber];
+}
+
+function checkForNull(obj) //stack overflow, returns true if parameter ISNT null
+{
+    return obj && obj !== null && obj !== 'undefined';
 }
