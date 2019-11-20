@@ -99,8 +99,8 @@ function changeCurrTeam()
     $('#pitScoutingTitle').text(`Pit Scouting Questions and Answers for team ${currTeamNumber}: ${currTeamName}`);
     $('.js_clear_on_load').val("").html("");
 
-    displayQuestionTable();
-    //loadMatch();
+    loadPit();
+    loadMatch();
 }
 
 //basically copy pasted from w3schools, onclick for a change in tabs
@@ -121,14 +121,14 @@ function displayTabContent(evt, tabName)
     if (tabName.startsWith('pit')) //function calls for pit page
     {
         $('.js_clear_on_load').val('').html('');
-        displayQuestionTable();
+        loadPit();
     } else //function calls for match page
     {
-
+        loadMatch();
     }
 }
 
-function displayQuestionTable()
+function loadPit()
 {
     var season = getCookie('currCheckedSeason');
     var cname = season + ' pitQuestions';
@@ -138,13 +138,13 @@ function displayQuestionTable()
 
     if (currTeam.trim().length == 0)
     {
-        $('#questionTable').html('');
-        $('#qTableConfirmation').text('No team selected.');
+        $('#pitQuestionTable').html('');
+        $('#pitTableConfirmation').text('No team selected.');
         return;
     }
 
     var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Question</b></th> <th class="q-th"><b>Answer</b></th> </tr>';
-    $('#questionTable').html(tableHeader); //default start of table
+    $('#pitQuestionTable').html(tableHeader); //default start of table
 
     var localStorageObjName = pitAnswerObjName(season,event,currTeam);
     var team_QA_pairs = JSON.parse(localStorage.getItem(localStorageObjName)); //get QA pairs that may/may not have already been stored
@@ -181,18 +181,62 @@ function displayQuestionTable()
         var inputHTML = `<input type="text" value="${potentialAnswer}" class="q-input">`; //pot answer is either '' or what is stored
         var newTRHtml = '<tr class="q-tr"><td class="q-td">' + question + '</td><td class="q-td">' + inputHTML + "</td></tr>";
         
-        if ($('#questionTable').html().indexOf(question) < 0) //if table doesn't already have it
+        if ($('#pitQuestionTable').html().indexOf(question) < 0) //if table doesn't already have it
         {
-            $('#questionTable').append(newTRHtml);
+            $('#pitQuestionTable').append(newTRHtml);
         }
     }
 
     //cookie will be a json object: /{season}/{event}/pit = {team}
 }
 
+function loadMatch()
+{
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var teamNum = getCurrTeamNumber();
+
+    if (teamNum.trim().length == 0)
+    {
+        $('#matchTableConfirmation').text('No Team selected.');
+        return;
+    }
+
+    var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Element</b></th> <th class="q-th"><b>Frequency</b></th> </tr>';
+    $('#matchQuestionTable').html(tableHeader); //default start of table
+
+    //retrieve elements for current season
+    var cname = `/season_config/${season}/` //starter bit of season_config_name
+    var cookieList = document.cookie.split(';');
+
+    for (var i = 0; i < cookieList.length; i++)
+    {
+        var currCName = cookieList[i].trim().split('=')[0];
+
+        if (!(currCName.startsWith(cname))) continue;
+
+        var element = currCName.substring(currCName.lastIndexOf('/')+1);
+        var value = getCookie(currCName);
+
+        var inputHTML = `<input type="text" class="q-input">`;
+        var elementText = `${element} (${value} points)`;
+        var newTRHtml = '<tr class="q-tr"><td class="q-td">' + elementText + '</td><td class="q-td">' + inputHTML + "</td></tr>";
+        
+        if ($('#matchQuestionTable').html().indexOf(elementText) < 0) //if table doesn't already have it
+        {
+            $('#matchQuestionTable').append(newTRHtml);
+        }
+    }
+}
+
 function pitAnswerObjName(season,event,team)
 {
     return `/${season}/${event}/${team}/pit`;
+}
+
+function matchAnswerObjName(seaon,event,team)
+{
+    return `/${season}/${event}/${team}/match`;
 }
 
 function savePitAnswers()
@@ -206,7 +250,7 @@ function savePitAnswers()
     var team = getCurrTeamNumber();
 
     var all_team_QA_pairs_obj = [];
-    $('#questionTable tr').each(function(){ //for each row
+    $('#pitQuestionTable tr').each(function(){ //for each row
         var question = $(this).find('td:first').text();
         var answer = $(this).find('td:last').find('input').val();
 
@@ -218,7 +262,7 @@ function savePitAnswers()
     var objName = pitAnswerObjName(season,event,team);
     localStorage.setItem(objName,JSON.stringify(all_team_QA_pairs_obj));
     
-    $('#qTableConfirmation').text('Answers saved.');
+    $('#pitTableConfirmation').text('Answers saved.');
 }
 
 $(document).ready(function(){
