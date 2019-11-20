@@ -178,8 +178,8 @@ function displayQuestions()
             }
         }
 
-        var inputHTML = `<input type="text" value="${potentialAnswer}">`; //pot answer is either '' or what is stored
-        var newTRHtml = "<tr><td>" + question + "</td><td>" + inputHTML + "</td></tr>";
+        var inputHTML = `<input type="text" value="${potentialAnswer}" class="q-input">`; //pot answer is either '' or what is stored
+        var newTRHtml = '<tr class="q-tr"><td class="q-td">' + question + '</td><td class="q-td">' + inputHTML + "</td></tr>";
         
         if ($('#questionTable').html().indexOf(question) < 0) //if table doesn't already have it
         {
