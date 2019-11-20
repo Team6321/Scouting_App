@@ -88,6 +88,17 @@
                 <h4>Here, enter custom notes about the selected team and
                     input game element stats for a given match.
                 </h4>
+                
+                <div id = 'matchNumberStuff'>
+                    <h4><br>First, enter and/or select a match number to enter data for.</h4>
+                    <input type='text' id='matchNumberInputBox' class='js_clear_on_load' placeholder='1'>
+                    <button id = 'matchNumberButton' class = "r3-button">Submit</button> <br>
+                    <fieldset> <!--onchange="changeCurrMatch()"-->
+                        <form id="matchNumberRadioList" style="font-size:18px"> </form>
+                    </fieldset>
+                </div>
+
+                <br><br>
                 <table id='matchQuestionTable'>
                 </table>
                 <i>

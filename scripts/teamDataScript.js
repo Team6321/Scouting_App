@@ -199,8 +199,10 @@ function loadMatch()
     if (teamNum.trim().length == 0)
     {
         $('#matchTableConfirmation').text('No Team selected.');
+        $('#matchNumberStuff').hide();
         return;
     }
+    $('#matchNumberStuff').show();
 
     var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Element</b></th> <th class="q-th"><b>Frequency</b></th> </tr>';
     $('#matchQuestionTable').html(tableHeader); //default start of table
@@ -227,6 +229,60 @@ function loadMatch()
             $('#matchQuestionTable').append(newTRHtml);
         }
     }
+}
+
+function addNewMatch() //onclick for adding the button to add a match number
+{
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+    var newMatchNum = $('#matchNumberInputBox').val().trim();
+
+    //store match numbers in a local object: {'/season/event/team/match numbers' : " '1','7','20'... "}
+    var objName = matchNumberObjName(season,event,team);
+
+    //check if local storage object already has the new match number, stores an array of match numbers
+    var storedString = localStorage.getItem(objName);
+    var alreadyStored;
+    var numsArr = [];
+    if (!checkForNull(storedString) || storedString.length == 0) 
+    {
+        storedString = '';
+        alreadyStored = false;
+    } else
+    {
+        numsArr = storedString.split(','); //arr.toString() values seperated by ,
+        for (var i = 0; i < numsArr.length; i++)
+        {
+            var currNum = numsArr[i];
+            if (parseInt(currNum) == parseInt(newMatchNum))
+            {
+                alreadyStored = true;
+                break;
+            }
+        }
+    }
+
+    if (alreadyStored)
+    {
+        $('#matchTableConfirmation').text('Match number already stored');
+        return;
+    } //else, new match number
+
+    numsArr.push(newMatchNum);
+    storedString = numsArr.toString();
+    localStorage.setItem(objName,storedString); //add new match number to arr in local storage obj
+
+    var newItem = `<label><input type="radio" name="matchNumberListItem" value="newMatchNumber">Match ${newMatchNum}</label><br>`;
+    $("#matchNumberRadioList").append(newItem); //add to radiolist
+
+    $('.js_clear_on_load').val("").html("");
+    $('#matchNumberInputBox').val("").focus();
+}
+
+function matchNumberObjName(season,event,team)
+{
+    return `/${season}/${event}/${team}/match numbers`
 }
 
 function pitAnswerObjName(season,event,team)
@@ -269,4 +325,6 @@ $(document).ready(function(){
     loadTDataPage();
 
     $('#savePitAnswers').click(savePitAnswers); //button for saving pit answers
+
+    $('#matchNumberButton').click(addNewMatch); //button for adding match numbers
 });
