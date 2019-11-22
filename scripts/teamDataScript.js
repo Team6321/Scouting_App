@@ -203,6 +203,7 @@ function loadMatch()
         return;
     }
     $('#matchNumberStuff').show();
+    loadMatchNumberList();
 
     var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Element</b></th> <th class="q-th"><b>Frequency</b></th> </tr>';
     $('#matchQuestionTable').html(tableHeader); //default start of table
@@ -265,7 +266,7 @@ function addNewMatch() //onclick for adding the button to add a match number
 
     if (alreadyStored)
     {
-        $('#matchTableConfirmation').text('Match number already stored');
+        $('#matchNumberConfirmation').text('Match number already stored');
         return;
     } //else, new match number
 
@@ -278,21 +279,6 @@ function addNewMatch() //onclick for adding the button to add a match number
 
     $('.js_clear_on_load').val("").html("");
     $('#matchNumberInputBox').val("").focus();
-}
-
-function matchNumberObjName(season,event,team)
-{
-    return `/${season}/${event}/${team}/match numbers`
-}
-
-function pitAnswerObjName(season,event,team)
-{
-    return `/${season}/${event}/${team}/pit`;
-}
-
-function matchAnswerObjName(seaon,event,team)
-{
-    return `/${season}/${event}/${team}/match`;
 }
 
 function savePitAnswers()
@@ -321,10 +307,52 @@ function savePitAnswers()
     $('#pitTableConfirmation').text('Answers saved.');
 }
 
+function loadMatchNumberList()
+{
+    $('#matchNumberRadioList').html('');
+
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+    var matchNumsObjName = matchNumberObjName(season,event,team);
+    var matchNums = localStorage.getItem(matchNumsObjName);
+    var isNull = !checkForNull(matchNums); //check for null returns true if object isnt null
+
+    if (team.trim().length == 0 || isNull) return;
+
+    var numsArr = matchNums.split(','); //splitting string into csv array
+    for (var i = 0; i < numsArr.length; i++)
+    {
+        var num = numsArr[i];
+        var radioButtonHTML = `<label><input type='radio' name='teamListItem' value='${num}'>Match ${num}</label><br>`;
+        $('#matchNumberRadioList').append(radioButtonHTML);
+    }
+}
+
 $(document).ready(function(){
     loadTDataPage();
 
     $('#savePitAnswers').click(savePitAnswers); //button for saving pit answers
 
     $('#matchNumberButton').click(addNewMatch); //button for adding match numbers
+
+    const Enter_key_code = 13;
+    $('#matchNumberInputBox').keypress(function(e){
+        if (e.keyCode == Enter_key_code) addNewMatch();
+    });
 });
+
+function matchNumberObjName(season,event,team)
+{
+    return `/${season}/${event}/${team}/match numbers`
+}
+
+function pitAnswerObjName(season,event,team)
+{
+    return `/${season}/${event}/${team}/pit`;
+}
+
+function matchAnswerObjName(seaon,event,team)
+{
+    return `/${season}/${event}/${team}/match`;
+}
