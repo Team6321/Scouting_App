@@ -94,7 +94,7 @@
                     <input type='text' id='matchNumberInputBox' class='js_clear_on_load' placeholder='1'>
                     <button id = 'matchNumberButton' class = "r3-button">Submit</button> <br>
                     <fieldset> <!--onchange="changeCurrMatch()"-->
-                        <form id="matchNumberRadioList" style="font-size:18px"> </form>
+                        <form id="matchNumberRadioList" onchange='changeCurrMatchNum()' style="font-size:18px"> </form>
                     </fieldset>
                     <i>
                         <h4 id='matchNumberConfirmation' class='js_clear_on_load'></h4>
@@ -102,6 +102,7 @@
                 </div>
 
                 <br><br>
+                <h3 id='currMatchHeader'></h3>
                 <table id='matchQuestionTable'>
                 </table>
                 <i>

@@ -324,9 +324,24 @@ function loadMatchNumberList()
     for (var i = 0; i < numsArr.length; i++)
     {
         var num = numsArr[i];
-        var radioButtonHTML = `<label><input type='radio' name='teamListItem' value='${num}'>Match ${num}</label><br>`;
+        var radioButtonHTML = `<label><input type='radio' name='matchNumListItem' value='${num}'>Match ${num}</label><br>`;
         $('#matchNumberRadioList').append(radioButtonHTML);
     }
+}
+
+function changeCurrMatchNum() //onchange for curr match number
+{
+    var teamNum = getCurrTeamNumber();
+    var teamName = getCurrTeamName();
+    var currMatch = $("input[name=matchNumListItem]:checked","#matchNumberRadioList").val(); //in prev method, val of each radio item is the tNum
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var objName = 'currCheckedMatch';
+    var objValue = `/${season}/${event}/${teamNum}/${currMatch}`;
+    localStorage.setItem(objName,objValue);
+
+    $("#currMatchHeader").text(`Data for Match ${currMatch} for Team ${teamNum}: ${teamName}`);
+    $('.js_clear_on_load').val("").html("");
 }
 
 $(document).ready(function(){
@@ -355,4 +370,16 @@ function pitAnswerObjName(season,event,team)
 function matchAnswerObjName(seaon,event,team)
 {
     return `/${season}/${event}/${team}/match`;
+}
+
+function getCurrMatchNum(season,event,team) //returns number of match
+{
+    var value = localStorage.getItem('currCheckedMatch');
+    if (value.trim().length == 0)
+        return '';
+    else
+    {
+        // value is in format /season/event/team/match num
+        return value.substring(value.lastIndexOf('/')+1);
+    }
 }
