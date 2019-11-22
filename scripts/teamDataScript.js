@@ -204,6 +204,7 @@ function loadMatch()
     }
     $('#matchNumberStuff').show();
     loadMatchNumberList();
+    localStorage.setItem('currCheckedMatch','');
 
     var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Element</b></th> <th class="q-th"><b>Frequency</b></th> </tr>';
     $('#matchQuestionTable').html(tableHeader); //default start of table
@@ -222,7 +223,7 @@ function loadMatch()
         var value = getCookie(currCName);
 
         var inputHTML = `<input type="text" class="q-input">`;
-        var elementText = `${element} (${value} points)`;
+        var elementText = `${element}`;
         var newTRHtml = '<tr class="q-tr"><td class="q-td">' + elementText + '</td><td class="q-td">' + inputHTML + "</td></tr>";
         
         if ($('#matchQuestionTable').html().indexOf(elementText) < 0) //if table doesn't already have it
@@ -307,6 +308,37 @@ function savePitAnswers()
     $('#pitTableConfirmation').text('Answers saved.');
 }
 
+function saveMatchAnswers()
+{
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+    var match = getCurrMatchNum(season,event,team);
+
+    if (match.trim().length == 0)
+    {
+        $('#matchTableConfirmation').text('No match selected.');
+        return;
+    }
+
+    var element_answer_pairs = [];
+    $('#matchQuestionTable tr').each(function(){ //for each row
+        var element = $(this).find('td:first').text();
+        var answer = $(this).find('td:last').find('input').val();
+
+        var pair = {};
+        pair[element] = answer;
+        element_answer_pairs.push(pair);
+    });
+
+    //same thing as pit answers: {'/season/event/team/match' : '{ball:2},{hatch:3}...'}
+    var locStrObjName = matchAnswerObjName(season,event,team,match);
+    var objVal = JSON.stringify(element_answer_pairs); //arr to string conversion
+    localStorage.setItem(locStrObjName,JSON.stringify(element_answer_pairs));
+
+    $('#matchTableConfirmation').text('Answers saved.');
+}
+
 function loadMatchNumberList()
 {
     $('#matchNumberRadioList').html('');
@@ -351,6 +383,8 @@ $(document).ready(function(){
 
     $('#matchNumberButton').click(addNewMatch); //button for adding match numbers
 
+    $('#matchTableSubmit').click(saveMatchAnswers); //saving answers to match tables
+
     const Enter_key_code = 13;
     $('#matchNumberInputBox').keypress(function(e){
         if (e.keyCode == Enter_key_code) addNewMatch();
@@ -367,9 +401,9 @@ function pitAnswerObjName(season,event,team)
     return `/${season}/${event}/${team}/pit`;
 }
 
-function matchAnswerObjName(seaon,event,team)
+function matchAnswerObjName(season,event,team,matchNum)
 {
-    return `/${season}/${event}/${team}/match`;
+    return `/${season}/${event}/${team}/Match ${matchNum}`;
 }
 
 function getCurrMatchNum(season,event,team) //returns number of match
