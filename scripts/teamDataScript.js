@@ -5,6 +5,7 @@ function loadTDataPage()
     show_TDataModal_Or_IntroText();
     displayTeamRadioList();
     setCookie('currCheckedTeam','',750);
+    localStorage.setItem('currCheckedMatch','');
 
     $('.js_clear_on_load').val("").html("");
 }
@@ -101,6 +102,7 @@ function changeCurrTeam()
 
     loadPit();
     loadMatch();
+    localStorage.setItem('currCheckedMatch','');
 }
 
 //basically copy pasted from w3schools, onclick for a change in tabs
@@ -126,6 +128,7 @@ function displayTabContent(evt, tabName)
     {
         loadMatch();
     }
+    localStorage.setItem('currCheckedMatch','');
 }
 
 function loadPit()
@@ -204,7 +207,6 @@ function loadMatch()
     }
     $('#matchNumberStuff').show();
     loadMatchNumberList();
-    localStorage.setItem('currCheckedMatch','');
 
     var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Element</b></th> <th class="q-th"><b>Frequency</b></th> </tr>';
     $('#matchQuestionTable').html(tableHeader); //default start of table
@@ -374,6 +376,58 @@ function changeCurrMatchNum() //onchange for curr match number
 
     $("#currMatchHeader").text(`Data for Match ${currMatch} for Team ${teamNum}: ${teamName}`);
     $('.js_clear_on_load').val("").html("");
+
+    loadPrevMatchAnswers(season,event,teamNum,currMatch);
+}
+
+function loadPrevMatchAnswers(season,event,team,match)
+{
+    var objName = matchAnswerObjName(season,event,team,match);
+    var objValue = localStorage.getItem(objName);
+    var prevStoredArr = JSON.parse(objValue);
+    console.log(prevStoredArr + " " + !checkForNull(prevStoredArr));
+    
+    var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Element</b></th> <th class="q-th"><b>Frequency</b></th> </tr>';
+    $('#matchQuestionTable').html(tableHeader); //default start of table
+
+    var teamStoredAlready = false
+    if (!checkForNull(prevStoredArr))
+        teamStoredAlready = true; //else, answers are stored, retrieve those answers
+
+    //go through all saved cookie elements
+    var cNameStart = `/season_config/${ season }/`;
+    var cookieList = document.cookie.split(';');
+
+    for (var i = 0; i < cookieList.length; i++)
+    {
+        var currCookie = cookieList[i].trim().split('=');
+        if (!(currCookie[0].startsWith(cNameStart))) continue; //else, currCookie stores an element
+
+        var element = currCookie[0].substring(currCookie[0].lastIndexOf('/')+1);
+
+        var prevSavedAnswer = '';
+        if (!teamStoredAlready) //won't through 'prevStoredArr is null' error
+        {
+            for (var j = 0; j < prevStoredArr.length; j++)
+            {
+                var currPair = prevStoredArr[j];
+                var potentialAnswer = currPair[element];
+                if (!checkForNull(potentialAnswer)) continue;
+
+                //else, object had a pair with that element name/value, use that instead of '' for input val
+                prevSavedAnswer = potentialAnswer;
+            }
+        }
+
+        var inputHTML = `<input type="text" value='${prevSavedAnswer}' class="q-input">`;
+        var elementText = `${element}`;
+        var newTRHtml = '<tr class="q-tr"><td class="q-td">' + elementText + '</td><td class="q-td">' + inputHTML + "</td></tr>";
+        
+        if ($('#matchQuestionTable').html().indexOf(newTRHtml) < 0) //if table doesn't already have it
+        {
+            $('#matchQuestionTable').append(newTRHtml);
+        }
+    }
 }
 
 $(document).ready(function(){
