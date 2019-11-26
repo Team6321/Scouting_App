@@ -24,7 +24,7 @@ function show_TDataModal_Or_IntroText()
         var season = getCookie('currCheckedSeason');
         introText = `Here, you can enter and view answers to ` +
         `pit scouting questions entered on the Season Configuration page. You can also add and view data from matches including game ` +
-        `element stats and custom notes. These can be cross-referenced for all the events the selected team has attended in the season "${season}".`;
+        `element stats and custom notes."${season}".`;
         $('#tDataIntroText').text(introText);
 
         fieldsetText = `Select a team attending the event "${event}" in the season "${season}."`;
@@ -131,6 +131,10 @@ function displayTabContent(evt, tabName)
     localStorage.setItem('currCheckedMatch','');
 }
 
+
+
+
+//Pit stuff
 function loadPit()
 {
     var season = getCookie('currCheckedSeason');
@@ -193,8 +197,39 @@ function loadPit()
     //cookie will be a json object: /{season}/{event}/pit = {team}
 }
 
+function savePitAnswers()
+{
+    //using local storage to save pit answers, one localStorage obj per team per event
+    // { '/{season}/{event}/{team}/pit answers' : {{question1}:{answer1}, {question2}:{answer2}...} }
+    //local storage obj will hold an array of q/a object pairs
+
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+
+    var all_team_QA_pairs_obj = [];
+    $('#pitQuestionTable tr').each(function(){ //for each row
+        var question = $(this).find('td:first').text();
+        var answer = $(this).find('td:last').find('input').val();
+
+        var pair = {};
+        pair[question] = answer;
+        if (pair.length != 0)
+            all_team_QA_pairs_obj.push(pair);
+    });
+
+    var objName = pitAnswerObjName(season,event,team);
+    localStorage.setItem(objName,JSON.stringify(all_team_QA_pairs_obj));
+    
+    $('#pitTableConfirmation').text('Answers saved.');
+}
+
+
+
+//Match Stuff
 function loadMatch()
 {
+    $('#currMatchHeader').text('');
     var season = getCookie('currCheckedSeason');
     var event = getCurrEvent();
     var teamNum = getCurrTeamNumber();
@@ -282,32 +317,6 @@ function addNewMatch() //onclick for adding the button to add a match number
 
     $('.js_clear_on_load').val("").html("");
     $('#matchNumberInputBox').val("").focus();
-}
-
-function savePitAnswers()
-{
-    //using local storage to save pit answers, one localStorage obj per team per event
-    // { '/{season}/{event}/{team}/pit answers' : {{question1}:{answer1}, {question2}:{answer2}...} }
-    //local storage obj will hold an array of q/a object pairs
-
-    var season = getCookie('currCheckedSeason');
-    var event = getCurrEvent();
-    var team = getCurrTeamNumber();
-
-    var all_team_QA_pairs_obj = [];
-    $('#pitQuestionTable tr').each(function(){ //for each row
-        var question = $(this).find('td:first').text();
-        var answer = $(this).find('td:last').find('input').val();
-
-        var pair = {};
-        pair[question] = answer;
-        all_team_QA_pairs_obj.push(pair);
-    });
-
-    var objName = pitAnswerObjName(season,event,team);
-    localStorage.setItem(objName,JSON.stringify(all_team_QA_pairs_obj));
-    
-    $('#pitTableConfirmation').text('Answers saved.');
 }
 
 function saveMatchAnswers()
@@ -429,6 +438,7 @@ function loadPrevMatchAnswers(season,event,team,match)
         }
     }
 }
+
 
 $(document).ready(function(){
     loadTDataPage();
