@@ -143,7 +143,7 @@ function loadPit()
     var questions = getCookie(cname).split('Ω'); //Ω is separator for questions
     var currTeam = getCurrTeamNumber();
 
-    showAllTeamsTable();
+    showAllPitDataTable();
     if (currTeam.trim().length == 0)
     {
         $('#pitQuestionTable').html('');
@@ -223,10 +223,10 @@ function savePitAnswers() //onclick for save pit button
     localStorage.setItem(objName,JSON.stringify(all_team_QA_pairs_obj));
     
     $('#pitTableConfirmation').text('Answers saved.');
-    showAllTeamsTable();
+    showAllPitDataTable();
 }
 
-function showAllTeamsTable() //shows pit stats of all teams for the current event in one table
+function showAllPitDataTable() //shows pit stats of all teams for the current event in one table
 {
     var season = getCookie('currCheckedSeason');
     var event = getCurrEvent();
@@ -395,6 +395,7 @@ function saveMatchAnswers()
     localStorage.setItem(locStrObjName,JSON.stringify(element_answer_pairs));
 
     $('#matchTableConfirmation').text('Answers saved.');
+    showAllMatchDataTable();
 }
 
 function loadMatchNumberList()
@@ -434,6 +435,7 @@ function changeCurrMatchNum() //onchange for curr match number
     $('.js_clear_on_load').val("").html("");
 
     loadPrevMatchAnswers(season,event,teamNum,currMatch);
+    showAllMatchDataTable();
 }
 
 function deleteMatchNum() //deletes checked match num, onclick for delete button
@@ -513,6 +515,60 @@ function loadPrevMatchAnswers(season,event,team,match)
             $('#matchQuestionTable').append(newTRHtml);
         }
     }
+}
+
+function showAllMatchDataTable()
+{
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+    var match = getCurrMatchNum(season,event,team);
+    
+    //get all elements in an array
+    var questionsArr = [];
+    var cNameStart = `/season_config/${ season }/`;
+    var cookieList = document.cookie.split(';');
+    for (var i = 0; i < cookieList.length; i++)
+    {
+        if (!cookieList[i].trim().startsWith(cNameStart)) continue;
+        var currCName = cookieList[i].trim().split('=')[0];
+        var element = currCName.substring(currCName.lastIndexOf('/')+1);
+        questionsArr.push(element);
+    }
+
+    //default the table (make it blank and start with the header)
+    var tableHeader = '<tr><th></th>'
+    for (var i = 0; i < questionsArr.length; i++)
+    {
+        tableHeader += `<th>${questionsArr[i]}</th>`;
+    }
+    tableHeader += '</tr>';
+    $('#allMatchAnswers').html(tableHeader);
+
+    //add match data from all saved teams, for the curr checked match
+    var keys = Object.keys(localStorage);
+
+    for (var i = 0; i < keys.length; i++)
+    {
+        var currKey = keys[i];
+        if (!currKey.endsWith(`Match ${match}`)) continue;
+
+        var currTeam = currKey.split('/')[3]; //based on matchAnswerObjName structure
+        var newRowHTML = `<tr><td>${currTeam}</td>`;
+        var currValue = JSON.parse(localStorage.getItem(keys[i]));
+        var innerKeys = Object.keys(currValue); //local storage object has element/frequency pair objects inside it
+
+        for (var j = 0; j < innerKeys.length; j++)
+        {
+            var pair = currValue[j];
+            var element = Object.keys(pair)[0];
+            var freq = pair[element];
+            newRowHTML += `<td>${freq}</td>`
+        }
+
+        $('#allMatchAnswers').append(newRowHTML);
+    }
+    $('#allMatchAnswersTableTitle').text(`All Match Data for Match ${match}.`);
 }
 
 
