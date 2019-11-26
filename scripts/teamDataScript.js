@@ -242,7 +242,6 @@ function showAllTeamsTable() //shows pit stats of all teams for the current even
         tableHeader += `<th>${questionsArr[i]}</th>`;
     }
     tableHeader += '</tr>'; //end of row
-    console.log(tableHeader);
     $('#allTeamsPitAnswers').html(tableHeader); //default start of table
 
     var keys = Object.keys(localStorage);
@@ -361,6 +360,7 @@ function addNewMatch() //onclick for adding the button to add a match number
 
     $('.js_clear_on_load').val("").html("");
     $('#matchNumberInputBox').val("").focus();
+    $('#matchNumberConfirmation').text(`Match ${newMatchNum} added.`);
 }
 
 function saveMatchAnswers()
@@ -430,10 +430,40 @@ function changeCurrMatchNum() //onchange for curr match number
     var objValue = `/${season}/${event}/${teamNum}/${currMatch}`;
     localStorage.setItem(objName,objValue);
 
-    $("#currMatchHeader").text(`Data for Match ${currMatch} for Team ${teamNum}: ${teamName}`);
+    $("#currMatchHeader").text(`Data for Match ${getCurrMatchNum(season,event,teamNum)} for Team ${teamNum}: ${teamName}`);
     $('.js_clear_on_load').val("").html("");
 
     loadPrevMatchAnswers(season,event,teamNum,currMatch);
+}
+
+function deleteMatchNum() //deletes checked match num, onclick for delete button
+{
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+    
+    var matchNum = parseInt(getCurrMatchNum(season,event,team));
+    var objName = matchNumberObjName(season,event,team);
+    var storedMatchesArr = localStorage.getItem(objName).split(',');
+    var newArr = [];
+    for (var i = 0; i < storedMatchesArr.length; i++)
+    {
+        if (parseInt(storedMatchesArr[i]) == matchNum) continue; //skip over checked match num
+
+        newArr.push(storedMatchesArr[i]);
+    }
+    
+    //delete saved match data for that match number
+    var matchDataToRemove = matchAnswerObjName(season,event,team,matchNum);
+    localStorage.removeItem(matchDataToRemove);
+    loadPrevMatchAnswers(season,event,team,matchNum);
+
+    newArr = newArr.toString();
+    localStorage.setItem(objName,newArr); //update object
+    loadMatchNumberList();
+    localStorage.setItem('currCheckedMatch','');
+
+    $('#matchNumberConfirmation').text(`Match ${matchNum} deleted.`);
 }
 
 function loadPrevMatchAnswers(season,event,team,match)
@@ -441,7 +471,6 @@ function loadPrevMatchAnswers(season,event,team,match)
     var objName = matchAnswerObjName(season,event,team,match);
     var objValue = localStorage.getItem(objName);
     var prevStoredArr = JSON.parse(objValue);
-    console.log(prevStoredArr + " " + !checkForNull(prevStoredArr));
     
     var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency</b></th> </tr>';
     $('#matchQuestionTable').html(tableHeader); //default start of table
@@ -495,6 +524,8 @@ $(document).ready(function(){
     $('#matchNumberButton').click(addNewMatch); //button for adding match numbers
 
     $('#matchTableSubmit').click(saveMatchAnswers); //saving answers to match tables
+
+    $('#deleteMatchNum').click(deleteMatchNum); //deletes checked match num
 
     const Enter_key_code = 13;
     $('#matchNumberInputBox').keypress(function(e){

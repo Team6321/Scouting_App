@@ -80,10 +80,10 @@
                 <button class = "r3-button" id="savePitAnswers">Save</button>
 
                 <br><br>
+                <h3 id='allPitAnswersTitle'></h3>
+                <table id='allTeamsPitAnswers'>
+                </table>
             </div>
-            <h3 id='allPitAnswersTitle'></h3>
-            <table id='allTeamsPitAnswers'>
-            </table>
         
             
             
@@ -100,6 +100,7 @@
                     <button id = 'matchNumberButton' class = "r3-button">Submit</button> <br>
                     <fieldset> <!--onchange="changeCurrMatch()"-->
                         <form id="matchNumberRadioList" onchange='changeCurrMatchNum()' style="font-size:18px"> </form>
+                        <button id = 'deleteMatchNum' class='r3-button'>Delete Checked Match</button>
                     </fieldset>
                     <i>
                         <h4 id='matchNumberConfirmation' class='js_clear_on_load'></h4>
@@ -114,6 +115,13 @@
                     <h4 id='matchTableConfirmation' class='js_clear_on_load'></h4>
                 </i>
                 <button id = 'matchTableSubmit' class = "r3-button">Save</button>
+
+
+                <h3 id='allMatchAnswersTableTitle'></h3>
+                <table id='allMatchAnswers'>
+
+                </table>
+
             </div>
         </fieldset>
     </div>
