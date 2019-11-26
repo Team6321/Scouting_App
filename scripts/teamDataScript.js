@@ -143,6 +143,7 @@ function loadPit()
     var questions = getCookie(cname).split('Ω'); //Ω is separator for questions
     var currTeam = getCurrTeamNumber();
 
+    showAllTeamsTable();
     if (currTeam.trim().length == 0)
     {
         $('#pitQuestionTable').html('');
@@ -150,7 +151,7 @@ function loadPit()
         return;
     }
 
-    var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Question</b></th> <th class="q-th"><b>Answer</b></th> </tr>';
+    var tableHeader = '<tr> <th><b>Question</b></th> <th><b>Answer</b></th> </tr>';
     $('#pitQuestionTable').html(tableHeader); //default start of table
 
     var localStorageObjName = pitAnswerObjName(season,event,currTeam);
@@ -186,18 +187,16 @@ function loadPit()
         }
 
         var inputHTML = `<input type="text" value="${potentialAnswer}" class="q-input">`; //pot answer is either '' or what is stored
-        var newTRHtml = '<tr class="q-tr"><td class="q-td">' + question + '</td><td class="q-td">' + inputHTML + "</td></tr>";
+        var newTRHtml = '<tr><td>' + question + '</td><td>' + inputHTML + "</td></tr>";
         
         if ($('#pitQuestionTable').html().indexOf(question) < 0) //if table doesn't already have it
         {
             $('#pitQuestionTable').append(newTRHtml);
         }
     }
-
-    //cookie will be a json object: /{season}/{event}/pit = {team}
 }
 
-function savePitAnswers()
+function savePitAnswers() //onclick for save pit button
 {
     //using local storage to save pit answers, one localStorage obj per team per event
     // { '/{season}/{event}/{team}/pit answers' : {{question1}:{answer1}, {question2}:{answer2}...} }
@@ -214,14 +213,59 @@ function savePitAnswers()
 
         var pair = {};
         pair[question] = answer;
-        if (pair.length != 0)
+        if (JSON.stringify(pair).localeCompare('{}') != 0) //first row reads {} as its reading the table header
+        {
             all_team_QA_pairs_obj.push(pair);
+        }
     });
 
     var objName = pitAnswerObjName(season,event,team);
     localStorage.setItem(objName,JSON.stringify(all_team_QA_pairs_obj));
     
     $('#pitTableConfirmation').text('Answers saved.');
+    showAllTeamsTable();
+}
+
+function showAllTeamsTable() //shows pit stats of all teams for the current event in one table
+{
+    var season = getCookie('currCheckedSeason');
+    var event = getCurrEvent();
+    var cname = season + ' pitQuestions';
+    var questionsArr = getCookie(cname).split('Ω');
+    $('#allTeamsPitAnswers').html('');
+    $('#allPitAnswersTitle').text(`All Pit Scouting Data for the '${event} event'.`);
+
+    var tableHeader = '<tr><th></th>';
+    for (var i = 0; i < questionsArr.length-1; i++)
+    {
+
+        tableHeader += `<th>${questionsArr[i]}</th>`;
+    }
+    tableHeader += '</tr>'; //end of row
+    console.log(tableHeader);
+    $('#allTeamsPitAnswers').html(tableHeader); //default start of table
+
+    var keys = Object.keys(localStorage);
+    for (var j = 0; j < keys.length; j++) //iterate through localStorage objects
+    {
+        if (!keys[j].endsWith('pit')) continue;
+
+        var team = keys[j].split('/')[3]; //based on structure of pitStorageObjName
+        var newRowHTML = `<tr><td>${team}</td>`;
+        var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
+        var innerKeys = Object.keys(pitObjValue);
+
+        for (var k = 0; k < innerKeys.length; k++) //starts at 1 because first value is blank, it reads the table header
+        {
+            var pair = pitObjValue[k];
+            var key = Object.keys(pair)[0];
+            var answer = pair[key];
+            newRowHTML += `<td>${answer}</td>`;
+        }
+        //newRowHTML += '</tr>' //end of row
+
+        $('#allTeamsPitAnswers').append(newRowHTML);
+    }
 }
 
 
@@ -243,7 +287,7 @@ function loadMatch()
     $('#matchNumberStuff').show();
     loadMatchNumberList();
 
-    var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Element</b></th> <th class="q-th"><b>Frequency</b></th> </tr>';
+    var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency</b></th> </tr>';
     $('#matchQuestionTable').html(tableHeader); //default start of table
 
     //retrieve elements for current season
@@ -261,7 +305,7 @@ function loadMatch()
 
         var inputHTML = `<input type="text" class="q-input">`;
         var elementText = `${element}`;
-        var newTRHtml = '<tr class="q-tr"><td class="q-td">' + elementText + '</td><td class="q-td">' + inputHTML + "</td></tr>";
+        var newTRHtml = '<tr><td>' + elementText + '</td><td>' + inputHTML + "</td></tr>";
         
         if ($('#matchQuestionTable').html().indexOf(elementText) < 0) //if table doesn't already have it
         {
@@ -339,7 +383,10 @@ function saveMatchAnswers()
 
         var pair = {};
         pair[element] = answer;
-        element_answer_pairs.push(pair);
+        if (JSON.stringify(pair).localeCompare('{}') != 0) //first row reads {} as its reading the table header
+        {
+            element_answer_pairs.push(pair);
+        }
     });
 
     //same thing as pit answers: {'/season/event/team/match' : '{ball:2},{hatch:3}...'}
@@ -396,7 +443,7 @@ function loadPrevMatchAnswers(season,event,team,match)
     var prevStoredArr = JSON.parse(objValue);
     console.log(prevStoredArr + " " + !checkForNull(prevStoredArr));
     
-    var tableHeader = '<tr class="q-tr"> <th class="q-th"><b>Element</b></th> <th class="q-th"><b>Frequency</b></th> </tr>';
+    var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency</b></th> </tr>';
     $('#matchQuestionTable').html(tableHeader); //default start of table
 
     var teamStoredAlready = false
@@ -430,7 +477,7 @@ function loadPrevMatchAnswers(season,event,team,match)
 
         var inputHTML = `<input type="text" value='${prevSavedAnswer}' class="q-input">`;
         var elementText = `${element}`;
-        var newTRHtml = '<tr class="q-tr"><td class="q-td">' + elementText + '</td><td class="q-td">' + inputHTML + "</td></tr>";
+        var newTRHtml = '<tr><td>' + elementText + '</td><td>' + inputHTML + "</td></tr>";
         
         if ($('#matchQuestionTable').html().indexOf(newTRHtml) < 0) //if table doesn't already have it
         {
