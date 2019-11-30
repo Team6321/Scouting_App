@@ -84,7 +84,7 @@ function setCurrMatch(number) //stores a curr checked match as a number
         localStorage.setItem(objName,'');
     } else
     {
-        var objValue = `/${season}/${event}/${teamNum}/${number}`
+        var objValue = `/${season}/${event}/${team}/${number}`
         localStorage.setItem(objName,objValue);
     }
 }

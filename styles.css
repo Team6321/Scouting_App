@@ -185,3 +185,14 @@ table, th, td
 {
   font-size:20px;
 }
+
+.scoutingTableRow
+{
+  padding-bottom: 12px;
+  padding-top: 12px;
+}
+
+.question, .match-element, .allTeamsRow
+{
+  text-align: center;
+}

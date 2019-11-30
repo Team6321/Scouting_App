@@ -90,13 +90,13 @@
             
             <div id='matchTabContent' style='display:none' class='w3-container w3-animate-fading tabContent'>
                 <h3>Match Scouting</h3>
-                <h4>Here, enter custom notes about the selected team and
-                    input game element stats for a given match.
+                <h4>Here, enter custom notes about the selected team and input game element stats for a given match.
+                    If you need to edit/add game elements, go to the <a href="season-config.html">Season Configuration</a> page.
                 </h4>
                 
                 <div id = 'matchNumberStuff'>
                     <h4><br>Enter and/or select a match number to enter data for the selected team.</h4>
-                    <input type='text' id='matchNumberInputBox' class='js_clear_on_load' placeholder='1'>
+                    <input type='number' id='matchNumberInputBox' class='js_clear_on_load' placeholder='1'>
                     <button id = 'matchNumberButton' class = "r3-button">Submit</button> <br>
                     <fieldset> <!--onchange="changeCurrMatch()"-->
                         <form id="matchNumberRadioList" onchange='changeCurrMatchNum()' style="font-size:18px"> </form>
