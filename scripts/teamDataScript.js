@@ -199,10 +199,16 @@ function savePitAnswers() //onclick for save pit button
     var team = getCurrTeamNumber();
 
     var all_team_QA_pairs_obj = [];
+    var areAnyFieldsBlank = false;
+
     $('#pitQuestionTable tr').each(function(){ //for each row
         var question = $(this).find('.question').text();
         var answer = $(this).find('.answer').val();
 
+        if (typeof(answer) == 'undefined')
+        {
+            areAnyFieldsBlank = true;
+        }
         var pair = {};
         pair[question] = answer;
         if (JSON.stringify(pair) != '{}') //first row reads {} as its reading the table header
@@ -210,6 +216,12 @@ function savePitAnswers() //onclick for save pit button
             all_team_QA_pairs_obj.push(pair);
         }
     });
+
+    if (areAnyFieldsBlank)
+    {
+        $('#pitTableConfirmation').text('Please enter data for all fields.');
+        return;    
+    }
 
     var objName = pitAnswerObjName(season,event,team);
     localStorage.setItem(objName,JSON.stringify(all_team_QA_pairs_obj));
@@ -312,6 +324,8 @@ function saveMatchAnswers()
 
     var match = 0;
     var element_answer_pairs = [];
+    var areAnyFieldsBlank = false;
+
     $('#matchQuestionTable tr').each(function(){ //for each row
         var potentialMatchNum = $(this).find('.matchNumInput').val(); //for first row, which is always the match num
         if (typeof(potentialMatchNum) !== 'undefined')
@@ -322,6 +336,10 @@ function saveMatchAnswers()
         var element = $(this).find('.match-element').text();
         var answer = $(this).find('.match-frequency').val();
 
+        if (typeof(answer) == 'undefined')
+        {
+            areAnyFieldsBlank = true;   
+        }
         var pair = {};
         pair[element] = answer;
         if (JSON.stringify(pair) != '{}') //first row reads {} as its reading the table header
@@ -329,6 +347,12 @@ function saveMatchAnswers()
             element_answer_pairs.push(pair);
         }
     });
+
+    if (areAnyFieldsBlank)
+    {
+        $('#matchTableConfirmation').text('Please enter data for all fields.');
+        return;
+    }
 
     //same thing as pit answers: {'/season/event/team/match' : '{ball:2},{hatch:3}...'}
     var locStrObjName = matchAnswerObjName(season,event,team,match);
