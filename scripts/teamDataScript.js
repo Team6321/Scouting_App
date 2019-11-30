@@ -5,7 +5,7 @@ function loadTDataPage()
     show_TDataModal_Or_IntroText();
     displayTeamRadioList();
     setCookie('currCheckedTeam','',750);
-    localStorage.setItem('currCheckedMatch','');
+    setCurrMatch('');
 
     $('.js_clear_on_load').val("").html("");
 }
@@ -102,22 +102,16 @@ function changeCurrTeam()
 
     loadPit();
     loadMatch();
-    localStorage.setItem('currCheckedMatch','');
+    setCurrMatch('');
 }
 
 //basically copy pasted from w3schools, onclick for a change in tabs
 function displayTabContent(evt, tabName)
 {
     var i, x, tablinks;
-    x = document.getElementsByClassName("tabContent");
-    for (i = 0; i < x.length; i++) {
-      x[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tabs");
-    for (i = 0; i < x.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" w3-bottombar-gold", " w3-bottombar-maroon");
-    }
-    document.getElementById(tabName).style.display = "block";
+    $('.tabContent').hide();
+    $('.tabs').removeClass('w3-bottombar-gold').addClass('w3-bottombar-marron');
+    $('#' + tabName).show();
     evt.currentTarget.firstElementChild.className += " w3-bottombar-gold";
 
     if (tabName.startsWith('pit')) //function calls for pit page
@@ -128,9 +122,8 @@ function displayTabContent(evt, tabName)
     {
         loadMatch();
     }
-    localStorage.setItem('currCheckedMatch','');
+    setCurrMatch('');
 }
-
 
 
 
@@ -140,7 +133,7 @@ function loadPit()
     var season = getCurrSeason();
     var cname = season + ' pitQuestions';
     var event = getCurrEvent();
-    var questions = getCookie(cname).split('Ω'); //Ω is separator for questions
+    var questions = getCookie(cname).split(COOKIE_STRING_SEPARATOR);
     var currTeam = getCurrTeamNumber();
 
     showAllPitDataTable();
@@ -186,8 +179,8 @@ function loadPit()
             }
         }
 
-        var inputHTML = `<input type="text" value="${potentialAnswer}" class="q-input">`; //pot answer is either '' or what is stored
-        var newTRHtml = '<tr><td>' + question + '</td><td>' + inputHTML + "</td></tr>";
+        var inputHTML = `<input type="text" value="${potentialAnswer}" class="answer">`; //pot answer is either '' or what is stored
+        var newTRHtml = `<tr><td class='question'>${question}</td><td>${inputHTML}</td></tr>`;
         
         if ($('#pitQuestionTable').html().indexOf(question) < 0) //if table doesn't already have it
         {
@@ -208,12 +201,12 @@ function savePitAnswers() //onclick for save pit button
 
     var all_team_QA_pairs_obj = [];
     $('#pitQuestionTable tr').each(function(){ //for each row
-        var question = $(this).find('td:first').text();
-        var answer = $(this).find('td:last').find('input').val();
+        var question = $(this).find('.question').text();
+        var answer = $(this).find('.answer').val();
 
         var pair = {};
         pair[question] = answer;
-        if (JSON.stringify(pair).localeCompare('{}') != 0) //first row reads {} as its reading the table header
+        if (JSON.stringify(pair) != '{}') //first row reads {} as its reading the table header
         {
             all_team_QA_pairs_obj.push(pair);
         }
@@ -427,9 +420,7 @@ function changeCurrMatchNum() //onchange for curr match number
     var currMatch = $("input[name=matchNumListItem]:checked","#matchNumberRadioList").val(); //in prev method, val of each radio item is the tNum
     var season = getCurrSeason();
     var event = getCurrEvent();
-    var objName = 'currCheckedMatch';
-    var objValue = `/${season}/${event}/${teamNum}/${currMatch}`;
-    localStorage.setItem(objName,objValue);
+    setCurrMatch(currMatch);
 
     $("#currMatchHeader").text(`Data for Match ${getCurrMatchNum(season,event,teamNum)} for Team ${teamNum}: ${teamName}`);
     $('.js_clear_on_load').val("").html("");
@@ -463,7 +454,7 @@ function deleteMatchNum() //deletes checked match num, onclick for delete button
     newArr = newArr.toString();
     localStorage.setItem(objName,newArr); //update object
     loadMatchNumberList();
-    localStorage.setItem('currCheckedMatch','');
+    setCurrMatch('');
 
     $('#matchNumberConfirmation').text(`Match ${matchNum} deleted.`);
 }
@@ -606,7 +597,8 @@ function matchAnswerObjName(season,event,team,matchNum)
 
 function getCurrMatchNum(season,event,team) //returns number of match
 {
-    var value = localStorage.getItem('currCheckedMatch');
+    var objName = 'currCheckedMatch';
+    var value = localStorage.getItem(objName);
     if (value.trim().length == 0)
         return '';
     else

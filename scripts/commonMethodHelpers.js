@@ -71,3 +71,22 @@ function checkForNull(obj) //stack overflow, returns true if parameter ISNT null
 {
     return obj && obj !== null && obj !== 'undefined';
 }
+
+function setCurrMatch(number) //stores a curr checked match as a number
+{
+    var season = getCurrSeason();
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+
+    var objName = 'currCheckedMatch';
+    if (number.trim().length == 0) //if input was '' (make the obj val blank)
+    {
+        localStorage.setItem(objName,'');
+    } else
+    {
+        var objValue = `/${season}/${event}/${teamNum}/${number}`
+        localStorage.setItem(objName,objValue);
+    }
+}
+
+const COOKIE_STRING_SEPARATOR = 'Ω';
