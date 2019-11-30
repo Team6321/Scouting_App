@@ -140,7 +140,8 @@ table, th, td
   resize:none;
 }
 
-/*for the season alert on the event data page*/
+/*for modal boxes on all pages*/
+
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
@@ -178,4 +179,20 @@ table, th, td
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.tabs
+{
+  font-size:20px;
+}
+
+.scoutingTableRow
+{
+  padding-bottom: 12px;
+  padding-top: 12px;
+}
+
+.question, .match-element, .allTeamsRow
+{
+  text-align: center;
 }
