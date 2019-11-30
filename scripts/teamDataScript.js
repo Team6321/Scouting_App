@@ -301,6 +301,7 @@ function loadMatch()
 
 function saveMatchAnswers()
 {
+    $('#matchTableConfirmation').text('Saving...');
     var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
@@ -389,7 +390,6 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
 
             if (!currKey.includes(currTeam)) continue;
 
-            console.log(currKey);
             //now, since the team matches, display each one
             var currValue = JSON.parse(localStorage.getItem(currKey));
             var innerKeys = Object.keys(currValue);
