@@ -7,6 +7,11 @@ function loadTDataPage()
     setCookie('currCheckedTeam','',750);
 
     $('.js_clear_on_load').val("").html("");
+    
+    $('#matchTab').on('click', function(event) { //by default, open match tab
+        displayTabContent(event,'matchTabContent');
+    });
+    $('#matchTab').trigger('click');
 }
 
 //shows modal box or displays regular instruction text at top of page
