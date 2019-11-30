@@ -278,7 +278,7 @@ function loadMatch()
     var cname = `/season_config/${season}/` //starter bit of season_config_name
     var cookieList = document.cookie.split(';');
 
-    var matchInputHTML = `<input type="number" class="matchNumInput match-frequency">`;
+    var matchInputHTML = `<input type="number" class="matchNumInput match-frequency js_clear_on_load">`;
     var matchRow = `<tr> <td class="match-element scoutingTableRow">Match #</td> <td class="scoutingTableRow">${matchInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(matchRow); //default for all teams: row for inputting what match it was
     for (var i = 0; i < cookieList.length; i++)
@@ -331,7 +331,7 @@ function saveMatchAnswers()
     localStorage.setItem(locStrObjName,JSON.stringify(element_answer_pairs));
 
     $('#matchTableConfirmation').text('Answers saved.');
-    $('.js_clear_on_load').val('').html('');
+    $('.js_clear_on_load').val('');
     showAllMatchDataTable()
 }
 
@@ -366,27 +366,46 @@ function showAllMatchDataTable()
     //add match data from all saved teams, for the curr checked match
     var keys = Object.keys(localStorage);
 
-    for (var i = 0; i < keys.length; i++)
+    sortMatchOutputTable(keys);
+}
+
+function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and then displays the output
+{
+    var season = getCurrSeason();
+    var event = getCurrEvent();
+
+    //get array of team numbers for current event
+    var teamsObject = getTeams(season,event);
+    var teamsKeys = Object.keys(teamsObject);
+    for (var i = 0; i < teamsKeys.length; i++) //iterate through teams attending currEvent
     {
-        var currKey = keys[i];
-        if (currKey.indexOf('Match') < 0) continue;
+        var currTeam = teamsKeys[i];
 
-        var match = parseInt(currKey.charAt(currKey.length-1));
-        var currTeam = currKey.split('/')[3]; //based on matchAnswerObjName structure
-        var newRowHTML = `<tr><td class="allTeamsRow">${currTeam}</td>`; //team and match
-        console.log(keys[i]);
-        var currValue = JSON.parse(localStorage.getItem(keys[i]));
-        var innerKeys = Object.keys(currValue); //local storage object has element/frequency pair objects inside it
-
-        for (var j = 0; j < innerKeys.length; j++)
+        //for each team, if there is any data saved, display it
+        for (var j = 0; j < savedLocStrKeys.length; j++)
         {
-            var pair = currValue[j];
-            var element = Object.keys(pair)[0];
-            var freq = pair[element];
-            newRowHTML += `<td class="allTeamsRow">${freq}</td>`
-        }
+            var currKey = savedLocStrKeys[j];
+            if (!currKey.includes('Match Data')) continue;
 
-        $('#allMatchAnswers').append(newRowHTML);
+            if (!currKey.includes(currTeam)) continue;
+
+            console.log(currKey);
+            //now, since the team matches, display each one
+            var currValue = JSON.parse(localStorage.getItem(currKey));
+            var innerKeys = Object.keys(currValue);
+
+            var newRowHTML = `<tr><td class="allTeamsRow">${currTeam}</td>`;
+
+            for (var k = 0; k < innerKeys.length; k++) //displaying answers to each question
+            {
+                var pair = currValue[k];
+                var element = Object.keys(pair)[0]; //pair has only 1 element/value
+                var freq = pair[element];
+                newRowHTML += `<td class="allTeamsRow">${freq}</td>`
+            }
+
+            $('#allMatchAnswers').append(newRowHTML);
+        }
     }
     $('#allMatchAnswersTableTitle').text(`All Match Data for the ${event} event.`);
 }
@@ -409,207 +428,3 @@ function matchAnswerObjName(season,event,team,matchNum)
 {
     return `/${season}/${event}/${team}/Match Data/${matchNum}`;
 }
-
-
-
-
-
-
-
-
-
-/*
-function loadMatchNumberList()
-{
-    $('#matchNumberRadioList').html('');
-
-    var season = getCurrSeason();
-    var event = getCurrEvent();
-    var team = getCurrTeamNumber();
-    var matchNumsObjName = matchNumberObjName(season,event,team);
-    var matchNums = localStorage.getItem(matchNumsObjName);
-    var isNull = !checkForNull(matchNums); //check for null returns true if object isnt null
-
-    if (team == 0 || isNull) return;
-
-    var numsArr = matchNums.split(','); //splitting string into csv array
-    for (var i = 0; i < numsArr.length; i++)
-    {
-        var num = numsArr[i];
-        var radioButtonHTML = `<label><input type='radio' name='matchNumListItem' value='${num}'>Match ${num}</label><br>`;
-        $('#matchNumberRadioList').append(radioButtonHTML);
-    }
-}
-
-function changeCurrMatchNum() //onchange for curr match number
-{
-    var teamNum = getCurrTeamNumber();
-    var teamName = getCurrTeamName();
-    var currMatch = $("input[name=matchNumListItem]:checked","#matchNumberRadioList").val(); //in prev method, val of each radio item is the tNum
-    var season = getCurrSeason();
-    var event = getCurrEvent();
-    setCurrMatch(currMatch);
-
-    $("#currMatchHeader").text(`Data for Match ${getCurrMatchNum(season,event,teamNum)} for Team ${teamNum}: ${teamName}`);
-    $('.js_clear_on_load').val("").html("");
-
-    loadPrevMatchAnswers(season,event,teamNum,currMatch);
-    showAllMatchDataTable();
-}
-
-function deleteMatchNum() //deletes checked match num, onclick for delete button
-{
-    var season = getCurrSeason();
-    var event = getCurrEvent();
-    var team = getCurrTeamNumber();
-    
-    var matchNum = parseInt(getCurrMatchNum(season,event,team));
-    var objName = matchNumberObjName(season,event,team);
-    var storedMatchesArr = localStorage.getItem(objName).split(',');
-    var newArr = [];
-    for (var i = 0; i < storedMatchesArr.length; i++)
-    {
-        if (parseInt(storedMatchesArr[i]) == matchNum) continue; //skip over checked match num
-
-        newArr.push(storedMatchesArr[i]);
-    }
-    
-    //delete saved match data for that match number
-    var matchDataToRemove = matchAnswerObjName(season,event,team,matchNum);
-    localStorage.removeItem(matchDataToRemove);
-    loadPrevMatchAnswers(season,event,team,matchNum);
-
-    newArr = newArr.toString();
-    localStorage.setItem(objName,newArr); //update object
-    loadMatchNumberList();
-    setCurrMatch('');
-
-    $('#matchNumberConfirmation').text(`Match ${matchNum} deleted.`);
-}
-
-function loadPrevMatchAnswers(season,event,team,match)
-{
-    var objName = matchAnswerObjName(season,event,team,match);
-    var objValue = localStorage.getItem(objName);
-    var prevStoredArr = JSON.parse(objValue);
-    
-    var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency</b></th> </tr>';
-    $('#matchQuestionTable').html(tableHeader); //default start of table
-
-    var teamStoredAlready = false
-    if (!checkForNull(prevStoredArr))
-        teamStoredAlready = true; //else, answers are stored, retrieve those answers
-
-    //go through all saved cookie elements
-    var cNameStart = `/season_config/${ season }/`;
-    var cookieList = document.cookie.split(';');
-
-    for (var i = 0; i < cookieList.length; i++)
-    {
-        var currCookie = cookieList[i].trim().split('=');
-        if (!(currCookie[0].startsWith(cNameStart))) continue; //else, currCookie stores an element
-
-        var element = currCookie[0].substring(currCookie[0].lastIndexOf('/')+1);
-
-        var prevSavedAnswer = '';
-        if (!teamStoredAlready) //won't through 'prevStoredArr is null' error
-        {
-            for (var j = 0; j < prevStoredArr.length; j++)
-            {
-                var currPair = prevStoredArr[j];
-                var potentialAnswer = currPair[element];
-                if (!checkForNull(potentialAnswer)) continue;
-
-                //else, object had a pair with that element name/value, use that instead of '' for input val
-                prevSavedAnswer = potentialAnswer;
-            }
-        }
-
-        var inputHTML = `<input type="number" value='${prevSavedAnswer}' class='match-frequency'>`;
-        var elementText = `${element}`;
-        var newTRHtml = `<tr><td class='match-element scoutingTableRow'>${elementText}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
-        
-        $('#matchQuestionTable').append(newTRHtml);
-    }
-}*/
-
-
-/*
-function addNewMatch() //onclick for adding the button to add a match number
-{
-    var season = getCurrSeason();
-    var event = getCurrEvent();
-    var team = getCurrTeamNumber();
-    var newMatchNum = $('#matchNumberInputBox').val().trim();
-
-    //store match numbers in a local object: {'/season/event/team/match numbers' : " '1','7','20'... "}
-    var objName = matchNumberObjName(season,event,team);
-
-    //check if local storage object already has the new match number, stores an array of match numbers
-    var storedString = localStorage.getItem(objName);
-    var alreadyStored;
-    var numsArr = [];
-    if (!checkForNull(storedString) || storedString.length == 0) 
-    {
-        storedString = '';
-        alreadyStored = false;
-    } else
-    {
-        numsArr = storedString.split(','); //arr.toString() values seperated by ,
-        for (var i = 0; i < numsArr.length && !alreadyStored; i++)
-        {
-            var currNum = numsArr[i];
-            if (parseInt(currNum) == parseInt(newMatchNum))
-            {
-                alreadyStored = true;
-            }
-        }
-    }
-
-    if (alreadyStored)
-    {
-        $('#matchNumberConfirmation').text('Match number already stored');
-        return;
-    } //else, new match number
-
-    numsArr.push(newMatchNum);
-    storedString = numsArr.toString();
-    localStorage.setItem(objName,storedString); //add new match number to arr in local storage obj
-
-    var newItem = `<label><input type="radio" name="matchNumberListItem" value="newMatchNumber">Match ${newMatchNum}</label><br>`;
-    $("#matchNumberRadioList").append(newItem); //add to radiolist
-
-    $('.js_clear_on_load').val("").html("");
-    $('#matchNumberInputBox').val("").focus();
-    $('#matchNumberConfirmation').text(`Match ${newMatchNum} added.`);
-}*/
-
-
-//$('#deleteMatchNum').click(deleteMatchNum); //deletes checked match num
-
-    //const Enter_key_code = 13;
-    //$('#matchNumberInputBox').keypress(function(e){
-    //    if (e.keyCode == Enter_key_code) addNewMatch();
-    //});
-
-    
-//function matchNumberObjName(season,event,team)
-//{
-//    return `/${season}/${event}/${team}/match numbers`
-//}
-
-/*function getCurrMatchNum(season,event,team) //returns number of match
-{
-    var objName = 'currCheckedMatch';
-    var value = localStorage.getItem(objName);
-    if (value.trim().length == 0)
-    {
-        return '';
-    } else
-    {
-        // value is in format /season/event/team/match num
-        return value.substring(value.lastIndexOf('/')+1);
-    }
-}*/
-
-//$('#matchNumberButton').click(addNewMatch); //button for adding match numbers
