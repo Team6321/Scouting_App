@@ -22,6 +22,12 @@ function event_data_cookie_name(season,event)
     return `/event_data teams/${ season }/${ event }`;
 }
 
+function getCurrSeason()
+{
+    var cname = 'currCheckedSeason';
+    return getCookie(cname);
+}
+
 function getCurrEvent()
 {
     var cookieEv = getCookie('currCheckedEvent');
@@ -33,7 +39,7 @@ function getTeams(season, currEvent)
 {
     var cname = event_data_cookie_name(season,currEvent);
     var cvalue = getCookie(cname);
-    if (cvalue.trim().length == 0) return '';
+    if (cvalue.trim().length == 0) return {}; //empty object
 
     var result = JSON.parse(cvalue);
     return result;
@@ -45,7 +51,7 @@ function getCurrTeamNumber()
     var season = getCookie('currCheckedSeason');
     var event = getCurrEvent();
 
-    if (cvalue.trim().length == 0 || season.length==0 || event.length==0) return '';
+    if (cvalue.trim().length == 0 || season.length==0 || event.length==0) return 0;
 
     return cvalue.substring(cvalue.lastIndexOf('/')+1); //returns last part of /{season}/{event}/{teamNumber}
 }

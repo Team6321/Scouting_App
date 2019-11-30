@@ -21,7 +21,7 @@ function show_TDataModal_Or_IntroText()
 
     if (isSeasonSaved() && eventChecked) //everything is checked, show text at top of page
     {
-        var season = getCookie('currCheckedSeason');
+        var season = getCurrSeason();
         introText = `Here, you can enter and view answers to ` +
         `pit scouting questions entered on the Season Configuration page. You can also add and view data from matches including game ` +
         `element stats and custom notes."${season}".`;
@@ -62,7 +62,7 @@ function closeTDataModal() //onclick for x button in modal
 
 function displayTeamRadioList()
 {
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     if (season.trim().length == 0 || event.trim().length == 0) return;
 
@@ -82,12 +82,12 @@ function displayTeamRadioList()
 function changeCurrTeam()
 {
     var currTeamNumber = $("input[name=teamListItem]:checked","#teamRadioList").val(); //in prev method, val of each radio item is the tNum
-    var currSeason = getCookie('currCheckedSeason');
+    var currSeason = getCurrSeason();
     var currEvent = getCurrEvent();
     var cname = 'currCheckedTeam';
     var currTeamName = getTeams(currSeason,currEvent)[currTeamNumber];
 
-    if (currSeason.trim().length == 0 || currEvent.trim().length==0 || currTeamNumber.trim().length == 0)
+    if (currSeason.trim().length == 0 || currEvent.trim().length==0 || currTeamNumber == 0)
     {
         $("#teamStatsTitle").text('');
         return;
@@ -137,14 +137,14 @@ function displayTabContent(evt, tabName)
 //Pit stuff
 function loadPit()
 {
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var cname = season + ' pitQuestions';
     var event = getCurrEvent();
     var questions = getCookie(cname).split('Ω'); //Ω is separator for questions
     var currTeam = getCurrTeamNumber();
 
     showAllPitDataTable();
-    if (currTeam.trim().length == 0)
+    if (currTeam == 0)
     {
         $('#pitQuestionTable').html('');
         $('#pitTableConfirmation').text('No team selected.');
@@ -202,7 +202,7 @@ function savePitAnswers() //onclick for save pit button
     // { '/{season}/{event}/{team}/pit answers' : {{question1}:{answer1}, {question2}:{answer2}...} }
     //local storage obj will hold an array of q/a object pairs
 
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
 
@@ -228,7 +228,7 @@ function savePitAnswers() //onclick for save pit button
 
 function showAllPitDataTable() //shows pit stats of all teams for the current event in one table
 {
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var cname = season + ' pitQuestions';
     var questionsArr = getCookie(cname).split('Ω');
@@ -273,11 +273,11 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
 function loadMatch()
 {
     $('#currMatchHeader').text('');
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var teamNum = getCurrTeamNumber();
 
-    if (teamNum.trim().length == 0)
+    if (teamNum == 0)
     {
         $('#matchTableConfirmation').text('No Team selected.');
         $('#matchNumberStuff').hide();
@@ -315,7 +315,7 @@ function loadMatch()
 
 function addNewMatch() //onclick for adding the button to add a match number
 {
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
     var newMatchNum = $('#matchNumberInputBox').val().trim();
@@ -365,7 +365,7 @@ function addNewMatch() //onclick for adding the button to add a match number
 
 function saveMatchAnswers()
 {
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
     var match = getCurrMatchNum(season,event,team);
@@ -402,14 +402,14 @@ function loadMatchNumberList()
 {
     $('#matchNumberRadioList').html('');
 
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
     var matchNumsObjName = matchNumberObjName(season,event,team);
     var matchNums = localStorage.getItem(matchNumsObjName);
     var isNull = !checkForNull(matchNums); //check for null returns true if object isnt null
 
-    if (team.trim().length == 0 || isNull) return;
+    if (team == 0 || isNull) return;
 
     var numsArr = matchNums.split(','); //splitting string into csv array
     for (var i = 0; i < numsArr.length; i++)
@@ -425,7 +425,7 @@ function changeCurrMatchNum() //onchange for curr match number
     var teamNum = getCurrTeamNumber();
     var teamName = getCurrTeamName();
     var currMatch = $("input[name=matchNumListItem]:checked","#matchNumberRadioList").val(); //in prev method, val of each radio item is the tNum
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var objName = 'currCheckedMatch';
     var objValue = `/${season}/${event}/${teamNum}/${currMatch}`;
@@ -440,7 +440,7 @@ function changeCurrMatchNum() //onchange for curr match number
 
 function deleteMatchNum() //deletes checked match num, onclick for delete button
 {
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
     
@@ -519,7 +519,7 @@ function loadPrevMatchAnswers(season,event,team,match)
 
 function showAllMatchDataTable()
 {
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
     var match = getCurrMatchNum(season,event,team);
