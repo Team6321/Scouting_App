@@ -5,7 +5,6 @@ function loadTDataPage()
     show_TDataModal_Or_IntroText();
     displayTeamRadioList();
     setCookie('currCheckedTeam','',750);
-    setCurrMatch('');
 
     $('.js_clear_on_load').val("").html("");
 }
@@ -102,7 +101,6 @@ function changeCurrTeam()
 
     loadPit();
     loadMatch();
-    setCurrMatch('');
 }
 
 //basically copy pasted from w3schools, onclick for a change in tabs
@@ -122,7 +120,6 @@ function displayTabContent(evt, tabName)
     {
         loadMatch();
     }
-    setCurrMatch('');
 }
 
 
@@ -271,19 +268,19 @@ function loadMatch()
     if (teamNum == 0)
     {
         $('#matchTableConfirmation').text('No Team selected.');
-        $('#matchNumberStuff').hide();
         return;
     }
-    $('#matchNumberStuff').show();
-    loadMatchNumberList();
 
-    var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency</b></th> </tr>';
+    var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency/Answer</b></th> </tr>';
     $('#matchQuestionTable').html(tableHeader); //default start of table
 
     //retrieve elements for current season
     var cname = `/season_config/${season}/` //starter bit of season_config_name
     var cookieList = document.cookie.split(';');
 
+    var matchInputHTML = `<input type="number" class="matchNumInput match-frequency">`;
+    var matchRow = `<tr> <td class="match-element scoutingTableRow">Match #</td> <td class="scoutingTableRow">${matchInputHTML}</td> </tr>`;
+    $('#matchQuestionTable').append(matchRow); //default for all teams: row for inputting what match it was
     for (var i = 0; i < cookieList.length; i++)
     {
         var currCName = cookieList[i].trim().split('=')[0];
@@ -293,63 +290,13 @@ function loadMatch()
         var element = currCName.substring(currCName.lastIndexOf('/')+1);
         var value = getCookie(currCName);
 
-        var inputHTML = `<input type="number" class="match-frequency">`;
+        var inputHTML = `<input type="number" class="match-frequency js_clear_on_load">`;
         var elementText = `${element}`;
         var newTRHtml = `<tr><td class='match-element scoutingTableRow'>${elementText}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
         
-        $('#matchQuestionTable').append(newTRHtml);
-        
+        $('#matchQuestionTable').append(newTRHtml);   
     }
-}
-
-function addNewMatch() //onclick for adding the button to add a match number
-{
-    var season = getCurrSeason();
-    var event = getCurrEvent();
-    var team = getCurrTeamNumber();
-    var newMatchNum = $('#matchNumberInputBox').val().trim();
-
-    //store match numbers in a local object: {'/season/event/team/match numbers' : " '1','7','20'... "}
-    var objName = matchNumberObjName(season,event,team);
-
-    //check if local storage object already has the new match number, stores an array of match numbers
-    var storedString = localStorage.getItem(objName);
-    var alreadyStored;
-    var numsArr = [];
-    if (!checkForNull(storedString) || storedString.length == 0) 
-    {
-        storedString = '';
-        alreadyStored = false;
-    } else
-    {
-        numsArr = storedString.split(','); //arr.toString() values seperated by ,
-        for (var i = 0; i < numsArr.length; i++)
-        {
-            var currNum = numsArr[i];
-            if (parseInt(currNum) == parseInt(newMatchNum))
-            {
-                alreadyStored = true;
-                break;
-            }
-        }
-    }
-
-    if (alreadyStored)
-    {
-        $('#matchNumberConfirmation').text('Match number already stored');
-        return;
-    } //else, new match number
-
-    numsArr.push(newMatchNum);
-    storedString = numsArr.toString();
-    localStorage.setItem(objName,storedString); //add new match number to arr in local storage obj
-
-    var newItem = `<label><input type="radio" name="matchNumberListItem" value="newMatchNumber">Match ${newMatchNum}</label><br>`;
-    $("#matchNumberRadioList").append(newItem); //add to radiolist
-
-    $('.js_clear_on_load').val("").html("");
-    $('#matchNumberInputBox').val("").focus();
-    $('#matchNumberConfirmation').text(`Match ${newMatchNum} added.`);
+    showAllMatchDataTable();
 }
 
 function saveMatchAnswers()
@@ -357,22 +304,22 @@ function saveMatchAnswers()
     var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
-    var match = getCurrMatchNum(season,event,team);
 
-    if (match.trim().length == 0)
-    {
-        $('#matchTableConfirmation').text('No match selected.');
-        return;
-    }
-
+    var match = 0;
     var element_answer_pairs = [];
     $('#matchQuestionTable tr').each(function(){ //for each row
+        var potentialMatchNum = $(this).find('.matchNumInput').val(); //for first row, which is always the match num
+        if (typeof(potentialMatchNum) !== 'undefined')
+        {
+            match = potentialMatchNum;
+        }
+
         var element = $(this).find('.match-element').text();
         var answer = $(this).find('.match-frequency').val();
 
         var pair = {};
         pair[element] = answer;
-        if (JSON.stringify(pair).localeCompare('{}') != 0) //first row reads {} as its reading the table header
+        if (JSON.stringify(pair) != '{}') //first row reads {} as its reading the table header
         {
             element_answer_pairs.push(pair);
         }
@@ -384,9 +331,94 @@ function saveMatchAnswers()
     localStorage.setItem(locStrObjName,JSON.stringify(element_answer_pairs));
 
     $('#matchTableConfirmation').text('Answers saved.');
-    showAllMatchDataTable();
+    $('.js_clear_on_load').val('').html('');
+    showAllMatchDataTable()
 }
 
+
+function showAllMatchDataTable()
+{
+    var season = getCurrSeason();
+    var event = getCurrEvent();
+    var team = getCurrTeamNumber();
+    
+    //get all elements in an array
+    var questionsArr = [];
+    var cNameStart = `/season_config/${ season }/`;
+    var cookieList = document.cookie.split(';');
+    for (var i = 0; i < cookieList.length; i++)
+    {
+        if (!cookieList[i].trim().startsWith(cNameStart)) continue;
+        var currCName = cookieList[i].trim().split('=')[0];
+        var element = currCName.substring(currCName.lastIndexOf('/')+1);
+        questionsArr.push(element);
+    }
+
+    //default the table (make it blank and start with the header)
+    var tableHeader = '<tr><th class="allTeamsRow">Team #</th> <th>Match #</th>'
+    for (var i = 0; i < questionsArr.length; i++)
+    {
+        tableHeader += `<th>${questionsArr[i]}</th>`;
+    }
+    tableHeader += '</tr>';
+    $('#allMatchAnswers').html(tableHeader);
+
+    //add match data from all saved teams, for the curr checked match
+    var keys = Object.keys(localStorage);
+
+    for (var i = 0; i < keys.length; i++)
+    {
+        var currKey = keys[i];
+        if (currKey.indexOf('Match') < 0) continue;
+
+        var match = parseInt(currKey.charAt(currKey.length-1));
+        var currTeam = currKey.split('/')[3]; //based on matchAnswerObjName structure
+        var newRowHTML = `<tr><td class="allTeamsRow">${currTeam}</td>`; //team and match
+        console.log(keys[i]);
+        var currValue = JSON.parse(localStorage.getItem(keys[i]));
+        var innerKeys = Object.keys(currValue); //local storage object has element/frequency pair objects inside it
+
+        for (var j = 0; j < innerKeys.length; j++)
+        {
+            var pair = currValue[j];
+            var element = Object.keys(pair)[0];
+            var freq = pair[element];
+            newRowHTML += `<td class="allTeamsRow">${freq}</td>`
+        }
+
+        $('#allMatchAnswers').append(newRowHTML);
+    }
+    $('#allMatchAnswersTableTitle').text(`All Match Data for the ${event} event.`);
+}
+
+
+$(document).ready(function(){
+    loadTDataPage();
+
+    $('#savePitAnswers').click(savePitAnswers); //button for saving pit answers
+
+    $('#matchTableSubmit').click(saveMatchAnswers); //saving answers to match tables
+});
+
+function pitAnswerObjName(season,event,team)
+{
+    return `/${season}/${event}/${team}/pit`;
+}
+
+function matchAnswerObjName(season,event,team,matchNum)
+{
+    return `/${season}/${event}/${team}/Match Data/${matchNum}`;
+}
+
+
+
+
+
+
+
+
+
+/*
 function loadMatchNumberList()
 {
     $('#matchNumberRadioList').html('');
@@ -499,104 +531,85 @@ function loadPrevMatchAnswers(season,event,team,match)
         
         $('#matchQuestionTable').append(newTRHtml);
     }
-}
+}*/
 
-function showAllMatchDataTable()
+
+/*
+function addNewMatch() //onclick for adding the button to add a match number
 {
     var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
-    var match = getCurrMatchNum(season,event,team);
-    
-    //get all elements in an array
-    var questionsArr = [];
-    var cNameStart = `/season_config/${ season }/`;
-    var cookieList = document.cookie.split(';');
-    for (var i = 0; i < cookieList.length; i++)
+    var newMatchNum = $('#matchNumberInputBox').val().trim();
+
+    //store match numbers in a local object: {'/season/event/team/match numbers' : " '1','7','20'... "}
+    var objName = matchNumberObjName(season,event,team);
+
+    //check if local storage object already has the new match number, stores an array of match numbers
+    var storedString = localStorage.getItem(objName);
+    var alreadyStored;
+    var numsArr = [];
+    if (!checkForNull(storedString) || storedString.length == 0) 
     {
-        if (!cookieList[i].trim().startsWith(cNameStart)) continue;
-        var currCName = cookieList[i].trim().split('=')[0];
-        var element = currCName.substring(currCName.lastIndexOf('/')+1);
-        questionsArr.push(element);
-    }
-
-    //default the table (make it blank and start with the header)
-    var tableHeader = '<tr><th class="allTeamsRow">Team #</th>'
-    for (var i = 0; i < questionsArr.length; i++)
+        storedString = '';
+        alreadyStored = false;
+    } else
     {
-        tableHeader += `<th>${questionsArr[i]}</th>`;
-    }
-    tableHeader += '</tr>';
-    $('#allMatchAnswers').html(tableHeader);
-
-    //add match data from all saved teams, for the curr checked match
-    var keys = Object.keys(localStorage);
-
-    for (var i = 0; i < keys.length; i++)
-    {
-        var currKey = keys[i];
-        if (!currKey.endsWith(`Match ${match}`)) continue;
-
-        var currTeam = currKey.split('/')[3]; //based on matchAnswerObjName structure
-        var newRowHTML = `<tr><td class="allTeamsRow">${currTeam}</td>`;
-        var currValue = JSON.parse(localStorage.getItem(keys[i]));
-        var innerKeys = Object.keys(currValue); //local storage object has element/frequency pair objects inside it
-
-        for (var j = 0; j < innerKeys.length; j++)
+        numsArr = storedString.split(','); //arr.toString() values seperated by ,
+        for (var i = 0; i < numsArr.length && !alreadyStored; i++)
         {
-            var pair = currValue[j];
-            var element = Object.keys(pair)[0];
-            var freq = pair[element];
-            newRowHTML += `<td class="allTeamsRow">${freq}</td>`
+            var currNum = numsArr[i];
+            if (parseInt(currNum) == parseInt(newMatchNum))
+            {
+                alreadyStored = true;
+            }
         }
-
-        $('#allMatchAnswers').append(newRowHTML);
     }
-    $('#allMatchAnswersTableTitle').text(`All Match Data for Match ${match}.`);
-}
+
+    if (alreadyStored)
+    {
+        $('#matchNumberConfirmation').text('Match number already stored');
+        return;
+    } //else, new match number
+
+    numsArr.push(newMatchNum);
+    storedString = numsArr.toString();
+    localStorage.setItem(objName,storedString); //add new match number to arr in local storage obj
+
+    var newItem = `<label><input type="radio" name="matchNumberListItem" value="newMatchNumber">Match ${newMatchNum}</label><br>`;
+    $("#matchNumberRadioList").append(newItem); //add to radiolist
+
+    $('.js_clear_on_load').val("").html("");
+    $('#matchNumberInputBox').val("").focus();
+    $('#matchNumberConfirmation').text(`Match ${newMatchNum} added.`);
+}*/
 
 
-$(document).ready(function(){
-    loadTDataPage();
+//$('#deleteMatchNum').click(deleteMatchNum); //deletes checked match num
 
-    $('#savePitAnswers').click(savePitAnswers); //button for saving pit answers
+    //const Enter_key_code = 13;
+    //$('#matchNumberInputBox').keypress(function(e){
+    //    if (e.keyCode == Enter_key_code) addNewMatch();
+    //});
 
-    $('#matchNumberButton').click(addNewMatch); //button for adding match numbers
+    
+//function matchNumberObjName(season,event,team)
+//{
+//    return `/${season}/${event}/${team}/match numbers`
+//}
 
-    $('#matchTableSubmit').click(saveMatchAnswers); //saving answers to match tables
-
-    $('#deleteMatchNum').click(deleteMatchNum); //deletes checked match num
-
-    const Enter_key_code = 13;
-    $('#matchNumberInputBox').keypress(function(e){
-        if (e.keyCode == Enter_key_code) addNewMatch();
-    });
-});
-
-function matchNumberObjName(season,event,team)
-{
-    return `/${season}/${event}/${team}/match numbers`
-}
-
-function pitAnswerObjName(season,event,team)
-{
-    return `/${season}/${event}/${team}/pit`;
-}
-
-function matchAnswerObjName(season,event,team,matchNum)
-{
-    return `/${season}/${event}/${team}/Match ${matchNum}`;
-}
-
-function getCurrMatchNum(season,event,team) //returns number of match
+/*function getCurrMatchNum(season,event,team) //returns number of match
 {
     var objName = 'currCheckedMatch';
     var value = localStorage.getItem(objName);
     if (value.trim().length == 0)
+    {
         return '';
-    else
+    } else
     {
         // value is in format /season/event/team/match num
         return value.substring(value.lastIndexOf('/')+1);
     }
-}
+}*/
+
+//$('#matchNumberButton').click(addNewMatch); //button for adding match numbers

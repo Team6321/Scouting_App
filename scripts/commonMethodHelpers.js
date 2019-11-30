@@ -72,6 +72,7 @@ function checkForNull(obj) //stack overflow, returns true if parameter ISNT null
     return obj && obj !== null && obj !== 'undefined';
 }
 
+/*
 function setCurrMatch(number) //stores a curr checked match as a number
 {
     var season = getCurrSeason();
@@ -87,6 +88,6 @@ function setCurrMatch(number) //stores a curr checked match as a number
         var objValue = `/${season}/${event}/${team}/${number}`
         localStorage.setItem(objName,objValue);
     }
-}
+}*/
 
 const COOKIE_STRING_SEPARATOR = 'Ω';
