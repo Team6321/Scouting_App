@@ -48,7 +48,7 @@ function getTeams(season, currEvent)
 function getCurrTeamNumber()
 {
     var cvalue = getCookie('currCheckedTeam'); //contains number of team
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var event = getCurrEvent();
 
     if (cvalue.trim().length == 0 || season.length==0 || event.length==0) return 0;
@@ -72,22 +72,6 @@ function checkForNull(obj) //stack overflow, returns true if parameter ISNT null
     return obj && obj !== null && obj !== 'undefined';
 }
 
-/*
-function setCurrMatch(number) //stores a curr checked match as a number
-{
-    var season = getCurrSeason();
-    var event = getCurrEvent();
-    var team = getCurrTeamNumber();
-
-    var objName = 'currCheckedMatch';
-    if (number.trim().length == 0) //if input was '' (make the obj val blank)
-    {
-        localStorage.setItem(objName,'');
-    } else
-    {
-        var objValue = `/${season}/${event}/${team}/${number}`
-        localStorage.setItem(objName,objValue);
-    }
-}*/
-
-const COOKIE_STRING_SEPARATOR = 'Ω';
+const COOKIE_QUESTION_SEPARATOR = 'Ω';
+const SEASON_LIST_SEPARATOR = '§';
+const EVENT_LIST_COOKIE_SEPARATOR = 'Δ';

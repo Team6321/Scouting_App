@@ -111,9 +111,8 @@ function changeCurrTeam()
 //basically copy pasted from w3schools, onclick for a change in tabs
 function displayTabContent(evt, tabName)
 {
-    var i, x, tablinks;
     $('.tabContent').hide();
-    $('.tabs').removeClass('w3-bottombar-gold').addClass('w3-bottombar-marron');
+    $('.tabs').removeClass('w3-bottombar-gold').addClass('w3-bottombar-maroon');
     $('#' + tabName).show();
     evt.currentTarget.firstElementChild.className += " w3-bottombar-gold";
 
@@ -135,7 +134,7 @@ function loadPit()
     var season = getCurrSeason();
     var cname = season + ' pitQuestions';
     var event = getCurrEvent();
-    var questions = getCookie(cname).split(COOKIE_STRING_SEPARATOR);
+    var questions = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR);
     var currTeam = getCurrTeamNumber();
 
     showAllPitDataTable();

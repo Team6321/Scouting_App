@@ -10,7 +10,7 @@ function loadPage()
 
 function isSeasonSaved()
 {
-    var currSeason = getCookie('currCheckedSeason');
+    var currSeason = getCurrSeason();
     if (currSeason !== " ")
         return true;
     else
@@ -22,7 +22,7 @@ function showModalOrIntroText()
 {
     if (isSeasonSaved())
     {
-        var currSeason = getCookie('currCheckedSeason');
+        var currSeason = getCurrSeason();
         var finalText = 'Here, enter all the events that the team will be scouting from for season "' + currSeason + '".';
         $("#eventDataIntroText").text(finalText);
         $('.disableIfNoSeason').prop("disabled", false) //remove disable on inputs
@@ -42,11 +42,11 @@ function displayEventsInRadioList()
 {
     if (isSeasonSaved())
     {
-        var currSeason = getCookie('currCheckedSeason');
+        var currSeason = getCurrSeason();
         var cname = currSeason + ' events';
         if (getCookie(cname) !== ' ')
         {
-            var eventList = getCookie(cname).split('Δ');
+            var eventList = getCookie(cname).split(EVENT_LIST_COOKIE_SEPARATOR);
             for (var i = 0; i < eventList.length; i++)
             {
                 var cookieVal = eventList[i];
@@ -64,7 +64,7 @@ function changeCurrEvent()
 {
     //curr event cookie --> currCheckedEvent = /{currCheckedSeason}/{currEvent}/
     var currEvent = $("input[name=eventListItem]:checked","#eventRadioList").val();
-    var currSeason = getCookie('currCheckedSeason');
+    var currSeason = getCurrSeason();
     var cname = 'currCheckedEvent';
     var cvalue = '/'+currSeason+'/'+currEvent;
     setCookie(cname,cvalue,750);
@@ -79,7 +79,7 @@ function changeCurrEvent()
 function addNewEvent()
 {
     var newEvent = $("#newEventInputBox").val().trim();
-    var currSeason = getCookie('currCheckedSeason');
+    var currSeason = getCurrSeason();
 
     if (currSeason.trim().length == 0) //if season is blank don't continue with function
     {
@@ -92,7 +92,7 @@ function addNewEvent()
     var isAlreadyStored = false;
     var cookieName = currSeason + ' events';
     
-    var eventNames = getCookie(cookieName).split("Δ"); //Δ is an uncommon separator that user can't type
+    var eventNames = getCookie(cookieName).split(EVENT_LIST_COOKIE_SEPARATOR); //Δ is an uncommon separator that user can't type
     for (var i=0;i<eventNames.length;i++)
     {
         var val = eventNames[i].trim();
@@ -123,7 +123,7 @@ function addNewEvent()
 //mirrors the deleteCheckedSeason function
 function deleteCheckedEvent()
 {
-    var currCheckedSeason = getCookie('currCheckedSeason');
+    var currCheckedSeason = getCurrSeason();
     //cookie --> 'deep space events=austinΔfit champsΔ...'
     var cookieName = currCheckedSeason + ' events';
     var cookieVal = getCookie(cookieName);
@@ -159,7 +159,7 @@ function deleteCheckedEvent()
 function setTeamTable(season, event)
 {
     var currEvent = getCurrEvent();
-    var currSeason = getCookie('currCheckedSeason');
+    var currSeason = getCurrSeason();
     if (currEvent !== ' ')
     {
         $('#teamTableTitle').text('Teams for event "' + currEvent + '."');
@@ -192,7 +192,7 @@ function deleteSpecificTeam()
     var input = $('#deleteSpecificTeamTextBox').val().trim(); //should be team number
     if (input === '') return;
 
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     var currEvent = getCurrEvent(); 
     var teamsJSON = getTeams(season,currEvent);
     var cname = event_data_cookie_name(season,currEvent);
@@ -205,7 +205,7 @@ function deleteSpecificTeam()
 
 function saveTeam() //onclick for saving the teams
 {
-    var currSeason = getCookie('currCheckedSeason');
+    var currSeason = getCurrSeason();
     var currEvent = getCurrEvent();
     var teamNumber = parseInt($("#teamNumber").val().trim());
     var teamName = $("#teamName").val().trim();
@@ -260,22 +260,3 @@ $(document).ready(function(){
         if (e.keyCode == Enter_key_code) deleteSpecificTeam();
     });
 });
-
-// helper methods below
-function event_data_cookie_name(season,event)
-{
-    return `/event_data teams/${ season }/${ event }`;
-}
-
-function getCurrEvent()
-{
-    var cookieEv = getCookie('currCheckedEvent');
-    return cookieEv.substring(cookieEv.lastIndexOf('/')+1);
-}
-
-function getTeams(season, currEvent)
-{
-    var cname = event_data_cookie_name(season,currEvent);
-    var result = JSON.parse(getCookie(cname));
-    return result;
-}
