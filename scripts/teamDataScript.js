@@ -205,9 +205,12 @@ function savePitAnswers() //onclick for save pit button
         var question = $(this).find('.question').text();
         var answer = $(this).find('.answer').val();
 
-        if (typeof(answer) == 'undefined')
+        if (typeof(answer) != 'undefined') //if its not the header and is really blank
         {
-            areAnyFieldsBlank = true;
+            if (answer.trim().length == 0)
+            {
+                areAnyFieldsBlank = true;
+            }
         }
         var pair = {};
         pair[question] = answer;
@@ -336,9 +339,12 @@ function saveMatchAnswers()
         var element = $(this).find('.match-element').text();
         var answer = $(this).find('.match-frequency').val();
 
-        if (typeof(answer) == 'undefined')
+        if (typeof(answer) != 'undefined') //if its not the header and is really blank
         {
-            areAnyFieldsBlank = true;   
+            if (answer.trim().length == 0)
+            {
+                areAnyFieldsBlank = true;
+            }
         }
         var pair = {};
         pair[element] = answer;
