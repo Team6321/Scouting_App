@@ -24,7 +24,7 @@ function addNewSeason()
     {
         if (getCookie("seasonList").trim().length > 0)
         {
-            var seasonNames = getCookie("seasonList").split("§"); //§ is an uncommon separator that user can't type
+            var seasonNames = getCookie("seasonList").split(SEASON_LIST_SEPARATOR);
             for (var i=0;i<seasonNames.length;i++)
             {
                 var val = seasonNames[i].trim();
@@ -48,7 +48,7 @@ function addNewSeason()
 
         //save newSeason in cookie
         var cname = 'seasonList';
-        var cvalue = getCookie('seasonList') + newSeason + '§';
+        var cvalue = getCookie('seasonList') + newSeason + SEASON_LIST_SEPARATOR;
         setCookie(cname,cvalue,750);
 
         $("#newSeasonInputBox").val("");
@@ -62,7 +62,7 @@ function loadSeasons()
     {
         if (getCookie("seasonList") !== " ")
         {
-            var seasonList = getCookie('seasonList').split("§");
+            var seasonList = getCookie('seasonList').split(SEASON_LIST_SEPARATOR);
             //console.log('seasonList:' + seasonList);
             for (var i=0;i<seasonList.length-1;i++) //length-1 because last will always be "" because name,name,
             {
@@ -104,7 +104,7 @@ function seasonSubmit()
 
 function deleteCheckedSeason()
 {
-    var currCheckedSeason = getCookie('currCheckedSeason');
+    var currCheckedSeason = getCurrSeason();
     var seasonList = getCookie('seasonList').trim();
     var startIndex = seasonList.indexOf(currCheckedSeason);
     var endIndex = startIndex + currCheckedSeason.length;
@@ -132,7 +132,7 @@ function deleteSpecificElement()
         cnameToDelete = currCname;
     }
     deleteCookie(cnameToDelete);
-    var season = getCookie('currCheckedSeason');
+    var season = getCurrSeason();
     setTable(season);
     $('#elementToDelete').val('').focus();
 }
@@ -141,7 +141,7 @@ function deleteSpecificElement()
 function setPitQuestionTextBox(season)
 {
     $('#pitScoutingTextBox').val("");
-    var allQuestions = getCookie(season + ' pitQuestions').trim().split('Ω');
+    var allQuestions = getCookie(season + ' pitQuestions').trim().split(COOKIE_QUESTION_SEPARATOR);
     for (var i = 0; i < allQuestions.length;i++)
     {
         var question = allQuestions[i].trim();
@@ -237,7 +237,7 @@ $(document).ready(function()
         
         if (newElementName !== "" || newElementPoints !== "")
         {
-            var season = getCookie('currCheckedSeason');//$("input[name=seasonListItem]:checked","#seasonRadioList").val();
+            var season = getCurrSeason();
             if (season.trim().length > 0)
             {
                 var cookieName = season_config_cookie_name(season,newElementName);
@@ -283,7 +283,7 @@ $(document).ready(function()
         var allQuestions = $("#pitScoutingTextBox").val().split(/\r?\n/);
 
         console.log(allQuestions);
-        var currSeason = getCookie("currCheckedSeason");
+        var currSeason = getCurrSeason();
         
         if (currSeason === "null" || currSeason ===" ")
         {
@@ -304,7 +304,7 @@ $(document).ready(function()
                         //cookie --> {season} questions = {q1}Ω{q2}Ω{q3}
                     
                         //Ω is a character that most users can't enter,separator
-                        setCookie(cookieName,getCookie(cookieName) + question + 'Ω');
+                        setCookie(cookieName,getCookie(cookieName) + question + COOKIE_QUESTION_SEPARATOR);
                         
                         var confirmationText = '<i>Questions saved.<\i><br>';
                         $("#pitScoutConfirmationBox").html(confirmationText);
