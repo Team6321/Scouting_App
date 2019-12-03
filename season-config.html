@@ -5,6 +5,7 @@
 <script src="scripts/seasonConfigScript.js"></script> <!--js script-->
 <script src="scripts/eventDataScript.js"></script> <!--js script-->
 <script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
+<script src="scripts/importing-Exporting-Config.js"></script> <!--js script-->
 <html>
     <head>
         <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon" />
@@ -27,11 +28,10 @@
         </div>
 
         <h2 style="text-align: center">Season Configuration</h2>
-        <br><br><h3>Enter the name of a new season...</h3>
+        <br><br><h3>Enter the name of a new season and/or select a season to continue to entering season specific data.</h3>
         <input type="text" id = "newSeasonInputBox" class='js_clear_on_load' placeholder="Deep Space">
         <button class = "r3-button" onclick="addNewSeason()">Submit</button>
         <h3 id="newSeasonConfirmation"></h3><br><br>
-        <h3>... and/or select a season to continue to entering season specific data.</h3>
         <fieldset>
             <form id="seasonRadioList" style="font-size:18px" onchange="seasonSubmit()">
             </form>
@@ -84,6 +84,9 @@
 
 
 
+        <h3>If you wish to export the current configuration data for the checked season to an external file, click the following button.</h3>
+        <a id = 'configExportLink' download='config.json'>Export Data</a>
+        <i><h4 class = 'w3-button w3-maroon' id='exportConfirmation'></h4></i>
 
         <a href="event-data.html">
             <br><br>
