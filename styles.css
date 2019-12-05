@@ -9,6 +9,16 @@ h1, h2,h3,h4, h5, h6, p,form,div,table{
   color: maroon;
 }
 
+a,.r3-button:hover{
+  color:#f1f1f1;
+}
+
+a,button
+{
+  color: gold;
+  background-color: maroon;
+}
+
 #title {
     color: maroon;
     text-align: center;
@@ -26,10 +36,6 @@ h1, h2,h3,h4, h5, h6, p,form,div,table{
   border-radius: 12px;
   font-size:16px;
   margin: 4px 2px;
-}
-
-.r3-button:hover {
-  color: #f1f1f1;
 }
 
 .r3-button:hover {
@@ -195,4 +201,20 @@ table, th, td
 .question, .match-element, .allTeamsRow
 {
   text-align: center;
+}
+
+#configExportLink
+{
+  color: gold;
+  background-color: maroon;
+  border-color: black;
+  border-radius: 12px;
+  font-size:16px;
+  padding: 6px 7px;
+  margin: 4px 2px;
+}
+
+#configExportLink:hover
+{
+  color:#f1f1f1;
 }

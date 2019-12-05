@@ -74,5 +74,6 @@ $(document).ready(function()
         }
 
         download();
+        $('.js_clear_on_load').val('').html('');        
     });
 });
