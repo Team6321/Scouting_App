@@ -6,11 +6,11 @@ function setExportLink(addend)
 function download()
 {
     setExportLink(''); //default the link
-    var config_json = getData();
+    var config_json = encodeURIComponent(getExportData());
     setExportLink(config_json);
 }
 
-function getData()
+function getExportData() //returns prettified (tabbed) json.stringify version of config object
 {
     var season = getCurrSeason();
     var elementStart = `/season_config/${season}/`;
@@ -46,7 +46,7 @@ function getData()
     }
  
     /*
-        (output)
+        (output, with more nested tabs and formatting)
         {
             '{season} elements' : [{element1:value1},{element2:value2},...],
             '{season} elements' : [question1,question2,question3,...]
@@ -56,13 +56,14 @@ function getData()
     var elementsObjName = season + ' elements';
     var pitQuestionsObjName = season + ' pitQuestions';
     output[elementsObjName] = elementsArr;
-    output[pitQuestionsObjName] = questionsArr; 
-    return JSON.stringify(output);
+    output[pitQuestionsObjName] = questionsArr;
+    
+    return JSON.stringify(output,null,'\t');
 }
 
 $(document).ready(function()
 {
-    setExportLink();
+    setExportLink('');
 
     $('#configExportLink').click(function()
     {

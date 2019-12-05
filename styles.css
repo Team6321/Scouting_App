@@ -9,16 +9,6 @@ h1, h2,h3,h4, h5, h6, p,form,div,table{
   color: maroon;
 }
 
-a,.r3-button:hover{
-  color:#f1f1f1;
-}
-
-a,button
-{
-  color: gold;
-  background-color: maroon;
-}
-
 #title {
     color: maroon;
     text-align: center;
