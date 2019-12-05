@@ -1,3 +1,4 @@
+//Exporting season config \/\/\/
 function setExportLink(addend)
 {
     $('#configExportLink').attr('href', 'data:text/plain;charset=utf-8,' + addend);
@@ -61,9 +62,74 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
     return JSON.stringify(output,null,'\t');
 }
 
+
+
+
+
+// Importing Season config \/\/\/
+function readImportFile()
+{
+    var file = $('#importFile').prop('files')[0];
+
+    var fr = new FileReader();
+    fr.onload = function(e) {
+        var content = e.target.result;
+        var obj = JSON.parse(content);
+
+        parseFile(obj);
+    }
+    fr.readAsText(file);
+}
+
+function parseFile(obj) //goes through inner objects and assigns values to cookies
+{
+    var season = getCurrSeason();
+
+    var elementObjName = `${season} elements`;
+    var pitObjName = `${season} pitQuestions`;
+    console.log(elementObjName);
+
+    var keys = Object.keys(obj);
+    for (var i = 0; i < keys.length; i++)
+    {
+        currObj = keys[i];
+        if (currObj.localeCompare(elementObjName) == 0)
+        {
+            //set element value pairs
+            var innerArr = obj[currObj];
+            for (var j = 0; j < innerArr.length; j++)
+            {
+                var pair = innerArr[j];
+                var elementName = Object.keys(pair)[0]; //only has one kv pair
+                var elementValue = pair[elementName];
+
+                var cookieName = season_config_cookie_name(season,elementName);
+                setCookie(cookieName,elementValue,750);
+            }
+            setTable(season); //shows element table for curr season
+        }
+
+        if (currObj.localeCompare(pitObjName) == 0)
+        {
+            //set pitQuestions cookie
+            var cookieName = `${season} pitQuestions`
+            var cookieValString = '';
+
+            var innerArr = obj[currObj];
+            for (var j = 0; j < innerArr.length; j++)
+            {
+                cookieValString += innerArr[j] + COOKIE_QUESTION_SEPARATOR;
+            }
+            setCookie(cookieName,cookieValString,750);
+            setPitQuestionTextBox(season);
+        }
+    }
+}
+
 $(document).ready(function()
 {
-    setExportLink('');
+    setExportLink(''); //default export link
+    $('#importFile').val(null); //default import link
 
     $('#configExportLink').click(function()
     {
@@ -75,7 +141,7 @@ $(document).ready(function()
         }
 
         exportData();
-        $('.js_clear_on_load').val('').html('');        
+        $('#exportConfirmation').text('Season configuration exported.');        
     });
 
     $('#importButton').click(function()
@@ -86,5 +152,8 @@ $(document).ready(function()
             $('#importConfirmation').text('No season selected');
             return;
         }
+
+        readImportFile();
+        $('#importConfirmation').text('Season configuration imported.');
     });
 });
