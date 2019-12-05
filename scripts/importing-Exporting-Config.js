@@ -3,14 +3,14 @@ function setExportLink(addend)
     $('#configExportLink').attr('href', 'data:text/plain;charset=utf-8,' + addend);
 }
 
-function download()
+function exportData()
 {
     setExportLink(''); //default the link
     var config_json = encodeURIComponent(getExportData());
     setExportLink(config_json);
 }
 
-function getExportData() //returns prettified (tabbed) json.stringify version of config object
+function getExportData() //returns prettified (tabbed) json.stringify version of current config
 {
     var season = getCurrSeason();
     var elementStart = `/season_config/${season}/`;
@@ -74,7 +74,17 @@ $(document).ready(function()
             return false;
         }
 
-        download();
+        exportData();
         $('.js_clear_on_load').val('').html('');        
+    });
+
+    $('#importButton').click(function()
+    {
+        var season = getCurrSeason();
+        if (season.trim().length == 0)
+        {
+            $('#importConfirmation').text('No season selected');
+            return;
+        }
     });
 });
