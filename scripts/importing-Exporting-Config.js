@@ -62,13 +62,18 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
     for (var i = 0; i < checkedSeasonList.length; i++) //loop through each checked season
     {
         var season = checkedSeasonList[i];
-        var elementStart = `/season_config/${season}/`;
-        var pitStart = `${season} pitQuestions`
 
         var cookieList = document.cookie.split(';');
 
-        var elementsArr = [];
-        var questionsArr = [];
+        var elementsArr = []; //for elements of a season
+        var questionsArr = []; //for pit questions of a season
+        var eventsArr = []; //for events of a season (output will include teams going to each event nested under each event)
+        var teamArr = []; //for team data of a season
+        
+        var elementStart = `/season_config/${season}/`;
+        var pitStart = `${season} pitQuestions`;
+        var eventStart = `${season} events`;
+        
         for (var j = 0; j < cookieList.length; j++)
         {
             var cookie = cookieList[j].trim();
@@ -92,21 +97,30 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
                     questionsArr.push(questionList[k]);
                 }
             }
+
+            if (cookie.startsWith(eventStart)) //adding events to a season and all teams going to that event
+            {
+                var eventList = cvalue.split(EVENT_LIST_COOKIE_SEPARATOR).slice(0,-1); //slice takes off last '' in arr
+                for (var k = 0; k < eventList.length; k++)
+                {
+                    eventsArr.push(eventList[k]);
+                }
+            }
         }
 
         var elementsObjName = season + ' elements';
-        var pitQuestionsObjName = season + ' pitQuestions';
         output[elementsObjName] = elementsArr;
+
+        var pitQuestionsObjName = season + ' pitQuestions';
         output[pitQuestionsObjName] = questionsArr;
+        
+        var eventsObjName = season + ' events';
+        output[eventsObjName] = eventsArr;
+
+        //var teamDataObjName = season + ' team data';
+        //var teamDataObjValue = returnTeamDataArr();
+        //output[teamDataObjName] = teamDataObjValue;
     }
- 
-    /*
-        (output, with more nested tabs and formatting)
-        {
-            '{season} elements' : [{element1:value1},{element2:value2},...],
-            '{season} elements' : [question1,question2,question3,...]
-        }
-    */
     
     return JSON.stringify(output,null,'\t');
 }
