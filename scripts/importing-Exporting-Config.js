@@ -8,20 +8,18 @@ function loadSeasonRadioList() //basically a copy paste of loadSeasons(), but di
         return;
     }
 
+    $('#seasonRadioList-imp-exp-data').html(''); //default the radio list
     var seasonList = getCookie('seasonList').split(SEASON_LIST_SEPARATOR).slice(0,-1); //slice removes last ''
     for (var i=0;i<seasonList.length;i++)
     {
         var cookieVal = seasonList[i];
         var newInputHTML = `<label><input type='checkbox' name='seasonListItem-imp-exp-data' value='${cookieVal}'>${cookieVal}</label><br>`
         
-        if ($('#seasonRadioList-imp-exp-data').html().indexOf(newInputHTML) < 0) //if not included yet
-        {
-            $("#seasonRadioList-imp-exp-data").append(newInputHTML);
-        }
+        $("#seasonRadioList-imp-exp-data").append(newInputHTML); //season names guaranteed to be unique, don't need to check for duplicates
     }
 
     $('.js_clear_on_load').val("").html("");
-    var cname ='checkedSeasons imp-exp-data'; 
+    var cname = checked_seasons_name(); 
     setCookie(cname,'',750);
 }
 
@@ -37,8 +35,8 @@ function setCheckedSeasons() //onchange for checked seasons checkboxes
         }
     });
 
-    var cname = 'checkedSeasons imp-exp-data';
-    var cvalue = arr.toString();
+    var cname = checked_seasons_name();
+    var cvalue = arr.toString(); //arr gets split up into a csv string
     console.log(cvalue);
     setCookie(cname,cvalue,750);
 }
@@ -58,37 +56,48 @@ function exportData()
 
 function getExportData() //returns prettified (tabbed) json.stringify version of current config
 {
-    var season = getCurrSeason();
-    var elementStart = `/season_config/${season}/`;
-    var pitStart = `${season} pitQuestions`
+    var checkedSeasonList = getCurrCheckedSeasons().split(','); // csv string --> array
 
-    var cookieList = document.cookie.split(';');
-
-   var elementsArr = [];
-   var questionsArr = [];
-    for (var i = 0; i < cookieList.length; i++)
+    var output = {};
+    for (var i = 0; i < checkedSeasonList.length; i++) //loop through each checked season
     {
-        var cookie = cookieList[i].trim();
-        var cvalue = cookie.substring(cookie.indexOf('=')+1);
-        
-        if (cookie.startsWith(elementStart)) //if cookie contains an element
-        {
-            var objName = getElementName(cookie);
-            var objValue = getElementValue(cookie);
-            var pair = {};
-            pair[objName] = objValue;
-            elementsArr.push(pair);
-        }
+        var season = checkedSeasonList[i];
+        var elementStart = `/season_config/${season}/`;
+        var pitStart = `${season} pitQuestions`
 
-        if (cookie.startsWith(pitStart)) //if cookie contains the pit question list
+        var cookieList = document.cookie.split(';');
+
+        var elementsArr = [];
+        var questionsArr = [];
+        for (var j = 0; j < cookieList.length; j++)
         {
-            //loop through each question in cookie and add that to questionsArr
-            var questionList = cvalue.split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //slice to take off the last separator
-            for (var j = 0; j < questionList.length; j++)
+            var cookie = cookieList[j].trim();
+            var cvalue = cookie.substring(cookie.indexOf('=')+1);
+            
+            if (cookie.startsWith(elementStart)) //if cookie contains an element
             {
-                questionsArr.push(questionList[j]);
+                var objName = getElementName(cookie);
+                var objValue = getElementValue(cookie);
+                var pair = {};
+                pair[objName] = objValue;
+                elementsArr.push(pair);
+            }
+
+            if (cookie.startsWith(pitStart)) //if cookie contains the pit question list
+            {
+                //loop through each question in cookie and add that to questionsArr
+                var questionList = cvalue.split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //slice to take off the last '' in arr
+                for (var k = 0; k < questionList.length; k++)
+                {
+                    questionsArr.push(questionList[k]);
+                }
             }
         }
+
+        var elementsObjName = season + ' elements';
+        var pitQuestionsObjName = season + ' pitQuestions';
+        output[elementsObjName] = elementsArr;
+        output[pitQuestionsObjName] = questionsArr;
     }
  
     /*
@@ -98,15 +107,9 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
             '{season} elements' : [question1,question2,question3,...]
         }
     */
-    var output = {};
-    var elementsObjName = season + ' elements';
-    var pitQuestionsObjName = season + ' pitQuestions';
-    output[elementsObjName] = elementsArr;
-    output[pitQuestionsObjName] = questionsArr;
     
     return JSON.stringify(output,null,'\t');
 }
-
 
 
 
@@ -121,7 +124,13 @@ function readImportFile()
         var content = e.target.result;
         var obj = JSON.parse(content);
 
-        parseFile(obj);
+        if (file.name.endsWith('.rcubedscoutconfig'))
+        {
+            parseFile(obj);
+        } else
+        {
+            $('#importConfirmation').text('No ".rcubedscoutconfig" file selected.');
+        }
     }
     fr.readAsText(file);
 }
@@ -177,37 +186,44 @@ $(document).ready(function()
     $('#importFile').val(null); //default import link
     loadSeasonRadioList(); //set up radio list
 
+
     $('#configExportLink').click(function()
     {
-        var season = getCurrSeason();
-        if (season.trim().length == 0)
+        var seasons = getCurrCheckedSeasons();
+        console.log(seasons);
+        if (seasons.trim().length == 0)
         {
-            $('#exportConfirmation').text('No season selected.');
+            $('#exportConfirmation').text('No season(s) selected.');
             return false;
         }
 
         exportData();
-        $('#exportConfirmation').text('Season configuration exported.');        
+        $('#exportConfirmation').text('Data exported.');        
     });
 
     $('#importButton').click(function()
     {
-        var season = getCurrSeason();
+        var season = getCurrCheckedSeasons();
         if (season.trim().length == 0)
         {
-            $('#importConfirmation').text('No season selected');
+            $('#importConfirmation').text('No season(s) selected');
             return;
         }
 
         readImportFile();
-        $('#importConfirmation').text('Season configuration imported.');
+        $('#importConfirmation').text('Data imported.');
     });
 });
 
+function checked_seasons_name()
+{
+    return '/imp-exp-data/checkedSeasons';
+}
+
 function getCurrCheckedSeasons() //returns string of checked seasons
 {
-    var seasonStr = getCookie('checkedSeasons imp-exp-data');
-    if (seasonStr.trim().length == 0) return '';
+    var cname = checked_seasons_name();
+    var seasonStr = getCookie(cname);
 
-    return seasonStr;
+    return (seasonStr.trim().length == 0 ? '' : seasonStr); 
 }
