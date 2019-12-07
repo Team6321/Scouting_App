@@ -235,44 +235,67 @@ function readImportFile()
 
 function processImportData(obj) //goes through inner objects and assigns values to cookies
 {
-    var season = 'x';
+    var keys = Object.keys(obj);
+    var seasonList = obj[keys[0]]; //seasons at top of import config file
     
-    var elementObjName = `${season} elements`;
-    var pitObjName = `${season} pitQuestions`;
-    var eventStart = `${season} events`;
-
-    for (var i = 0; i < keys.length; i++)
+    for (var i = 0; i < seasonList.length; i++)
     {
-        currObj = keys[i];
-        if (currObj.startsWith(elementObjName)) //add elements/points cookies
-        {
-            //set element value pairs
-            var innerArr = obj[currObj];
-            for (var j = 0; j < innerArr.length; j++)
-            {
-                var pair = innerArr[j];
-                var elementName = Object.keys(pair)[0]; //only has one kv pair
-                var elementValue = pair[elementName];
+        var season = seasonList[i]; //if season was included, it probably had data; look for element/pit/event/team data for those seasons
 
-                var cookieName = season_config_cookie_name(season,elementName);
-                setCookie(cookieName,elementValue,750);
-            }
-            setTable(season); //shows element table for curr season
+        var savedSeasons = getCookie('seasonList');
+        if (!savedSeasons.includes(season)) //if season is new, add it to the seasonList cookie
+        {
+            savedSeasons += season + SEASON_LIST_SEPARATOR;
+            setCookie('seasonList',savedSeasons);
         }
 
-        if (currObj.startsWith(pitObjName))
+        var elementObjName = `${season} elements`;
+        var pitObjName = `${season} pitQuestions`;
+        var eventObjName = `${season} events`;
+    
+        for (var k = 0; k < keys.length; k++) //
         {
-            //set pitQuestions cookie
-            var cookieName = `${season} pitQuestions`
-            var cookieValString = '';
-
-            var innerArr = obj[currObj];
-            for (var j = 0; j < innerArr.length; j++)
+            currObj = keys[k];
+            if (currObj.startsWith(elementObjName)) //add elements/points cookies
             {
-                cookieValString += innerArr[j] + COOKIE_QUESTION_SEPARATOR;
+                //set element value pairs
+                var innerArr = obj[currObj];
+                for (var j = 0; j < innerArr.length; j++)
+                {
+                    var pair = innerArr[j];
+                    var elementName = Object.keys(pair)[0]; //only has one kv pair
+                    var elementValue = pair[elementName];
+    
+                    var cookieName = season_config_cookie_name(season,elementName);
+                    setCookie(cookieName,elementValue,750);
+                }
             }
-            setCookie(cookieName,cookieValString,750);
-            setPitQuestionTextBox(season);
+    
+            if (currObj.startsWith(pitObjName)) //add pitQuestions cookie
+            {
+                //set pitQuestions cookie
+                var cookieName = `${season} pitQuestions`
+                var cookieValString = '';
+    
+                var innerArr = obj[currObj];
+                for (var j = 0; j < innerArr.length; j++)
+                {
+                    cookieValString += innerArr[j] + COOKIE_QUESTION_SEPARATOR;
+                }
+                setCookie(cookieName,cookieValString,750);
+            }
+
+            if (currObj.startsWith(eventObjName)) //add eventList cookie for the season
+            {
+                var cookieName = eventObjName;
+                var cookieValString = '';
+                var eventList = obj[currObj];
+                for (var j = 0; j < eventList.length; j++)
+                {
+                    cookieValString += eventList[j] + EVENT_LIST_COOKIE_SEPARATOR;
+                }
+                setCookie(cookieName,cookieValString,750);
+            }
         }
     }
 }
@@ -299,13 +322,6 @@ $(document).ready(function()
 
     $('#importButton').click(function()
     {
-        var season = getCurrCheckedSeasons();
-        if (season.trim().length == 0)
-        {
-            $('#importConfirmation').text('No season(s) selected');
-            return;
-        }
-
         readImportFile();
         $('#importConfirmation').text('Data imported.');
     });
