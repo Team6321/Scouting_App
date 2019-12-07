@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
+<script src="scripts/jquery.js"></script> <!--jquery library-->
+<script src="scripts/seasonConfigScript.js"></script> <!--js script-->
+<script src="scripts/eventDataScript.js"></script> <!--js script-->
+<script src="scripts/teamDataScript.js"></script> <!--js script-->
+<script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
+<script src="scripts/importing-Exporting-Config.js"></script> <!--js script-->
+<html>
+    <head>
+        <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon" />
+        <title>FRC 6321 Scouting</title>
+        <!--Importing fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    </head>
+    <body id="background" onload="loadSeasons()">
+        <button style = "float:left" onclick = "openNav()" class="r3-button">Navigation Menu</button>
+        <div>
+            <h1 id = "title">FRC 6321 Scouting</h1>
+        </div>
+        <div id = "mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn"
+            onclick = "closeNav()">&times;</a>
+            <a href="index.html">Home</a>
+            <a href="season-config.html">Season Configuration</a>
+            <a href="event-data.html">Event Data</a>
+            <a href="team-data.html">Team Data</a>
+            <a href="importing-exporting-data.html">Importing and Exporting Data</a>
+        </div>
+
+        <div style='text-align:center'>
+            <h3>If you wish to import configuration data for the checked season from an external file (JSON format), choose a file and press Import.
+            This will add to/overwrite any previously saved elements/pit scouting questions.<br>
+            Please make sure that the input file is correct JSON format and ends in <code>.json</code>.</h3>
+            <input type='file' id='importFile'><br>
+            <button id='importButton' class = 'r3-button'> Import</button>
+            <i><h4 id='importConfirmation'></h4></i>
+        </div>     
+
+        <div style = 'text-align: center'>
+            <h3>If you wish to export the current configuration data for the checked season to an external file (JSON format), click the following button.</h3>
+            <a id = 'configExportLink' download='config.json'>Export Data</a>
+            <i><h4 id='exportConfirmation' class='js_clear_on_load'></h4></i>
+        </div>
+</html>
