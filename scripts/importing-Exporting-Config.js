@@ -1,3 +1,48 @@
+function loadSeasonRadioList() //basically a copy paste of loadSeasons(), but didn't want to mess with season config stuff
+{
+    if (document.cookie.length == 0)
+    {
+        return;
+    } else if (getCookie('seasonList').trim().length == 0)
+    {
+        return;
+    }
+
+    var seasonList = getCookie('seasonList').split(SEASON_LIST_SEPARATOR).slice(0,-1); //slice removes last ''
+    for (var i=0;i<seasonList.length;i++)
+    {
+        var cookieVal = seasonList[i];
+        var newInputHTML = `<label><input type='checkbox' name='seasonListItem-imp-exp-data' value='${cookieVal}'>${cookieVal}</label><br>`
+        
+        if ($('#seasonRadioList-imp-exp-data').html().indexOf(newInputHTML) < 0) //if not included yet
+        {
+            $("#seasonRadioList-imp-exp-data").append(newInputHTML);
+        }
+    }
+
+    $('.js_clear_on_load').val("").html("");
+    var cname ='checkedSeasons imp-exp-data'; 
+    setCookie(cname,'',750);
+}
+
+function setCheckedSeasons() //onchange for checked seasons checkboxes
+{
+    //set a cookie for checkedSeasons
+    var arr = [];
+    $('input[type=checkbox]').each(function () 
+    {
+        if (this.checked)
+        {
+            arr.push($(this).val());
+        }
+    });
+
+    var cname = 'checkedSeasons imp-exp-data';
+    var cvalue = arr.toString();
+    console.log(cvalue);
+    setCookie(cname,cvalue,750);
+}
+
 //Exporting season config \/\/\/
 function setExportLink(addend)
 {
@@ -130,6 +175,7 @@ $(document).ready(function()
 {
     setExportLink(''); //default export link
     $('#importFile').val(null); //default import link
+    loadSeasonRadioList(); //set up radio list
 
     $('#configExportLink').click(function()
     {
@@ -157,3 +203,11 @@ $(document).ready(function()
         $('#importConfirmation').text('Season configuration imported.');
     });
 });
+
+function getCurrCheckedSeasons() //returns string of checked seasons
+{
+    var seasonStr = getCookie('checkedSeasons imp-exp-data');
+    if (seasonStr.trim().length == 0) return '';
+
+    return seasonStr;
+}

@@ -14,7 +14,7 @@
         <!--Importing fonts-->
         <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
     </head>
-    <body id="background" onload="loadSeasons()">
+    <body id="background">
         <button style = "float:left" onclick = "openNav()" class="r3-button">Navigation Menu</button>
         <div>
             <h1 id = "title">FRC 6321 Scouting</h1>
@@ -29,18 +29,36 @@
             <a href="importing-exporting-data.html">Importing and Exporting Data</a>
         </div>
 
-        <div style='text-align:center'>
-            <h3>If you wish to import configuration data for the checked season from an external file (JSON format), choose a file and press Import.
-            This will add to/overwrite any previously saved elements/pit scouting questions.<br>
-            Please make sure that the input file is correct JSON format and ends in <code>.json</code>.</h3>
-            <input type='file' id='importFile'><br>
-            <button id='importButton' class = 'r3-button'> Import</button>
-            <i><h4 id='importConfirmation'></h4></i>
-        </div>     
+        <br>
+        <h3>Check one or more of these seasons to indicate which seasons you wish to import/export data for.</h3>
+        <fieldset>
+            <form class='season-checkboxes' id="seasonRadioList-imp-exp-data" style="font-size:18px" onchange="setCheckedSeasons()"></form>
+        </fieldset>
+        <br><br>
 
-        <div style = 'text-align: center'>
-            <h3>If you wish to export the current configuration data for the checked season to an external file (JSON format), click the following button.</h3>
-            <a id = 'configExportLink' download='config.json'>Export Data</a>
-            <i><h4 id='exportConfirmation' class='js_clear_on_load'></h4></i>
-        </div>
+        <fieldset>
+            <div style='text-align:center'>
+                <h2 style='text-decoration: underline'>Importing Data</h2>
+                
+                <h3>If you wish to import all data (season configuration, event data, and team data) 
+                for one or more seasons, check those seasons, choose a file and press Import.
+                <b>This will add to/overwrite any previously saved elements/pit scouting questions for those seasons.</b><br>
+                Please make sure that the input file ends in <code>.rcubedscoutconfig</code>.</h3>
+                <input type='file' id='importFile'><br>
+                <button id='importButton' class = 'r3-button'> Import</button>
+                <i><h4 id='importConfirmation'></h4></i>
+            </div>
+        </fieldset>
+        <br><br>     
+
+        <fieldset>
+            <div style = 'text-align: center'>
+                <h2 style='text-decoration: underline'>Exporting Data</h2>
+                
+                <h3>If you wish to export the current configuration data for one or more seasons to an external file 
+                (ending in <code>.rcubedscoutconfig</code>), check those seasons and click the following button.</h3>
+                <a id = 'configExportLink' download='config.json'>Export Data</a>
+                <i><h4 id='exportConfirmation' class='js_clear_on_load'></h4></i>
+            </div>
+        </fieldset>
 </html>
