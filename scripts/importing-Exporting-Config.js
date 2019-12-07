@@ -37,7 +37,6 @@ function setCheckedSeasons() //onchange for checked seasons checkboxes
 
     var cname = checked_seasons_name();
     var cvalue = arr.toString(); //arr gets split up into a csv string
-    console.log(cvalue);
     setCookie(cname,cvalue,750);
 }
 
@@ -59,6 +58,8 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
     var checkedSeasonList = getCurrCheckedSeasons().split(','); // csv string --> array
 
     var output = {};
+    output['Seasons in this configuration'] = checkedSeasonList; //sets season list at top of config
+
     for (var i = 0; i < checkedSeasonList.length; i++) //loop through each checked season
     {
         var season = checkedSeasonList[i];
@@ -68,7 +69,7 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
         var elementsArr = []; //for elements of a season
         var questionsArr = []; //for pit questions of a season
         var eventsArr = []; //for events of a season (output will include teams going to each event nested under each event)
-        var teamArr = []; //for team data of a season
+        var teamsArr = []; //for team data of a season
         
         var elementStart = `/season_config/${season}/`;
         var pitStart = `${season} pitQuestions`;
@@ -108,6 +109,7 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
             }
         }
 
+        // looping through cookies for each season \/ \/
         var elementsObjName = season + ' elements';
         output[elementsObjName] = elementsArr;
 
@@ -117,12 +119,94 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
         var eventsObjName = season + ' events';
         output[eventsObjName] = eventsArr;
 
-        //var teamDataObjName = season + ' team data';
-        //var teamDataObjValue = returnTeamDataArr();
-        //output[teamDataObjName] = teamDataObjValue;
+        // looping through local storage for each season \/ \/
+        var teamDataObjName = season + ' team data';
+        teamsArr = returnTeamDataArr(season,eventsArr);
+        output[teamDataObjName] = teamsArr;
     }
     
     return JSON.stringify(output,null,'\t');
+}
+
+function returnTeamDataArr(season,eventsArr) //returns array to be the value of a team data object
+{
+    var loc_Strge_Keys = Object.keys(localStorage);
+    var total_Output_Arr = [];
+    /*
+        --> Data for Event A
+            --> Data for Team B
+                --> Match data for team B
+                --> Pit Data for team B
+            --> Data for Team C
+            ...
+    all of ^^ will be an object put into an array ('event a data' is the key, data for team b,c,... is the value)
+    and the array will be returned.
+    */
+
+    for (var i = 0; i < eventsArr.length; i++) //loop through events in a season
+    {
+        var currEvent = eventsArr[i];
+        var event_Obj = {};
+        var event_Obj_Name = `${currEvent} data`;
+        var event_Obj_Value = [];
+        
+        var teams_In_Curr_Event = JSON.parse(getCookie(event_data_cookie_name(season,currEvent))); //object having kv pairs of format teamNum:teamName
+        var event_Specific_Teams_Keys = Object.keys(teams_In_Curr_Event); //has team nums 
+
+        for (var j = 0; j < event_Specific_Teams_Keys.length; j++) //loop through teams
+        {
+            var currTeam = event_Specific_Teams_Keys[j];
+            var team_Obj = {};
+            var team_Obj_Name = `Data for team ${currTeam}:${getTeams(season,currEvent)[currTeam]}`;
+            var team_Obj_Value = []; //will be of length 2: having a match obj and a pit obj
+            
+            var match_Obj = {};
+            var match_Obj_Name = `Match Data for team ${currTeam}`;
+            var match_Obj_Value = []; //length is unknown (dont know how many matches per event the team will attend)
+            
+            var pit_Obj = {}; 
+            var pit_Obj_Name = `Pit Data for team ${currTeam}`;
+            var pit_Obj_Value = ''; //not an array, only 1 value (only 1 pit entry per event)
+
+            var loc_Strg_Check = `/${season}/${currEvent}/${currTeam}/`; //to check if a key contains the curr event/curr team
+
+            for (var k = 0; k < loc_Strge_Keys.length; k++)
+            {
+                var curr_loc_Strg_key = loc_Strge_Keys[k];
+                if (!curr_loc_Strg_key.startsWith(loc_Strg_Check)) continue; //we know curr key has data on selected team for curr event
+
+                if (curr_loc_Strg_key.includes('Match Data')) //add to match_Obj
+                {
+                    var match_Data_Arr = JSON.parse(localStorage[curr_loc_Strg_key]); //is an array of smaller element/frequency object pairs
+                    match_Obj_Value.push(match_Data_Arr);
+                }
+
+                if (curr_loc_Strg_key.includes('pit')) //add to pit_Obj
+                {
+                    var pit_Data_Arr = JSON.parse(localStorage[curr_loc_Strg_key]); //is an array of smaller Q/A object pairs
+                    pit_Obj_Value = pit_Data_Arr;
+                }
+            }
+
+            //set up match/pit objects
+            match_Obj[match_Obj_Name] = match_Obj_Value;
+            pit_Obj[pit_Obj_Name] = pit_Obj_Value;
+
+            //add match/pit objects to team object
+            team_Obj_Value.push(match_Obj);
+            team_Obj_Value.push(pit_Obj);
+
+            //add team object to event object
+            team_Obj[team_Obj_Name] = team_Obj_Value;
+            event_Obj_Value.push(team_Obj);
+        }
+
+        //push event obj to total output array
+        event_Obj[event_Obj_Name] = event_Obj_Value;
+        total_Output_Arr.push(event_Obj);
+    }
+
+    return total_Output_Arr;
 }
 
 
@@ -140,7 +224,7 @@ function readImportFile()
 
         if (file.name.endsWith('.rcubedscoutconfig'))
         {
-            parseFile(obj);
+            processImportData(obj);
         } else
         {
             $('#importConfirmation').text('No ".rcubedscoutconfig" file selected.');
@@ -149,19 +233,18 @@ function readImportFile()
     fr.readAsText(file);
 }
 
-function parseFile(obj) //goes through inner objects and assigns values to cookies
+function processImportData(obj) //goes through inner objects and assigns values to cookies
 {
-    var season = getCurrSeason();
-
+    var season = 'x';
+    
     var elementObjName = `${season} elements`;
     var pitObjName = `${season} pitQuestions`;
-    console.log(elementObjName);
+    var eventStart = `${season} events`;
 
-    var keys = Object.keys(obj);
     for (var i = 0; i < keys.length; i++)
     {
         currObj = keys[i];
-        if (currObj.localeCompare(elementObjName) == 0)
+        if (currObj.startsWith(elementObjName)) //add elements/points cookies
         {
             //set element value pairs
             var innerArr = obj[currObj];
@@ -177,7 +260,7 @@ function parseFile(obj) //goes through inner objects and assigns values to cooki
             setTable(season); //shows element table for curr season
         }
 
-        if (currObj.localeCompare(pitObjName) == 0)
+        if (currObj.startsWith(pitObjName))
         {
             //set pitQuestions cookie
             var cookieName = `${season} pitQuestions`
@@ -204,7 +287,6 @@ $(document).ready(function()
     $('#configExportLink').click(function()
     {
         var seasons = getCurrCheckedSeasons();
-        console.log(seasons);
         if (seasons.trim().length == 0)
         {
             $('#exportConfirmation').text('No season(s) selected.');
