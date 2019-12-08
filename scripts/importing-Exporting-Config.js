@@ -104,7 +104,8 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
                 var eventList = cvalue.split(EVENT_LIST_COOKIE_SEPARATOR).slice(0,-1); //slice takes off last '' in arr
                 for (var k = 0; k < eventList.length; k++)
                 {
-                    eventsArr.push(eventList[k]);
+                    var currEvent = eventList[k];
+                    eventsArr.push(currEvent);
                 }
             }
         }
@@ -142,7 +143,6 @@ function returnTeamDataArr(season,eventsArr) //returns array to be the value of 
     all of ^^ will be an object put into an array ('event a data' is the key, data for team b,c,... is the value)
     and the array will be returned.
     */
-
     for (var i = 0; i < eventsArr.length; i++) //loop through events in a season
     {
         var currEvent = eventsArr[i];
@@ -156,8 +156,10 @@ function returnTeamDataArr(season,eventsArr) //returns array to be the value of 
         for (var j = 0; j < event_Specific_Teams_Keys.length; j++) //loop through teams
         {
             var currTeam = event_Specific_Teams_Keys[j];
+            alert(currTeam);
+            
             var team_Obj = {};
-            var team_Obj_Name = `Data for team ${currTeam}:${getTeams(season,currEvent)[currTeam]}`;
+            var team_Obj_Name = `Data for team ${currTeam}`;
             var team_Obj_Value = []; //will be of length 2: having a match obj and a pit obj
             
             var match_Obj = {};
