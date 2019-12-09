@@ -69,6 +69,7 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
         var elementsArr = []; //for elements of a season
         var questionsArr = []; //for pit questions of a season
         var eventsArr = []; //for events of a season (output will include teams going to each event nested under each event)
+        var teamsInEventsArr = [];
         var teamsArr = []; //for team data of a season
         
         var elementStart = `/season_config/${season}/`;
@@ -104,6 +105,7 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
                 var eventList = cvalue.split(EVENT_LIST_COOKIE_SEPARATOR).slice(0,-1); //slice takes off last '' in arr
                 for (var k = 0; k < eventList.length; k++)
                 {
+                    //add to event list arr
                     var currEvent = eventList[k];
                     eventsArr.push(currEvent);
                 }
@@ -156,10 +158,11 @@ function returnTeamDataArr(season,eventsArr) //returns array to be the value of 
         for (var j = 0; j < event_Specific_Teams_Keys.length; j++) //loop through teams
         {
             var currTeam = event_Specific_Teams_Keys[j];
-            alert(currTeam);
+            var currTeamName = getTeams(season,currEvent)[currTeam];
+            //alert(currTeam);
             
             var team_Obj = {};
-            var team_Obj_Name = `Data for team ${currTeam}`;
+            var team_Obj_Name = `Data for team ${currTeam}:${currTeamName}`;
             var team_Obj_Value = []; //will be of length 2: having a match obj and a pit obj
             
             var match_Obj = {};
@@ -254,6 +257,7 @@ function processImportData(obj) //goes through inner objects and assigns values 
         var elementObjName = `${season} elements`;
         var pitObjName = `${season} pitQuestions`;
         var eventObjName = `${season} events`;
+        var teamDataObjName = `${season} team data`;
     
         for (var k = 0; k < keys.length; k++) //
         {
@@ -298,7 +302,78 @@ function processImportData(obj) //goes through inner objects and assigns values 
                 }
                 setCookie(cookieName,cookieValString,750);
             }
+
+            if (currObj.startsWith(teamDataObjName))
+            {   
+                processTeamData(season,obj,currObj);
+            }
         }
+    }
+}
+
+function processTeamData(season,originalObject,team_Data_Obj_Key)
+{
+    var team_Data_Obj_Entry = originalObject[team_Data_Obj_Key];
+    var events_In_Team = Object.keys(team_Data_Obj_Entry);
+
+    for (var i = 0; i < events_In_Team.length; i++)
+    {
+        var curr_Event_Data_Obj = team_Data_Obj_Entry[events_In_Team[i]];
+        var curr_Event_Data_Obj_Key = Object.keys(curr_Event_Data_Obj)[0]; //length of 1 only
+        var curr_Event_Data_Obj_Value = curr_Event_Data_Obj[curr_Event_Data_Obj_Key]; //is an array with data for each team num
+
+        var curr_Event = curr_Event_Data_Obj_Key.split('data')[0].trim(); //key is in format '{eventName} data'
+
+        var teams_In_Curr_Event = {}; // also need to add a cookie for teams in every event
+        for (var j = 0; j < curr_Event_Data_Obj_Value.length; j++)
+        {
+            var curr_Team_Data_Obj = curr_Event_Data_Obj_Value[j]; //each entry in array is an object with 2 values, match and pit data for the event
+            var curr_Team_Data_Obj_Key = Object.keys(curr_Team_Data_Obj)[0];
+            var curr_Team_Data_Obj_Value = curr_Team_Data_Obj[curr_Team_Data_Obj_Key]; //is an array with a match object value and a pit object value (length 2)
+
+            var curr_Team_Num = curr_Team_Data_Obj_Key.split(' ').pop().split(':')[0]; //key is in format 'Team data for team ${teamNum}'
+            var curr_Team_Name = curr_Team_Data_Obj_Key.split(' ').pop().split(':')[1];
+            console.log('currTeamName: ' + curr_Team_Name);
+            teams_In_Curr_Event[curr_Team_Num] = curr_Team_Name; //add to object for teams in every event
+            
+            for (var k = 0; k < curr_Team_Data_Obj_Value.length; k++)
+            {
+                var match_Or_Pit_Obj = curr_Team_Data_Obj_Value[k];
+                var match_Or_Pit_Obj_Key = Object.keys(match_Or_Pit_Obj)[0];
+                var match_Or_Pit_Obj_Value = match_Or_Pit_Obj[match_Or_Pit_Obj_Key]; //has array(s) (>1 if match because it has data for each match)
+
+                if (match_Or_Pit_Obj_Key.includes('Match Data'))
+                {
+                    //has an array full of elment/frequency pair objects in it for every match
+                    var num_Matches = match_Or_Pit_Obj_Value.length;
+
+                    for (var m = 0; m < num_Matches; m++)
+                    {
+                        var curr_Match_Arr = match_Or_Pit_Obj_Value[m];
+
+                        //need to find match num to set a local storage object, {'Match #' : number} is the first object in the array
+                        var match_Num_Obj = curr_Match_Arr[0];
+                        var match_Num_Key = Object.keys(match_Num_Obj)[0]; //only of length 1
+                        var match_Num = match_Num_Obj[match_Num_Key];
+
+                        var local_Storage_Obj_Name = matchAnswerObjName(season,curr_Event,curr_Team_Num,match_Num);
+                        var local_Storage_Obj_Value = JSON.stringify(curr_Match_Arr);
+                        localStorage.setItem(local_Storage_Obj_Name,local_Storage_Obj_Value);
+                    }
+                }
+
+                if (match_Or_Pit_Obj_Key.includes('Pit Data'))
+                {
+                    var local_Storage_Obj_Value = JSON.stringify(match_Or_Pit_Obj_Value); //is just an array with Q/A pair objects in it
+                    var local_Storage_Obj_Name = pitAnswerObjName(season,curr_Event,curr_Team_Num);
+                    localStorage.setItem(local_Storage_Obj_Name,local_Storage_Obj_Value);
+                }
+            }
+        }
+        //set cookie for teams in every event
+        var cookie_Name = event_data_cookie_name(season,curr_Event);
+        var cookie_Value = JSON.stringify(teams_In_Curr_Event);
+        setCookie(cookie_Name,cookie_Value,750);
     }
 }
 
