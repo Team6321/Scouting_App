@@ -229,7 +229,21 @@ function readImportFile()
 
         if (file.name.endsWith('.rcubedscoutconfig'))
         {
-            processImportData(obj);
+            var continueOrNot = getImportModalChoice();
+            if (continueOrNot.includes('Yes')) //user clicked yes
+            {
+                closeImportModal();
+                processImportData(obj);
+                setCookie(import_Modal_Cookie_Name(),'',750); // reset cookie for new cycle
+            } else if (continueOrNot.includes('No')) //user clicked no
+            {
+                closeImportModal();
+                setCookie(import_Modal_Cookie_Name(),'',750); // reset cookie for new cycle
+            } else if (continueOrNot.trim().length == 0) //user hasn't selected yet or its the first time opening the modal
+            {
+                showImportModal(obj);
+            }
+            resetModalInputs();
         } else
         {
             $('#importConfirmation').text('No ".rcubedscoutconfig" file selected.');
@@ -242,7 +256,7 @@ function processImportData(obj) //goes through inner objects and assigns values 
 {
     var keys = Object.keys(obj);
     var seasonList = obj[keys[0]]; //seasons at top of import config file
-    
+
     for (var i = 0; i < seasonList.length; i++)
     {
         var season = seasonList[i]; //if season was included, it probably had data; look for element/pit/event/team data for those seasons
@@ -309,6 +323,8 @@ function processImportData(obj) //goes through inner objects and assigns values 
             }
         }
     }
+    loadSeasonRadioList() // 'confirmation' to the user that the desired seasons were added
+    $('#importConfirmation').text('Data imported.');
 }
 
 function processTeamData(season,originalObject,team_Data_Obj_Key)
@@ -333,7 +349,7 @@ function processTeamData(season,originalObject,team_Data_Obj_Key)
 
             var curr_Team_Num = curr_Team_Data_Obj_Key.split(' ').pop().split(':')[0]; //key is in format 'Team data for team ${teamNum}'
             var curr_Team_Name = curr_Team_Data_Obj_Key.split(' ').pop().split(':')[1];
-            console.log('currTeamName: ' + curr_Team_Name);
+            //console.log('currTeamName: ' + curr_Team_Name);
             teams_In_Curr_Event[curr_Team_Num] = curr_Team_Name; //add to object for teams in every event
             
             for (var k = 0; k < curr_Team_Data_Obj_Value.length; k++)
@@ -377,11 +393,58 @@ function processTeamData(season,originalObject,team_Data_Obj_Key)
     }
 }
 
+function showImportModal(object)
+{
+    var keys = Object.keys(object);
+    var seasonList = object[keys[0]]; // season config list is the entry for the first key
+    
+    //add seasons to modal text
+    var modalText = 'This file contains data that will overwrite the following season(s): ';
+    for (var i = 0; i < seasonList.length; i++)
+    {
+        if (i == seasonList.length-1)
+        {
+            modalText += `${seasonList[i]}. `
+        } else
+        {
+            modalText += `${seasonList[i]}, `;
+        }
+    }
+    modalText += 'Are you sure you want to continue importing the data?';
+    $('#importModalText').text(modalText);
+    $('#importAlertModal').show();
+}
+
+function importModalSubmit() //onclick for submit button on import modal
+{
+    var yesOrNo = $("input[name=import-modal-choice]:checked","#import-Modal-Choices").val();
+    var cname = import_Modal_Cookie_Name();
+    var cvalue = '';
+
+    if (typeof(yesOrNo) == 'undefined')
+    {
+        $('#importModalConfirmation').text('No choice selected');
+        return;
+    }
+    if (yesOrNo.includes('Yes'))
+    {
+        cvalue = 'Yes';
+    } else
+    {
+        cvalue = 'No';
+    }
+    setCookie(cname,cvalue,750);
+
+    readImportFile(); //read file again
+}
+
 $(document).ready(function()
 {
     setExportLink(''); //default export link
     $('#importFile').val(null); //default import link
     loadSeasonRadioList(); //set up radio list
+    setCookie(import_Modal_Cookie_Name(),'',750);
+    resetModalInputs();
 
 
     $('#configExportLink').click(function()
@@ -394,19 +457,46 @@ $(document).ready(function()
         }
 
         exportData();
-        $('#exportConfirmation').text('Data exported.');        
+        $('#exportConfirmation').text('Data exported.');
     });
 
     $('#importButton').click(function()
     {
         readImportFile();
-        $('#importConfirmation').text('Data imported.');
     });
 });
 
 function checked_seasons_name()
 {
     return '/imp-exp-data/checkedSeasons';
+}
+
+function resetModalInputs()
+{
+    $('input[name="import-modal-choice"]').prop('checked',false);
+}
+
+function closeImportModal()
+{
+    $('#importAlertModal').hide();
+}
+
+function import_Modal_Cookie_Name()
+{
+    return '/imp-exp-data/continueWithImport';
+}
+
+function getImportModalChoice()
+{
+    var cname = import_Modal_Cookie_Name();
+    var cvalue = getCookie(cname);
+    if (cvalue.trim().length == 0)
+    {
+        return '';
+    } else
+    {
+        return cvalue;
+    }
 }
 
 function getCurrCheckedSeasons() //returns string of checked seasons

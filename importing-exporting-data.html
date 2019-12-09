@@ -29,12 +29,21 @@
             <a href="importing-exporting-data.html">Importing and Exporting Data</a>
         </div>
 
-        <br>
-        <h3>Check one or more of these seasons to indicate which seasons you wish to import/export data for.</h3>
-        <fieldset>
-            <form class='season-checkboxes' id="seasonRadioList-imp-exp-data" style="font-size:18px" onchange="setCheckedSeasons()"></form>
-        </fieldset>
         <br><br>
+
+        <div id= 'importAlertModal' class='modal'>
+            <div class='modal-content'>
+                <span class='close' onclick = 'closeImportModal()'>&times;</span>
+                <p id='importModalText'></p>
+
+                <form id="import-Modal-Choices" style="font-size:18px; text-align:left">
+                    <input type='radio' value = 'Yes' name='import-modal-choice'>Yes
+                    <input type='radio' value = 'No' name='import-modal-choice'>No
+                </form>
+                <button id='import-Modal-Choice-Button' class='r3-button' onclick = importModalSubmit()>Submit</button>
+                <i><h4 id='importModalConfirmation'></h4></i>
+            </div>
+        </div>
 
         <fieldset>
             <div style='text-align:center'>
@@ -54,6 +63,12 @@
         <fieldset>
             <div style = 'text-align: center'>
                 <h2 style='text-decoration: underline'>Exporting Data</h2>
+
+                <h3 style='text-align:left'>Check one or more of these seasons to indicate which seasons you wish to export data for.</h3>
+                <fieldset>
+                    <form class='season-checkboxes' id="seasonRadioList-imp-exp-data" style="font-size:18px; text-align:left" onchange="setCheckedSeasons()"></form>
+                </fieldset>
+                <br>
                 
                 <h3>If you wish to export the current configuration data for one or more seasons to an external file 
                 (ending in <code>.rcubedscoutconfig</code>), check those seasons and click the following button.</h3>
