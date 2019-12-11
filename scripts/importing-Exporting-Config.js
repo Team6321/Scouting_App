@@ -365,19 +365,19 @@ function showImportModal(object)
     var seasonList = object[EXPORT_CONFIG_SEASON_LIST_KEY]; // season config list is the entry for the first key
     
     //add seasons to modal text
-    var modalText = 'This file contains data that will overwrite the following season(s): ';
+    var modalText = 'This file contains data that will overwrite the following season(s): <br/><br/>';
     for (var i = 0; i < seasonList.length; i++)
     {
         if (i == seasonList.length-1)
         {
-            modalText += `${seasonList[i]}. `
+            modalText += `${seasonList[i]}.<br/> `
         } else
         {
-            modalText += `${seasonList[i]}, `;
+            modalText += `${seasonList[i]},<br/> `;
         }
     }
-    modalText += 'Are you sure you want to continue importing the data?';
-    $('#importModalText').text(modalText);
+    modalText += '<br/>Are you sure you want to continue importing the data?';
+    $('#importModalText').html(modalText);
     $('#importAlertModal').show();
 }
 
