@@ -41,7 +41,7 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
     var checkedSeasonList = getCurrCheckedSeasons(); // csv string --> array
 
     var output = {};
-    output['Seasons in this configuration'] = checkedSeasonList; //sets season list at top of config
+    output[EXPORT_CONFIG_SEASON_LIST_KEY] = checkedSeasonList; //sets season list at top of config
 
     for (var i = 0; i < checkedSeasonList.length; i++) //loop through each checked season
     {
@@ -235,7 +235,7 @@ function readImportFile()
 function processImportData(obj) //goes through inner objects and assigns values to cookies
 {
     var keys = Object.keys(obj);
-    var seasonList = obj[keys[0]]; //seasons at top of import config file
+    var seasonList = obj[EXPORT_CONFIG_SEASON_LIST_KEY]; //seasons at top of import config file
 
     for (var i = 0; i < seasonList.length; i++)
     {
@@ -253,55 +253,41 @@ function processImportData(obj) //goes through inner objects and assigns values 
         var eventObjName = `${season} events`;
         var teamDataObjName = `${season} team data`;
     
-        for (var k = 0; k < keys.length; k++) //
+        //set element/value cookies
+        var elementsObjArray = obj[elementObjName];
+        for (var j = 0; j < elementsObjArray.length; j++)
         {
-            currObj = keys[k];
-            if (currObj.startsWith(elementObjName)) //add elements/points cookies
-            {
-                //set element value pairs
-                var innerArr = obj[currObj];
-                for (var j = 0; j < innerArr.length; j++)
-                {
-                    var pair = innerArr[j];
-                    var elementName = Object.keys(pair)[0]; //only has one kv pair
-                    var elementValue = pair[elementName];
-    
-                    var cookieName = season_config_cookie_name(season,elementName);
-                    setCookie(cookieName,elementValue,750);
-                }
-            }
-    
-            if (currObj.startsWith(pitObjName)) //add pitQuestions cookie
-            {
-                //set pitQuestions cookie
-                var cookieName = `${season} pitQuestions`
-                var cookieValString = '';
-    
-                var innerArr = obj[currObj];
-                for (var j = 0; j < innerArr.length; j++)
-                {
-                    cookieValString += innerArr[j] + COOKIE_QUESTION_SEPARATOR;
-                }
-                setCookie(cookieName,cookieValString,750);
-            }
+            var pair = elementsObjArray[j];
+            var elementName = Object.keys(pair)[0]; //only has one kv pair
+            var elementValue = pair[elementName];
 
-            if (currObj.startsWith(eventObjName)) //add eventList cookie for the season
-            {
-                var cookieName = eventObjName;
-                var cookieValString = '';
-                var eventList = obj[currObj];
-                for (var j = 0; j < eventList.length; j++)
-                {
-                    cookieValString += eventList[j] + EVENT_LIST_COOKIE_SEPARATOR;
-                }
-                setCookie(cookieName,cookieValString,750);
-            }
-
-            if (currObj.startsWith(teamDataObjName))
-            {   
-                processTeamData(season,obj,currObj);
-            }
+            var cookieName = season_config_cookie_name(season,elementName);
+            setCookie(cookieName,elementValue,750);
         }
+
+        //set pitQuestion cookie
+        var pitObjArray = obj[pitObjName];
+        var pitCookieName = `${season} pitQuestions`
+        var pitCookieValString = '';
+        for (var j = 0; j < pitObjArray.length; j++)
+        {
+            pitCookieValString += pitObjArray[j] + COOKIE_QUESTION_SEPARATOR;
+        }
+        setCookie(pitCookieName,pitCookieValString,750);
+
+        //set event cookie
+        var eventObjArray = obj[eventObjName];
+        var eventCookieName = eventObjName;
+        var eventCookieValString = '';
+        for (var j = 0; j < eventObjArray.length; j++)
+        {
+            eventCookieValString += eventObjArray[j] + EVENT_LIST_COOKIE_SEPARATOR;
+        }
+        setCookie(eventCookieName,eventCookieValString,750);
+
+        //set team data local storage objects
+        processTeamData(season,obj,teamDataObjName);
+
     }
     loadSeasonRadioList() // 'confirmation' to the user that the desired seasons were added
     $('#importConfirmation').text('Data imported.');
@@ -376,7 +362,7 @@ function processTeamData(season,originalObject,team_Data_Obj_Key)
 function showImportModal(object)
 {
     var keys = Object.keys(object);
-    var seasonList = object[keys[0]]; // season config list is the entry for the first key
+    var seasonList = object[EXPORT_CONFIG_SEASON_LIST_KEY]; // season config list is the entry for the first key
     
     //add seasons to modal text
     var modalText = 'This file contains data that will overwrite the following season(s): ';
@@ -492,3 +478,5 @@ function getCurrCheckedSeasons() //returns string of checked seasons
     
     return arr;
 }
+
+const EXPORT_CONFIG_SEASON_LIST_KEY = 'Seasons in this configuration';
