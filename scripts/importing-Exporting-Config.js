@@ -51,8 +51,7 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
 
         var elementsArr = []; //for elements of a season
         var questionsArr = []; //for pit questions of a season
-        var eventsArr = []; //for events of a season (output will include teams going to each event nested under each event)
-        var teamsInEventsArr = [];
+        var eventsArr = []; //for events of a season
         var teamsArr = []; //for team data of a season
         
         var elementStart = `/season_config/${season}/`;
@@ -75,23 +74,12 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
 
             if (cookie.startsWith(pitStart)) //if cookie contains the pit question list
             {
-                //loop through each question in cookie and add that to questionsArr
-                var questionList = cvalue.split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //slice to take off the last '' in arr
-                for (var k = 0; k < questionList.length; k++)
-                {
-                    questionsArr.push(questionList[k]);
-                }
+                parse_cookie(cvalue,COOKIE_QUESTION_SEPARATOR,questionsArr);
             }
 
-            if (cookie.startsWith(eventStart)) //adding events to a season and all teams going to that event
+            if (cookie.startsWith(eventStart)) //adding events to a season
             {
-                var eventList = cvalue.split(EVENT_LIST_COOKIE_SEPARATOR).slice(0,-1); //slice takes off last '' in arr
-                for (var k = 0; k < eventList.length; k++)
-                {
-                    //add to event list arr
-                    var currEvent = eventList[k];
-                    eventsArr.push(currEvent);
-                }
+                parse_cookie(cvalue,EVENT_LIST_COOKIE_SEPARATOR,eventsArr);
             }
         }
 
@@ -112,6 +100,15 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
     }
     
     return JSON.stringify(output,null,'\t');
+}
+
+function parse_cookie(cvalue,separator,array)
+{
+    var list = cvalue.split(separator).slice(0,-1);
+    for (var i = 0; i < list.length; i++)
+    {
+        array.push(list[i]);
+    }
 }
 
 function returnTeamDataArr(season,eventsArr) //returns array to be the value of a team data object
@@ -210,27 +207,27 @@ function readImportFile()
         var content = e.target.result;
         var obj = JSON.parse(content);
 
-        if (file.name.endsWith('.rcubedscoutconfig'))
-        {
-            var continueOrNot = getImportModalChoice();
-            if (continueOrNot.includes('Yes')) //user clicked yes
-            {
-                closeImportModal();
-                processImportData(obj);
-                setCookie(import_Modal_Cookie_Name(),'',750); // reset cookie for new cycle
-            } else if (continueOrNot.includes('No')) //user clicked no
-            {
-                closeImportModal();
-                setCookie(import_Modal_Cookie_Name(),'',750); // reset cookie for new cycle
-            } else if (continueOrNot.trim().length == 0) //user hasn't selected yet or its the first time opening the modal
-            {
-                showImportModal(obj);
-            }
-            resetModalInputs();
-        } else
+        if (!file.name.endsWith('.rcubedscoutconfig'))
         {
             $('#importConfirmation').text('No ".rcubedscoutconfig" file selected.');
+            return;
         }
+
+        var continueOrNot = getImportModalChoice();
+        if (continueOrNot.includes('Yes')) //user clicked yes
+        {
+            closeImportModal();
+            processImportData(obj);
+            setCookie(import_Modal_Cookie_Name(),'',750); // reset cookie for new cycle
+        } else if (continueOrNot.includes('No')) //user clicked no
+        {
+            closeImportModal();
+            setCookie(import_Modal_Cookie_Name(),'',750); // reset cookie for new cycle
+        } else if (continueOrNot.trim().length == 0) //user hasn't selected yet or its the first time opening the modal
+        {
+            showImportModal(obj);
+        }
+        resetModalInputs();
     }
     fr.readAsText(file);
 }
