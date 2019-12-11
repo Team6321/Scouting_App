@@ -23,23 +23,6 @@ function loadSeasonRadioList() //basically a copy paste of loadSeasons(), but di
     setCookie(cname,'',750);
 }
 
-function setCheckedSeasons() //onchange for checked seasons checkboxes
-{
-    //set a cookie for checkedSeasons
-    var arr = [];
-    $('input[type=checkbox]').each(function () 
-    {
-        if (this.checked)
-        {
-            arr.push($(this).val());
-        }
-    });
-
-    var cname = checked_seasons_name();
-    var cvalue = arr.toString(); //arr gets split up into a csv string
-    setCookie(cname,cvalue,750);
-}
-
 //Exporting season config \/\/\/
 function setExportLink(addend)
 {
@@ -55,7 +38,7 @@ function exportData()
 
 function getExportData() //returns prettified (tabbed) json.stringify version of current config
 {
-    var checkedSeasonList = getCurrCheckedSeasons().split(','); // csv string --> array
+    var checkedSeasonList = getCurrCheckedSeasons(); // csv string --> array
 
     var output = {};
     output['Seasons in this configuration'] = checkedSeasonList; //sets season list at top of config
@@ -450,7 +433,7 @@ $(document).ready(function()
     $('#configExportLink').click(function()
     {
         var seasons = getCurrCheckedSeasons();
-        if (seasons.trim().length == 0)
+        if (seasons.length == 0)
         {
             $('#exportConfirmation').text('No season(s) selected.');
             return false;
@@ -501,8 +484,14 @@ function getImportModalChoice()
 
 function getCurrCheckedSeasons() //returns string of checked seasons
 {
-    var cname = checked_seasons_name();
-    var seasonStr = getCookie(cname);
-
-    return (seasonStr.trim().length == 0 ? '' : seasonStr); 
+    var arr = [];
+    $('#seasonRadioList-imp-exp-data input[type=checkbox]').each(function () 
+    {
+        if (this.checked)
+        {
+            arr.push($(this).val());
+        }
+    });
+    
+    return arr;
 }
