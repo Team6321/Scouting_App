@@ -49,10 +49,9 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
 
         var cookieList = document.cookie.split(';');
 
-        var elementsArr = []; //for elements of a season
+        var elementsObj = {}; //for elements of a season
         var questionsArr = []; //for pit questions of a season
         var eventsArr = []; //for events of a season
-        var teamsArr = []; //for team data of a season
         
         var elementStart = `/season_config/${season}/`;
         var pitStart = `${season} pitQuestions`;
@@ -65,11 +64,9 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
             
             if (cookie.startsWith(elementStart)) //if cookie contains an element
             {
-                var objName = getElementName(cookie);
-                var objValue = getElementValue(cookie);
-                var pair = {};
-                pair[objName] = objValue;
-                elementsArr.push(pair);
+                var elementName = getElementName(cookie);
+                var elementValue = getElementValue(cookie);
+                elementsObj[elementName] = elementValue;
             }
 
             if (cookie.startsWith(pitStart)) //if cookie contains the pit question list
@@ -86,15 +83,15 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
         var seasonObjName = season;
         var seasonObjValues = {};
 
-        seasonObjValues[EXPORT_CONFIG_ELEMENTS_KEY] = elementsArr; //set elements
+        seasonObjValues[EXPORT_CONFIG_ELEMENTS_KEY] = elementsObj; //set elements
 
         seasonObjValues[EXPORT_CONFIG_PIT_QUESTIONS_KEY] = questionsArr; //set pit questions
         
         seasonObjValues[EXPORT_CONFIG_EVENTS_KEY] = eventsArr; //set events
 
-        seasonObjValues[EXPORT_CONFIG_TEAM_DATA_KEY] = returnTeamDataArr(season,eventsArr); // set team data
+        seasonObjValues[EXPORT_CONFIG_TEAM_DATA_KEY] = returnTeamData(season,eventsArr); // set team data
 
-        
+
         output[seasonObjName] = seasonObjValues; //put it all together
     }
     
@@ -110,29 +107,31 @@ function parse_cookie(cvalue,separator,array)
     }
 }
 
-function returnTeamDataArr(season,eventsArr) //returns array to be the value of a team data object
+function returnTeamData(season,eventsArr) //returns array to be the value of a team data object
 {
     var loc_Strge_Keys = Object.keys(localStorage);
-    var total_Output_Arr = [];
+    var total_Output_Obj = {};
     /*
-        --> Data for Event A
-            --> Data for Team B
-                --> Match data for team B
-                --> Pit Data for team B
-            --> Data for Team C
+        --> Event A
+            --> Team B
+                --> Match data
+                --> Pit Data
+            --> Team C
             ...
-    all of ^^ will be an object put into an array ('event a data' is the key, data for team b,c,... is the value)
-    and the array will be returned.
     */
+   
     for (var i = 0; i < eventsArr.length; i++) //loop through events in a season
     {
         var currEvent = eventsArr[i];
-        var event_Obj = {};
-        var event_Obj_Name = `${currEvent} data`;
-        var event_Obj_Value = [];
+        //var event_Obj = {};
+        var event_Obj_Name = `${currEvent}`;
+        var event_Obj_Value = {};
         
-        var teams_In_Curr_Event = JSON.parse(getCookie(event_data_cookie_name(season,currEvent))); //object having kv pairs of format teamNum:teamName
-        var event_Specific_Teams_Keys = Object.keys(teams_In_Curr_Event); //has team nums 
+        var teams_From_Cookie = getCookie(event_data_cookie_name(season,currEvent));
+        if (teams_From_Cookie.trim().length == 0) continue;
+        
+        var teams_In_Curr_Event = JSON.parse(teams_From_Cookie); //object having kv pairs of format teamNum:teamName
+        var event_Specific_Teams_Keys = Object.keys(teams_In_Curr_Event); //has team nums
 
         for (var j = 0; j < event_Specific_Teams_Keys.length; j++) //loop through teams
         {
@@ -140,17 +139,17 @@ function returnTeamDataArr(season,eventsArr) //returns array to be the value of 
             var currTeamName = getTeams(season,currEvent)[currTeam];
             //alert(currTeam);
             
-            var team_Obj = {};
-            var team_Obj_Name = `Data for team ${currTeam}:${currTeamName}`;
-            var team_Obj_Value = []; //will be of length 2: having a match obj and a pit obj
+            //var team_Obj = {};
+            var team_Obj_Name = `${currTeam}:${currTeamName}`;
+            var team_Obj_Value = {}; //will be of length 2: having a match obj and a pit obj
             
-            var match_Obj = {};
-            var match_Obj_Name = `Match Data for team ${currTeam}`;
+            //var match_Obj = {};
+            var match_Obj_Name = `match data`;
             var match_Obj_Value = []; //length is unknown (dont know how many matches per event the team will attend)
             
-            var pit_Obj = {}; 
-            var pit_Obj_Name = `Pit Data for team ${currTeam}`;
-            var pit_Obj_Value = ''; //not an array, only 1 value (only 1 pit entry per event)
+            //var pit_Obj = {}; 
+            var pit_Obj_Name = `pit data`;
+            var pit_Obj_Value = []; //not an array, only 1 value (only 1 pit entry per event)
 
             var loc_Strg_Check = `/${season}/${currEvent}/${currTeam}/`; //to check if a key contains the curr event/curr team
 
@@ -173,24 +172,27 @@ function returnTeamDataArr(season,eventsArr) //returns array to be the value of 
             }
 
             //set up match/pit objects
-            match_Obj[match_Obj_Name] = match_Obj_Value;
-            pit_Obj[pit_Obj_Name] = pit_Obj_Value;
+            //match_Obj[match_Obj_Name] = match_Obj_Value;
+            //pit_Obj[pit_Obj_Name] = pit_Obj_Value;
 
             //add match/pit objects to team object
-            team_Obj_Value.push(match_Obj);
-            team_Obj_Value.push(pit_Obj);
+            team_Obj_Value[match_Obj_Name] = match_Obj_Value; //team_Obj_Value.push(match_Obj);
+            team_Obj_Value[pit_Obj_Name] = pit_Obj_Value; //team_Obj_Value.push(pit_Obj);
 
             //add team object to event object
-            team_Obj[team_Obj_Name] = team_Obj_Value;
-            event_Obj_Value.push(team_Obj);
+            //team_Obj[team_Obj_Name] = team_Obj_Value;
+            event_Obj_Value[team_Obj_Name] = team_Obj_Value; //event_Obj_Value.push(team_Obj);
         }
 
         //push event obj to total output array
-        event_Obj[event_Obj_Name] = event_Obj_Value;
-        total_Output_Arr.push(event_Obj);
+        //event_Obj[event_Obj_Name] = event_Obj_Value;
+        //total_Output_Arr.push(event_Obj);
+
+        total_Output_Obj[event_Obj_Name] = event_Obj_Value;
+        
     }
 
-    return total_Output_Arr;
+    return total_Output_Obj;
 }
 
 
@@ -247,13 +249,17 @@ function processImportData(obj) //goes through inner objects and assigns values 
             setCookie('seasonList',savedSeasons);
         }
 
+        //the seaon object in JSON file
+        var seasonObjValues = obj[season];
+
+        /*
         var elementObjName = `${season} elements`;
         var pitObjName = `${season} pitQuestions`;
         var eventObjName = `${season} events`;
-        var teamDataObjName = `${season} team data`;
+        var teamDataObjName = `${season} team data`; */
     
         //set element/value cookies
-        var elementsObjArray = obj[elementObjName];
+        var elementsObjArray = seasonObjValues[EXPORT_CONFIG_ELEMENTS_KEY];
         for (var j = 0; j < elementsObjArray.length; j++)
         {
             var pair = elementsObjArray[j];
@@ -265,7 +271,7 @@ function processImportData(obj) //goes through inner objects and assigns values 
         }
 
         //set pitQuestion cookie
-        var pitObjArray = obj[pitObjName];
+        var pitObjArray = seasonObjValues[EXPORT_CONFIG_PIT_QUESTIONS_KEY];
         var pitCookieName = `${season} pitQuestions`
         var pitCookieValString = '';
         for (var j = 0; j < pitObjArray.length; j++)
@@ -275,7 +281,7 @@ function processImportData(obj) //goes through inner objects and assigns values 
         setCookie(pitCookieName,pitCookieValString,750);
 
         //set event cookie
-        var eventObjArray = obj[eventObjName];
+        var eventObjArray = seasonObjValues[EXPORT_CONFIG_EVENTS_KEY];
         var eventCookieName = eventObjName;
         var eventCookieValString = '';
         for (var j = 0; j < eventObjArray.length; j++)
@@ -285,7 +291,7 @@ function processImportData(obj) //goes through inner objects and assigns values 
         setCookie(eventCookieName,eventCookieValString,750);
 
         //set team data local storage objects
-        processTeamData(season,obj,teamDataObjName);
+        processTeamData(season,seasonObjValues,EXPORT_CONFIG_TEAM_DATA_KEY);
 
     }
     loadSeasonRadioList() // 'confirmation' to the user that the desired seasons were added
@@ -483,3 +489,6 @@ const EXPORT_CONFIG_ELEMENTS_KEY = 'elements';
 const EXPORT_CONFIG_PIT_QUESTIONS_KEY = 'pit questions';
 const EXPORT_CONFIG_EVENTS_KEY = 'events';
 const EXPORT_CONFIG_TEAM_DATA_KEY = 'team data';
+
+const MATCH_DATA_KEY = 'match data';
+const PIT_DATA_KEY = 'pit data';
