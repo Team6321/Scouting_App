@@ -83,20 +83,19 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
             }
         }
 
-        // looping through cookies for each season \/ \/
-        var elementsObjName = season + ' elements';
-        output[elementsObjName] = elementsArr;
+        var seasonObjName = season;
+        var seasonObjValues = {};
 
-        var pitQuestionsObjName = season + ' pitQuestions';
-        output[pitQuestionsObjName] = questionsArr;
+        seasonObjValues[EXPORT_CONFIG_ELEMENTS_KEY] = elementsArr; //set elements
+
+        seasonObjValues[EXPORT_CONFIG_PIT_QUESTIONS_KEY] = questionsArr; //set pit questions
         
-        var eventsObjName = season + ' events';
-        output[eventsObjName] = eventsArr;
+        seasonObjValues[EXPORT_CONFIG_EVENTS_KEY] = eventsArr; //set events
 
-        // looping through local storage for each season \/ \/
-        var teamDataObjName = season + ' team data';
-        teamsArr = returnTeamDataArr(season,eventsArr);
-        output[teamDataObjName] = teamsArr;
+        seasonObjValues[EXPORT_CONFIG_TEAM_DATA_KEY] = returnTeamDataArr(season,eventsArr); // set team data
+
+        
+        output[seasonObjName] = seasonObjValues; //put it all together
     }
     
     return JSON.stringify(output,null,'\t');
@@ -480,3 +479,7 @@ function getCurrCheckedSeasons() //returns string of checked seasons
 }
 
 const EXPORT_CONFIG_SEASON_LIST_KEY = 'Seasons in this configuration';
+const EXPORT_CONFIG_ELEMENTS_KEY = 'elements';
+const EXPORT_CONFIG_PIT_QUESTIONS_KEY = 'pit questions';
+const EXPORT_CONFIG_EVENTS_KEY = 'events';
+const EXPORT_CONFIG_TEAM_DATA_KEY = 'team data';
