@@ -121,7 +121,6 @@ function returnTeamData(season,eventsArr) //returns array to be the value of a t
     for (var i = 0; i < eventsArr.length; i++) //loop through events in a season
     {
         var currEvent = eventsArr[i];
-        //var event_Obj = {};
         var event_Obj_Name = `${currEvent}`;
         var event_Obj_Value = {};
         
@@ -137,15 +136,12 @@ function returnTeamData(season,eventsArr) //returns array to be the value of a t
             var currTeamName = getTeams(season,currEvent)[currTeam];
             //alert(currTeam);
             
-            //var team_Obj = {};
             var team_Obj_Name = `${currTeam}:${currTeamName}`;
             var team_Obj_Value = {}; //will be of length 2: having a match obj and a pit obj
             
-            //var match_Obj = {};
             var match_Obj_Name = `match data`;
             var match_Obj_Value = []; //length is unknown (dont know how many matches per event the team will attend)
             
-            //var pit_Obj = {}; 
             var pit_Obj_Name = `pit data`;
             var pit_Obj_Value = []; //not an array, only 1 value (only 1 pit entry per event)
 
@@ -169,23 +165,15 @@ function returnTeamData(season,eventsArr) //returns array to be the value of a t
                 }
             }
 
-            //set up match/pit objects
-            //match_Obj[match_Obj_Name] = match_Obj_Value;
-            //pit_Obj[pit_Obj_Name] = pit_Obj_Value;
-
             //add match/pit objects to team object
-            team_Obj_Value[match_Obj_Name] = match_Obj_Value; //team_Obj_Value.push(match_Obj);
-            team_Obj_Value[pit_Obj_Name] = pit_Obj_Value; //team_Obj_Value.push(pit_Obj);
+            team_Obj_Value[match_Obj_Name] = match_Obj_Value;
+            team_Obj_Value[pit_Obj_Name] = pit_Obj_Value;
 
             //add team object to event object
-            //team_Obj[team_Obj_Name] = team_Obj_Value;
-            event_Obj_Value[team_Obj_Name] = team_Obj_Value; //event_Obj_Value.push(team_Obj);
+            event_Obj_Value[team_Obj_Name] = team_Obj_Value;
         }
 
         //push event obj to total output array
-        //event_Obj[event_Obj_Name] = event_Obj_Value;
-        //total_Output_Arr.push(event_Obj);
-
         total_Output_Obj[event_Obj_Name] = event_Obj_Value;
         
     }
