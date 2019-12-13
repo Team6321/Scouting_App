@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
-<link rel="stylesheet" type="text/css" href="w3css.css"> <!--css sheet-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> <!--jquery library-->
-<script src="scripts/seasonConfigScript.js"></script> <!--js script-->
-<script src="scripts/eventDataScript.js"></script> <!--js script-->
-<script src="scripts/teamDataScript.js"></script> <!--js script-->
-<script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
 <html>
     <head>
         <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon" />
         <title>FRC 6321 Scouting</title>
         <!--Importing fonts-->
         <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
+        <link rel="stylesheet" type="text/css" href="w3css.css"> <!--css sheet-->
+        <script src="scripts/jquery.js"></script> <!--jquery library-->
+        <script src="scripts/seasonConfigScript.js"></script> <!--js script-->
+        <script src="scripts/eventDataScript.js"></script> <!--js script-->
+        <script src="scripts/teamDataScript.js"></script> <!--js script-->
+        <script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
     </head>
     <body id="background">
         <button style = "float:left" onclick = "openNav()" class="r3-button">Navigation Menu</button>
@@ -26,6 +26,7 @@
             <a href="season-config.html">Season Configuration</a>
             <a href="event-data.html">Event Data</a>
             <a href="team-data.html">Team Data</a>
+            <a href="importing-exporting-data.html">Importing and Exporting Data</a>
         </div>
 
         <div id= 'teamDataAlertModal' class='modal'>
@@ -93,22 +94,7 @@
                 <h4>Here, enter custom notes about the selected team and input game element stats for a given match.
                     If you need to edit/add game elements, go to the <a href="season-config.html">Season Configuration</a> page.
                 </h4>
-                <!--
-                <div id = 'matchNumberStuff'>
-                    <h4><br>Enter and/or select a match number to enter data for the selected team.</h4>
-                    <input type='number' id='matchNumberInputBox' class='js_clear_on_load' placeholder='1'>
-                    <button id = 'matchNumberButton' class = "r3-button">Submit</button> <br>
-                    <fieldset>
-                        <form id="matchNumberRadioList" onchange='changeCurrMatchNum()' style="font-size:18px"> </form>
-                        <button id = 'deleteMatchNum' class='r3-button'>Delete Checked Match</button>
-                    </fieldset>
-                    <i>
-                        <h4 id='matchNumberConfirmation' class='js_clear_on_load'></h4>
-                    </i>
-                <br><br>
-                </div>
 
-                <h3 id='currMatchHeader'></h3>-->
                 <table id='matchQuestionTable'>
                 </table>
                 <i>
