@@ -136,9 +136,11 @@ function returnTeamData(season,eventsArr) //returns array to be the value of a t
             var currTeamName = getTeams(season,currEvent)[currTeam];
             //alert(currTeam);
             
-            var team_Obj_Name = `${currTeam}:${currTeamName}`;
+            //var team_Obj_Name = `${currTeam}:${currTeamName}`;
+            var team_Obj_Name = currTeam; //object storing team name and value
             var team_Obj_Value = {}; //will be of length 2: having a match obj and a pit obj
-            
+            team_Obj_Value['name'] = currTeamName; //setting team name as a kv pair
+
             var match_Obj_Name = `match data`;
             var match_Obj_Value = []; //length is unknown (dont know how many matches per event the team will attend)
             
@@ -291,26 +293,30 @@ function processTeamData(season,originalObject,team_Data_Obj_Key)
         for (var j = 0; j < teams_In_Curr_Event.length; j++)
         {
             var curr_Team_Key = teams_In_Curr_Event[j];
-            var curr_Team_Num = curr_Team_Key.split(':')[0];
-            var curr_Team_Name = curr_Team_Key.split(':')[1];
+            var curr_Team_Num = curr_Team_Key; //curr_Team_Key.split(':')[0];
+            var curr_Team_Name =  '' ;//curr_Team_Key.split(':')[1];
             var team_Specific_Data_Entry = curr_Event_Entries[curr_Team_Key];
             var team_Specific_Data_Keys = Object.keys(team_Specific_Data_Entry);
             //console.log(team_Specific_Data_Keys);
 
             for (var k = 0; k < team_Specific_Data_Keys.length; k++)
             {
-                var match_Or_Pit_Key = team_Specific_Data_Keys[k];
-                var match_Or_Pit_Entry = team_Specific_Data_Entry[match_Or_Pit_Key];
-                //console.log(match_Or_Pit_Key);
+                var match_Or_Pit_Or_Name_Key = team_Specific_Data_Keys[k];
+                var match_Or_Pit_Or_Name_Entry = team_Specific_Data_Entry[match_Or_Pit_Or_Name_Key];
+                //console.log(match_Or_Pit_Or_Name_Key);
+                if (match_Or_Pit_Or_Name_Key.includes('name')) //set team name
+                {
+                    curr_Team_Name = match_Or_Pit_Or_Name_Entry;
+                }
 
-                if (match_Or_Pit_Key.includes('match data'))
+                if (match_Or_Pit_Or_Name_Key.includes('match data'))
                 {
                     //has an array full of elment/frequency pair objects in it for every match
-                    var num_Matches = match_Or_Pit_Entry.length;
+                    var num_Matches = match_Or_Pit_Or_Name_Entry.length;
 
                     for (var m = 0; m < num_Matches; m++)
                     {
-                        var curr_Match_Arr = match_Or_Pit_Entry[m];
+                        var curr_Match_Arr = match_Or_Pit_Or_Name_Entry[m];
 
                         //need to find match num to set a local storage object, {'Match #' : number} is the first object in the array
                         var match_Num_Obj = curr_Match_Arr[0];
@@ -323,9 +329,9 @@ function processTeamData(season,originalObject,team_Data_Obj_Key)
                     }
                 }
 
-                if (match_Or_Pit_Key.includes('pit data'))
+                if (match_Or_Pit_Or_Name_Key.includes('pit data'))
                 {
-                    var local_Storage_Obj_Value = JSON.stringify(match_Or_Pit_Entry); //is just an array with Q/A pair objects in it
+                    var local_Storage_Obj_Value = JSON.stringify(match_Or_Pit_Or_Name_Entry); //is just an array with Q/A pair objects in it
                     var local_Storage_Obj_Name = pitAnswerObjName(season,curr_Event,curr_Team_Num);
                     localStorage.setItem(local_Storage_Obj_Name,local_Storage_Obj_Value);
                 }
@@ -353,7 +359,7 @@ function showImportModal(object)
         modalText += (i == seasonList.length - 1)?'.':',';
         modalText += '<br/>';
     }
-    
+
     modalText += '<br/>Are you sure you want to continue importing the data?';
     $('#importModalText').html(modalText);
     $('#importAlertModal').show();
