@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon" />
+        <title>FRC 6321 Scouting</title>
+        <!--Importing fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
+        <script src="scripts/jquery.js"></script> <!--jquery library-->
+        <script src="scripts/seasonConfigScript.js"></script> <!--js script-->
+        <script src="scripts/eventDataScript.js"></script> <!--js script-->
+        <script src="scripts/teamDataScript.js"></script> <!--js script-->
+        <script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
+        <script src="scripts/importing-Exporting-Config.js"></script> <!--js script-->
+    </head>
+    <body id="background">
+        <button style = "float:left" onclick = "openNav()" class="r3-button">Navigation Menu</button>
+        <div>
+            <h1 id = "title">FRC 6321 Scouting</h1>
+        </div>
+        <div id = "mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn"
+            onclick = "closeNav()">&times;</a>
+            <a href="index.html">Home</a>
+            <a href="season-config.html">Season Configuration</a>
+            <a href="event-data.html">Event Data</a>
+            <a href="team-data.html">Team Data</a>
+            <a href="importing-exporting-data.html">Importing and Exporting Data</a>
+        </div>
+
+        <br><br>
+
+        <div id= 'importAlertModal' class='modal'>
+            <div class='modal-content'>
+                <span class='close' onclick = 'closeImportModal()'>&times;</span>
+                <p id='importModalText'></p>
+
+                <form id="import-Modal-Choices" style="font-size:18px; text-align:left">
+                    <input type='radio' value = 'Yes' name='import-modal-choice'>Yes
+                    <input type='radio' value = 'No' name='import-modal-choice'>No
+                </form>
+                <button id='import-Modal-Choice-Button' class='r3-button' onclick = importModalSubmit()>Submit</button>
+                <i><h4 id='importModalConfirmation'></h4></i>
+            </div>
+        </div>
+
+        <fieldset>
+            <div style='text-align:center'>
+                <h2 style='text-decoration: underline'>Importing Data</h2>
+                
+                <h3>If you wish to import all data (season configuration, event data, and team data) 
+                for one or more seasons, check those seasons, choose a file and press Import.
+                <b>This will add to/overwrite any previously saved elements/pit scouting questions for those seasons.</b><br>
+                Please make sure that the input file ends in <code>.rcubedscoutconfig</code>.</h3>
+                <input type='file' id='importFile'><br>
+                <button id='importButton' class = 'r3-button'> Import</button>
+                <i><h4 id='importConfirmation'></h4></i>
+            </div>
+        </fieldset>
+        <br><br>     
+
+        <fieldset>
+            <div style = 'text-align: center'>
+                <h2 style='text-decoration: underline'>Exporting Data</h2>
+
+                <h3 style='text-align:left'>Check one or more of these seasons to indicate which seasons you wish to export data for.</h3>
+                <fieldset>
+                    <form class='season-checkboxes' id="seasonRadioList-imp-exp-data" style="font-size:18px; text-align:left"></form>
+                </fieldset>
+                <br>
+                
+                <h3>If you wish to export the current configuration data for one or more seasons to an external file 
+                (ending in <code>.rcubedscoutconfig</code>), check those seasons and click the following button.</h3>
+                <a id = 'configExportLink' download='config.rcubedscoutconfig'>Export Data</a>
+                <i><h4 id='exportConfirmation' class='js_clear_on_load'></h4></i>
+            </div>
+        </fieldset>
+</html>

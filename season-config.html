@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> <!--jquery library-->
-<script src="scripts/seasonConfigScript.js"></script> <!--js script-->
-<script src="scripts/eventDataScript.js"></script> <!--js script-->
-<script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
 <html>
     <head>
         <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon" />
         <title>FRC 6321 Scouting</title>
         <!--Importing fonts-->
         <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="styles.css"> <!--css sheet-->
+        <script src="scripts/jquery.js"></script> <!--jquery library-->
+        <script src="scripts/seasonConfigScript.js"></script> <!--js script-->
+        <script src="scripts/eventDataScript.js"></script> <!--js script-->
+        <script src="scripts/teamDataScript.js"></script> <!--js script-->
+        <script src="scripts/commonMethodHelpers.js"></script> <!--js script-->
+        <script src="scripts/importing-Exporting-Config.js"></script> <!--js script-->
     </head>
     <body id="background" onload="loadSeasons()">
         <button style = "float:left" onclick = "openNav()" class="r3-button">Navigation Menu</button>
@@ -24,14 +26,14 @@
             <a href="season-config.html">Season Configuration</a>
             <a href="event-data.html">Event Data</a>
             <a href="team-data.html">Team Data</a>
+            <a href="importing-exporting-data.html">Importing and Exporting Data</a>
         </div>
 
         <h2 style="text-align: center">Season Configuration</h2>
-        <br><br><h3>Enter the name of a new season...</h3>
+        <br><br><h3>Enter the name of a new season and/or select a season to continue to entering season specific data.</h3>
         <input type="text" id = "newSeasonInputBox" class='js_clear_on_load' placeholder="Deep Space">
         <button class = "r3-button" onclick="addNewSeason()">Submit</button>
         <h3 id="newSeasonConfirmation"></h3><br><br>
-        <h3>... and/or select a season to continue to entering season specific data.</h3>
         <fieldset>
             <form id="seasonRadioList" style="font-size:18px" onchange="seasonSubmit()">
             </form>
@@ -80,10 +82,6 @@
                 <h3 id="pitScoutConfirmationBox" class='js_clear_on_load'></h3>
                 <button class = "r3-button" id="pitScoutingSubmit">Save</button>
         </fieldset>
-        
-
-
-
 
         <a href="event-data.html">
             <br><br>

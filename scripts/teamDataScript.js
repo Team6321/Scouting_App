@@ -10,6 +10,7 @@ function loadTDataPage()
     
     $('#matchTab').on('click', function(event) { //by default, open match tab
         displayTabContent(event,'matchTabContent');
+        showAllMatchDataTable();
     });
     $('#matchTab').trigger('click');
 }
@@ -240,7 +241,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     var cname = season + ' pitQuestions';
     var questionsArr = getCookie(cname).split('Ω').slice(0,-1); //first element to second to last element of .split arr
     $('#allTeamsPitAnswers').html('');
-    $('#allPitAnswersTitle').text(`All Pit Scouting Data for the '${event}' event.`);
+    $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
     var tableHeader = '<tr><th class="allTeamsRow">Team #</th>'; //top-left most cell
     for (var i = 0; i < questionsArr.length; i++)
@@ -252,9 +253,10 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     $('#allTeamsPitAnswers').html(tableHeader); //default start of table
 
     var keys = Object.keys(localStorage);
+    var pitNameStarter = `/${season}/${event}/`; //ensures that only teams in curr season/event appear
     for (var j = 0; j < keys.length; j++) //iterate through localStorage objects
     {
-        if (!keys[j].endsWith('pit')) continue;
+        if (!keys[j].endsWith('pit') || !keys[j].startsWith(pitNameStarter)) continue;
 
         var team = keys[j].split('/')[3]; //based on structure of pitStorageObjName
         var newRowHTML = `<tr><td class='allTeamsRow'>${team}</td>`;

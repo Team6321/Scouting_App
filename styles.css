@@ -32,10 +32,6 @@ h1, h2,h3,h4, h5, h6, p,form,div,table{
   color: #f1f1f1;
 }
 
-.r3-button:hover {
-  color: #f1f1f1;
-}
-
 #instructionsHeader
 {
   font-family: 'Ubuntu';
@@ -195,4 +191,20 @@ table, th, td
 .question, .match-element, .allTeamsRow
 {
   text-align: center;
+}
+
+#configExportLink
+{
+  color: gold;
+  background-color: maroon;
+  border-color: black;
+  border-radius: 12px;
+  font-size:16px;
+  padding: 6px 7px;
+  margin: 4px 2px;
+}
+
+#configExportLink:hover
+{
+  color:#f1f1f1;
 }
