@@ -188,27 +188,24 @@ function returnTeamData(season,eventsArr) //returns array to be the value of a t
 function readImportFile()
 {
     var file = $('#importFile').prop('files')[0];
-
+    if (!file.name.endsWith('.rcubedscoutconfig'))
+    {
+        $('#importConfirmation').text('No ".rcubedscoutconfig" file selected.');
+        return;
+    }
+    
     var fr = new FileReader();
     fr.onload = function(e) {
         var content = e.target.result;
         var obj = JSON.parse(content);
 
-        if (!file.name.endsWith('.rcubedscoutconfig'))
-        {
-            $('#importConfirmation').text('No ".rcubedscoutconfig" file selected.');
-            return;
-        }
-
         var continueOrNot = getImportModalChoice();
         if (continueOrNot.includes('Yes')) //user clicked yes
         {
-            closeImportModal();
             processImportData(obj);
             setCookie(import_Modal_Cookie_Name(),'',750); // reset cookie for new cycle
         } else if (continueOrNot.includes('No')) //user clicked no
         {
-            closeImportModal();
             setCookie(import_Modal_Cookie_Name(),'',750); // reset cookie for new cycle
         } else if (continueOrNot.trim().length == 0) //user hasn't selected yet or its the first time opening the modal
         {
@@ -433,8 +430,10 @@ function import_Modal_Cookie_Name()
 
 function getImportModalChoice()
 {
+    closeImportModal();
     var cname = import_Modal_Cookie_Name();
     var cvalue = getCookie(cname);
+
     if (cvalue.trim().length == 0)
     {
         return '';
