@@ -349,14 +349,11 @@ function showImportModal(object)
     var modalText = 'This file contains data that will overwrite the following season(s): <br/><br/>';
     for (var i = 0; i < seasonList.length; i++)
     {
-        if (i == seasonList.length-1)
-        {
-            modalText += `${seasonList[i]}.<br/> `
-        } else
-        {
-            modalText += `${seasonList[i]},<br/> `;
-        }
+        modalText += `${seasonList[i]}`;
+        modalText += (i == seasonList.length - 1)?'.':',';
+        modalText += '<br/>';
     }
+    
     modalText += '<br/>Are you sure you want to continue importing the data?';
     $('#importModalText').html(modalText);
     $('#importAlertModal').show();
