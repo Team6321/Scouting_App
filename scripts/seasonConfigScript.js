@@ -1,17 +1,5 @@
 //credit to w3schools for js tutorials, stackoverflow
 
-//**********navbar on all pages*************//
-//open navbar
-
-function openNav(){
-    document.getElementById("mySidenav").style.width= "250px";
-}
-
-//closing navbar
-function closeNav(){
-document.getElementById("mySidenav").style.width="0";
-}
-
 //adds new season from input box
 function addNewSeason()
 {
