@@ -193,6 +193,7 @@ function season_config_cookie_name(season,element)
 
 $(document).ready(function()
 {
+    loadSeasons();
         //sets current checked season of the radiolist in a cookie
     $.fn.setCurrCheckedSeason = function(){
         var currCheckedSeason = this.val();
