@@ -29,21 +29,11 @@ h1, h2,h3,h4, h5, h6, p,form,div,table,title{
   color: #f1f1f1;
 }
 
-#instructionsHeader
-{
-  font-family: 'Ubuntu';
-  text-align: center;
-  font-size:20px;
-  color:maroon;
-}
-
 #instructions
 {
   display: inline-block;
-  font-family: 'Ubuntu';
   text-align: left;
   font-size:20px;
-  color:maroon;
 }
 
 .clickableXText
@@ -53,21 +43,21 @@ h1, h2,h3,h4, h5, h6, p,form,div,table,title{
 
 .navbar
 {
-  background-color: maroon!important;
-  border: black;
-  border-width: 10px;
-} 
+  background-color: maroon;
+}
+
 .nav-button
 {
   /*6 total navbar links, width is 100/6 = 16.5%*/
   width: 16.5%;
-  color: gold!important;
+  color: gold;
+  text-decoration: none;
 }
 
 .nav-button:hover
 {
-  background-color: gold!important;
-  color: maroon!important;
+  background-color: gold;
+  color: maroon;
 }
 
 .teamProfileImages
