@@ -4,7 +4,8 @@
     background-image: url('images/background.jpg');
 }
 
-h1, h2,h3,h4, h5, h6, p,form,div,table,title{
+html body
+{
   font-family: 'Ubuntu';
   color: maroon;
 }
