@@ -1,0 +1,9 @@
+list:
+- title: Season Configuration
+  url: /season-config.html
+- title: Event Data
+  url: /event-data.html
+- title: Team Data
+  url: /team-data.html
+- title: Import/Export Data
+  url: /importing-exporting-data.html
