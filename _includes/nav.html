@@ -1,11 +1,29 @@
 {% comment %} tag for this page is {% include nav.html %} {% endcomment %}
 
+{% capture page_list %}
+{% for page in site.data.pages %}
+    <a href= '{{ page.url }}' class="nav-button w3-bar-block w3-mobile w3-button">{{ page.title }}<a>
+{% endfor %}
+{% endcapture %}
+
 <div class = 'navbar w3-bar' style='text-align: center'>
-    <a class = 'nav-button w3-bar-block w3-button w3-mobile' href="index.html">Home</a>
-    <a class = 'nav-button w3-bar-block w3-button w3-mobile' href="season-config.html">Season Configuration</a>
-    <a class = 'nav-button w3-bar-block w3-button w3-mobile' href="event-data.html">Event Data</a>
-    <a class = 'nav-button w3-bar-block w3-button w3-mobile' href="team-data.html">Team Data</a>
-    <a class = 'nav-button w3-bar-block w3-button w3-mobile' href="importing-exporting-data.html">Importing and Exporting Data</a>
+    <a class = 'nav-button w3-bar-block w3-button' href="/">Home</a>
+    <span class = 'w3-hide-small'>
+        {{ page_list }}
+    </span>
+    <a href="javascript:void(0)" class="nav-button w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="toggleNav()">&#9776;</a>
 </div>
 
+<div class="navbar w3-bar w3-hide w3-hide-large w3-hide-medium js-collapse-nav">
+    {{ page_list }}
+</div>
+
+
 <br>
+
+<script>
+    function toggleNav() 
+    {
+        $('.js-collapse-nav').toggleClass("w3-hide"); 
+    }
+</script>

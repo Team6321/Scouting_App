@@ -49,8 +49,6 @@ html body
 
 .nav-button
 {
-  /*6 total navbar links, width is 100/6 = 16.5%*/
-  width: 16.5%;
   color: gold;
   text-decoration: none;
 }
