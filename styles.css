@@ -13,6 +13,8 @@ html body
 #title {
     text-align: center;
     display: block;
+    color: gold;
+    padding-top: 10px;
 }
 
 .r3-button
