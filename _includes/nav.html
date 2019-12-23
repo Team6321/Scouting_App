@@ -7,12 +7,19 @@
 {% endcapture %}
 
 <div class = 'navbar w3-bar' style='text-align: center'>
-    <div id = "title">FRC 6321 Scouting</div>
-    <a class = 'nav-button w3-bar-block w3-button' href="/">Home</a>
+    <!-- title for when screen is not small-->
+    <div class = "title w3-hide-small">FRC 6321 Scouting
+        <a href="javascript:void(0)" class="nav-button w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="toggleNav()">&#9776;</a>
+    </div>
+
+     <!-- title for when screen is small-->
+    <div style = 'padding-left: 3%' class = "w3-left-align title w3-hide-large w3-hide-medium">FRC 6321 Scouting
+        <a href="javascript:void(0)" class="nav-button w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="toggleNav()">&#9776;</a>
+    </div>
+
     <span class = 'w3-hide-small'>
         {{ page_list }}
     </span>
-    <a href="javascript:void(0)" class="nav-button w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="toggleNav()">&#9776;</a>
 </div>
 
 <div class="navbar w3-bar w3-hide w3-hide-large w3-hide-medium js-collapse-nav">

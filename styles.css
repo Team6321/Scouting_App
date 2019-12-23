@@ -10,12 +10,10 @@ html body
   color: maroon;
 }
 
-#title {
-    text-align: center;
-    display: block;
-    color: gold;
-    padding-top: 10px;
-    font-size:30px;
+.title {
+  color: gold;
+  padding-top: 10px;
+  font-size:30px;
 }
 
 .r3-button
