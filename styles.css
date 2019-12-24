@@ -61,23 +61,6 @@ html body
   color: maroon;
 }
 
-.teamProfileImages
-{
-  width: 4%;
-  height: 4%;
-  border: none;
-}
-.teamProfileImages:hover
-{
-  opacity: .7;
-}
-#teamProfileImages
-{
-  display: inline-block;
-  text-align:  center;
-}
-
-
 table, th, td
 {
   font-size: 15px;
