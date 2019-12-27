@@ -1,17 +1,5 @@
 //credit to w3schools for js tutorials, stackoverflow
 
-//**********navbar on all pages*************//
-//open navbar
-
-function openNav(){
-    document.getElementById("mySidenav").style.width= "250px";
-}
-
-//closing navbar
-function closeNav(){
-document.getElementById("mySidenav").style.width="0";
-}
-
 //adds new season from input box
 function addNewSeason()
 {
@@ -205,6 +193,7 @@ function season_config_cookie_name(season,element)
 
 $(document).ready(function()
 {
+    loadSeasons();
         //sets current checked season of the radiolist in a cookie
     $.fn.setCurrCheckedSeason = function(){
         var currCheckedSeason = this.val();

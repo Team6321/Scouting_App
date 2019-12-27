@@ -1,0 +1,37 @@
+{% comment %} tag for this page is {% include nav.html %} {% endcomment %}
+
+{% capture page_list %}
+{% for page in site.data.pages %}
+    <a href= '{{ page.url }}' class="nav-button w3-bar-block w3-mobile w3-button">{{ page.title }}<a>
+{% endfor %}
+{% endcapture %}
+
+<div class = 'navbar w3-bar' style='text-align: center'>
+    <!-- title for when screen is not small-->
+    <div class = "title w3-hide-small">FRC 6321 Scouting
+        <a href="javascript:void(0)" class="nav-button w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="toggleNav()">&#9776;</a>
+    </div>
+
+     <!-- title for when screen is small-->
+    <div style = 'padding-left: 3%' class = "w3-left-align title w3-hide-large w3-hide-medium">FRC 6321 Scouting
+        <a href="javascript:void(0)" class="nav-button w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="toggleNav()">&#9776;</a>
+    </div>
+
+    <span class = 'w3-hide-small'>
+        {{ page_list }}
+    </span>
+</div>
+
+<div class="navbar w3-bar w3-hide w3-hide-large w3-hide-medium js-collapse-nav">
+    {{ page_list }}
+</div>
+
+
+<br>
+
+<script>
+    function toggleNav() 
+    {
+        $('.js-collapse-nav').toggleClass("w3-hide"); 
+    }
+</script>
