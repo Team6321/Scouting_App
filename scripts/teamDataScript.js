@@ -135,7 +135,7 @@ function loadPit()
     var season = getCurrSeason();
     var cname = season + ' pitQuestions';
     var event = getCurrEvent();
-    var questions = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR);
+    var questions = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1);
     var currTeam = getCurrTeamNumber();
 
     showAllPitDataTable();
@@ -151,37 +151,18 @@ function loadPit()
 
     var localStorageObjName = pitAnswerObjName(season,event,currTeam);
     var team_QA_pairs = JSON.parse(localStorage.getItem(localStorageObjName)); //get QA pairs that may/may not have already been stored
-    var teamsAlreadyStoredBool = false;
-    if (checkForNull(team_QA_pairs))
-    {
-        teamsAlreadyStoredBool = true;
-    }
+    var QA_keys = Object.keys(team_QA_pairs);
 
-    for (var i = 0; i < questions.length;i++)
+    for (var i = 0; i < questions.length; i++) //iterate through questions array in cookie
     {
         var question = questions[i];
-        if (question.trim().length == 0) return;
-        
-        //loop through already stored local object: if question has an answer already stored then put that in the input box. Else, leave it empty (to fill in)
-        var potentialAnswer = '';
-        if (teamsAlreadyStoredBool == false) //len of loc storage obj == 0, nothing stored yet
+        var answer = '';
+        if (QA_keys.includes(question)) //if answer is saved for it yet
         {
-            potentialAnswer = '';
-        } else //len of loc storage obj = 1, something stored inside, now find answer to curr question
-        {
-            for (var j = 0; j < team_QA_pairs.length; j++)
-            {
-                var pair = team_QA_pairs[j];
-                var answer = pair[question];
-                if (!checkForNull(answer))
-                {
-                    continue;
-                }
-                potentialAnswer = answer;
-            }
+            answer = team_QA_pairs[question];
         }
-        
-        var inputHTML = `<input type="text" value="${potentialAnswer}" class="answer">`; //pot answer is either '' or what is stored
+
+        var inputHTML = `<input type="text" value="${answer}" class="answer">`; //answer is either '' or what is stored
         var newTRHtml = `<tr><td class='question scoutingTableRow'>${question}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
         
         $('#pitQuestionTable').append(newTRHtml);
