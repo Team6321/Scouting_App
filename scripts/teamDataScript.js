@@ -190,16 +190,14 @@ function loadPit()
 
 function savePitAnswers() //onclick for save pit button
 {
-    //using local storage to save pit answers, one localStorage obj per team per event
-    // { '/{season}/{event}/{team}/pit answers' : {{question1}:{answer1}, {question2}:{answer2}...} }
-    //local storage obj will hold an array of q/a object pairs
+    //dictionary with key:value being question:answer
 
     $('#pitTableConfirmation').text('Saving...');
     var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
 
-    var all_team_QA_pairs_obj = [];
+    var all_team_QA_pairs_obj = {};
     var areAnyFieldsBlank = false;
 
     $('#pitQuestionTable tr').each(function(){ //for each row
@@ -213,11 +211,9 @@ function savePitAnswers() //onclick for save pit button
                 areAnyFieldsBlank = true;
             }
         }
-        var pair = {};
-        pair[question] = answer;
-        if (JSON.stringify(pair) != '{}') //first row reads {} as its reading the table header
+        if (question != 'Question') //first row reads 'Question' as its a table header
         {
-            all_team_QA_pairs_obj.push(pair);
+            all_team_QA_pairs_obj[question] = answer;
         }
     });
 
@@ -263,14 +259,12 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
         var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
         var innerKeys = Object.keys(pitObjValue);
 
-        for (var k = 0; k < innerKeys.length; k++) //starts at 1 because first value is blank, it reads the table header
+        for (var k = 0; k < innerKeys.length; k++)
         {
-            var pair = pitObjValue[k];
-            var key = Object.keys(pair)[0];
-            var answer = pair[key];
+            var key = innerKeys[k];
+            var answer = pitObjValue[key];
             newRowHTML += `<td class='allTeamsRow'>${answer}</td>`;
         }
-        //newRowHTML += '</tr>' //end of row
 
         $('#allTeamsPitAnswers').append(newRowHTML);
     }
