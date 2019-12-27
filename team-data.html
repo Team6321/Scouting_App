@@ -13,7 +13,10 @@ layout: basic
 
 <h3 style='text-align:left' id='fieldsetTitle'></h3>
 <fieldset>
-    <form id="teamRadioList" style="font-size:18px" onchange="changeCurrTeam()"></form>
+    <select id='teamSelectList' onchange = 'changeCurrTeam()'>
+        <option value = '0' selected>Choose a Team:</option selected>
+    </select>
+    <!--<form id="teamRadioList" style="font-size:18px" onchange="changeCurrTeam()"></form>-->
 </fieldset>
 
 <h3 style='text-align:center;text-decoration:underline' id='teamStatsTitle'></h3>

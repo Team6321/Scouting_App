@@ -3,7 +3,7 @@
 function loadTDataPage()
 {
     show_TDataModal_Or_IntroText();
-    displayTeamRadioList();
+    displayTeamSelectList();
     setCookie('currCheckedTeam','',750);
 
     $('.js_clear_on_load').val("").html("");
@@ -65,7 +65,7 @@ function closeTDataModal() //onclick for x button in modal
     $('#teamDataAlertModal').hide();
 }
 
-function displayTeamRadioList()
+function displayTeamSelectList()
 {
     var season = getCurrSeason();
     var event = getCurrEvent();
@@ -78,21 +78,21 @@ function displayTeamRadioList()
         var teamNumber = keys[i];
         var teamName = teamsJSON[teamNumber];
 
-        var newItem = `<label><input type='radio' name='teamListItem' value='${teamNumber}'>${teamNumber}: ${teamName}</label><br>`;
-        $("#teamRadioList").append(newItem); //add to radiolist
+        var newItem = `<option value='${teamNumber}'>${teamNumber}: ${teamName}</option>`
+        $("#teamSelectList").append(newItem); //add to selectlist
     }
 }
 
-//onchange for the team radio list
+//onchange for the team select list
 function changeCurrTeam()
 {
-    var currTeamNumber = $("input[name=teamListItem]:checked","#teamRadioList").val(); //in prev method, val of each radio item is the tNum
+    var currTeamNumber = $('#teamSelectList').val();
     var currSeason = getCurrSeason();
     var currEvent = getCurrEvent();
     var cname = 'currCheckedTeam';
     var currTeamName = getTeams(currSeason,currEvent)[currTeamNumber];
 
-    if (currSeason.trim().length == 0 || currEvent.trim().length==0 || currTeamNumber == 0)
+    if (currSeason.trim().length == 0 || currEvent.trim().length==0 || currTeamNumber == 0) //0 if select text is 'Choose a team:'
     {
         $("#teamStatsTitle").text('');
         return;
@@ -180,7 +180,7 @@ function loadPit()
                 potentialAnswer = answer;
             }
         }
-
+        
         var inputHTML = `<input type="text" value="${potentialAnswer}" class="answer">`; //pot answer is either '' or what is stored
         var newTRHtml = `<tr><td class='question scoutingTableRow'>${question}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
         
