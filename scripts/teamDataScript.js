@@ -311,6 +311,9 @@ function loadMatch()
         
         $('#matchQuestionTable').append(newTRHtml);   
     }
+    var customNotesInputHTML = `<input type="text" class="match-frequency js_clear_on_load">`; //for custom notes each match
+    var customNotesRow = `<tr> <td class="match-element scoutingTableRow">Custom Notes</td> <td class="scoutingTableRow">${customNotesInputHTML}</td> </tr>`;
+    $('#matchQuestionTable').append(customNotesRow);
     showAllMatchDataTable();
 }
 
@@ -389,6 +392,7 @@ function showAllMatchDataTable()
     {
         tableHeader += `<th>${questionsArr[i]}</th>`;
     }
+    tableHeader += '<th>Custom Notes</th>'; //for custom notes
     tableHeader += '</tr>';
     $('#allMatchAnswers').html(tableHeader);
 
