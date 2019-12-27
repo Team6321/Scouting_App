@@ -322,7 +322,7 @@ function saveMatchAnswers()
     var team = getCurrTeamNumber();
 
     var match = 0;
-    var element_answer_pairs = [];
+    var element_answer_pairs = {};
     var areAnyFieldsBlank = false;
 
     $('#matchQuestionTable tr').each(function(){ //for each row
@@ -342,11 +342,10 @@ function saveMatchAnswers()
                 areAnyFieldsBlank = true;
             }
         }
-        var pair = {};
-        pair[element] = answer;
-        if (JSON.stringify(pair) != '{}') //first row reads {} as its reading the table header
+
+        if (element != 'Element') //first row reads 'Element' as its reading the table header
         {
-            element_answer_pairs.push(pair);
+            element_answer_pairs[element] = answer;
         }
     });
 
@@ -358,7 +357,6 @@ function saveMatchAnswers()
 
     //same thing as pit answers: {'/season/event/team/match' : '{ball:2},{hatch:3}...'}
     var locStrObjName = matchAnswerObjName(season,event,team,match);
-    var objVal = JSON.stringify(element_answer_pairs); //arr to string conversion
     localStorage.setItem(locStrObjName,JSON.stringify(element_answer_pairs));
 
     $('#matchTableConfirmation').text('Answers saved.');
@@ -428,9 +426,8 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
 
             for (var k = 0; k < innerKeys.length; k++) //displaying answers to each question
             {
-                var pair = currValue[k];
-                var element = Object.keys(pair)[0]; //pair has only 1 element/value
-                var freq = pair[element];
+                var element = innerKeys[k];
+                var freq = currValue[element];
                 newRowHTML += `<td class="allTeamsRow">${freq}</td>`
             }
 
