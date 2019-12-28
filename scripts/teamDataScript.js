@@ -141,14 +141,17 @@ function loadPit()
     showAllPitDataTable();
     if (currTeam == 0)
     {
-        $('#pitQuestionTable').html('');
+        $('#pitQuestionTableHeader').html('');
+        $('#pitQuestionTableBody').html('');
         $('#pitTableConfirmation').text('No team selected.');
         return;
     }
 
-    var tableHeader = '<tr> <th><b>Question</b></th> <th><b>Answer</b></th> </tr>';
-    $('#pitQuestionTable').html(tableHeader); //default start of table
+    var tableHeader = '<div class="w3-col m6 s12 w3-center"> <h4>Question</h4> </div>'+
+                        '<div class="w3-col m6 s12 w3-center"> <h4>Answer</h4> </div>';
+    $('#pitQuestionTableHeader').html(tableHeader); //default start of table
 
+    $('#pitQuestionTableBody').html('');
     var localStorageObjName = pitAnswerObjName(season,event,currTeam);
     var team_QA_pairs = JSON.parse(localStorage.getItem(localStorageObjName)); //get QA pairs that may/may not have already been stored
     
@@ -172,10 +175,20 @@ function loadPit()
             }
         }
 
-        var inputHTML = `<input type="text" value="${answer}" class="answer">`; //answer is either '' or what is stored
-        var newTRHtml = `<tr><td class='question scoutingTableRow'>${question}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
+        //var inputHTML = `<input type="text" value="${answer}" class="answer">`; //answer is either '' or what is stored
+        //var newTRHtml = `<tr><td class='question scoutingTableRow'>${question}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
+
+        var classText = 'w3-col l6 w6 s12 question w3-center'; 
+        var inputHTML = `<textarea width='50em' style='resize:vertical' value='${answer}' class='answer'></textarea>`; //textarea
+        var insideHtml = `<div class='${classText}'><h4>${question}</h4></div> <div class='${classText}'>${inputHTML}</div>`; //both divs
         
-        $('#pitQuestionTable').append(newTRHtml);
+        var w3RowClassText = 'w3-row scoutingTableRow';
+
+        //only put a top border on the first question row for styling
+        var newTRHtml = (i==0)?`<div style='border: 2px solid maroon' class='${w3RowClassText}'> ${insideHtml} </div>`:
+                                `<div style='border: 2px solid maroon; border-top:none' class='${w3RowClassText}'> ${insideHtml} </div>`;
+
+        $('#pitQuestionTableBody').append(newTRHtml);
     }
 }
 
