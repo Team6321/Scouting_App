@@ -151,15 +151,25 @@ function loadPit()
 
     var localStorageObjName = pitAnswerObjName(season,event,currTeam);
     var team_QA_pairs = JSON.parse(localStorage.getItem(localStorageObjName)); //get QA pairs that may/may not have already been stored
-    var QA_keys = Object.keys(team_QA_pairs);
+    
+    var alreadyStored = false;
+    var QA_keys = [];
+    if (checkForNull(team_QA_pairs))
+    {
+        alreadyStored = true;
+        QA_keys = Object.keys(team_QA_pairs);
+    }
 
     for (var i = 0; i < questions.length; i++) //iterate through questions array in cookie
     {
         var question = questions[i];
-        var answer = '';
-        if (QA_keys.includes(question)) //if answer is saved for it yet
+        var answer = ''; //default, in case something is stored
+        if (alreadyStored)
         {
-            answer = team_QA_pairs[question];
+            if (QA_keys.includes(question)) //if answer is saved for it yet
+            {
+                answer = team_QA_pairs[question];
+            }
         }
 
         var inputHTML = `<input type="text" value="${answer}" class="answer">`; //answer is either '' or what is stored
@@ -216,7 +226,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     var season = getCurrSeason();
     var event = getCurrEvent();
     var cname = season + ' pitQuestions';
-    var questionsArr = getCookie(cname).split('Ω').slice(0,-1); //first element to second to last element of .split arr
+    var questionsArr = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //first element to second to last element of .split arr
     $('#allTeamsPitAnswers').html('');
     $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
