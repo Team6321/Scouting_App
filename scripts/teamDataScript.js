@@ -187,6 +187,9 @@ function loadPit()
 
         $('#pitQuestionTableBody').append(newTRHtml);
     }
+
+    //update size of pit textareas based on text height
+    autosize($('.answer'));
 }
 
 function savePitAnswers() //onclick for save pit button

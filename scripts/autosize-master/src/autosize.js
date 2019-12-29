@@ -1,5 +1,3 @@
-//https://github.com/jackmoore/autosize/blob/master/src/autosize.js from Jack Moore's github
-
 const map = (typeof Map === "function") ? new Map() : (function () {
 	const keys = [];
 	const values = [];
