@@ -133,6 +133,16 @@ table, th, td
   padding-top: 12px;
 }
 
+.tableBorders
+{
+  border: 2px solid maroon;
+}
+
+.tableBorders-NoTop
+{
+  border-top:none;
+}
+
 .question, .match-element, .allTeamsRow
 {
   text-align: center;

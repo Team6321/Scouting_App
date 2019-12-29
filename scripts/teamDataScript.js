@@ -157,7 +157,7 @@ function loadPit()
     
     var alreadyStored = false;
     var QA_keys = [];
-    if (checkForNull(team_QA_pairs))
+    if (checkForNull(team_QA_pairs)) //if data is stored
     {
         alreadyStored = true;
         QA_keys = Object.keys(team_QA_pairs);
@@ -175,18 +175,15 @@ function loadPit()
             }
         }
 
-        //var inputHTML = `<input type="text" value="${answer}" class="answer">`; //answer is either '' or what is stored
-        //var newTRHtml = `<tr><td class='question scoutingTableRow'>${question}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
-
         var classText = 'w3-col l6 w6 s12 question w3-center'; 
-        var inputHTML = `<textarea width='50em' style='resize:vertical' value='${answer}' class='answer'></textarea>`; //textarea
+        var inputHTML = `<textarea width='50em' style='resize:vertical' value='${answer}' class='answer'>${answer}</textarea>`; //textarea
         var insideHtml = `<div class='${classText}'><h4>${question}</h4></div> <div class='${classText}'>${inputHTML}</div>`; //both divs
         
-        var w3RowClassText = 'w3-row scoutingTableRow';
+        var w3RowClassText = 'w3-row scoutingTableRow tableBorders';
 
-        //only put a top border on the first question row for styling
-        var newTRHtml = (i==0)?`<div style='border: 2px solid maroon' class='${w3RowClassText}'> ${insideHtml} </div>`:
-                                `<div style='border: 2px solid maroon; border-top:none' class='${w3RowClassText}'> ${insideHtml} </div>`;
+        //only put a top border on the first question row for styling: making sure top/bottom borders dont overlap for non-first rows
+        var newTRHtml = (i==0)?`<div class='${w3RowClassText}'> ${insideHtml} </div>`:
+                                `<div class='${w3RowClassText} tableBorders-NoTop'> ${insideHtml} </div>`;
 
         $('#pitQuestionTableBody').append(newTRHtml);
     }
@@ -204,7 +201,7 @@ function savePitAnswers() //onclick for save pit button
     var all_team_QA_pairs_obj = {};
     var areAnyFieldsBlank = false;
 
-    $('#pitQuestionTable tr').each(function(){ //for each row
+    $('#pitQuestionTableBody .w3-row').each(function(){ //each w3-row has 2 divs with a h4 and a textarea underneath them, respectively
         var question = $(this).find('.question').text();
         var answer = $(this).find('.answer').val();
 
