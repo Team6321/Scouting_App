@@ -179,10 +179,10 @@ function loadPit()
         var inputHTML = `<textarea width='50em' style='resize:vertical' value='${answer}' class='answer'>${answer}</textarea>`; //textarea
         var insideHtml = `<div class='${classText}'><h4>${question}</h4></div> <div class='${classText}'>${inputHTML}</div>`; //both divs
         
-        var w3RowClassText = 'w3-row scoutingTableRow tableBorders';
+        var w3RowClassText = 'w3-row scoutingTableRow tableBorders tableBorders-NoTop';
 
         //only put a top border on the first question row for styling: making sure top/bottom borders dont overlap for non-first rows
-        var newTRHtml = `<div class='${w3RowClassText} tableBorders-NoTop'> ${insideHtml} </div>`;
+        var newTRHtml = `<div class='${w3RowClassText}'> ${insideHtml} </div>`;
 
         $('#pitQuestionTableBody').append(newTRHtml);
     }
@@ -343,7 +343,7 @@ function saveMatchAnswers()
 
         if (typeof(answer) != 'undefined') //if its not the header and is really blank
         {
-            if (answer.trim().length == 0)
+            if (answer.trim().length == 0 && element != 'Custom Notes') //custom notes is not a required answer, just a feature
             {
                 areAnyFieldsBlank = true;
             }
