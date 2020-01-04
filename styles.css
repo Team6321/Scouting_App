@@ -138,7 +138,7 @@ table, th, td
   border: 2px solid maroon;
 }
 
-.tableBorders-NoTop
+table .tableBorders-NoTop:not(:first-child)
 {
   border-top:none;
 }

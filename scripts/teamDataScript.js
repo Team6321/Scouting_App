@@ -182,8 +182,7 @@ function loadPit()
         var w3RowClassText = 'w3-row scoutingTableRow tableBorders';
 
         //only put a top border on the first question row for styling: making sure top/bottom borders dont overlap for non-first rows
-        var newTRHtml = (i==0)?`<div class='${w3RowClassText}'> ${insideHtml} </div>`:
-                                `<div class='${w3RowClassText} tableBorders-NoTop'> ${insideHtml} </div>`;
+        var newTRHtml = `<div class='${w3RowClassText} tableBorders-NoTop'> ${insideHtml} </div>`;
 
         $('#pitQuestionTableBody').append(newTRHtml);
     }
