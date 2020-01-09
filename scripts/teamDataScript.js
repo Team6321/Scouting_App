@@ -239,17 +239,17 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     var event = getCurrEvent();
     var cname = season + ' pitQuestions';
     var questionsArr = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //first element to second to last element of .split arr
-    $('#allTeamsPitAnswers').html('');
+    $('#allTeamsPitAnswers-Body').html('');
     $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
-    var tableHeader = '<tr><th class="allTeamsRow">Team #</th>'; //top-left most cell
+    var widthString = `s${parseInt(12/(questionsArr.length+1))}`; //+1 for the Team# column
+    var tableHeader = `<div class="w3-col ${widthString} w3-center"> <h4>Team #</h4> </div>`; //top-left most cell
+    
     for (var i = 0; i < questionsArr.length; i++)
     {
-
-        tableHeader += `<th>${questionsArr[i]}</th>`;
+        tableHeader += `<div class="w3-col ${widthString} w3-center"> <h4>${questionsArr[i]}</h4> </div>`;
     }
-    tableHeader += '</tr>'; //end of row
-    $('#allTeamsPitAnswers').html(tableHeader); //default start of table
+    $('#allTeamsPitAnswers-Header').html(tableHeader); //default start of table
 
     var keys = Object.keys(localStorage);
     var pitNameStarter = `/${season}/${event}/`; //ensures that only teams in curr season/event appear
@@ -258,18 +258,25 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
         if (!keys[j].endsWith('pit') || !keys[j].startsWith(pitNameStarter)) continue;
 
         var team = keys[j].split('/')[3]; //based on structure of pitStorageObjName
-        var newRowHTML = `<tr><td class='allTeamsRow'>${team}</td>`;
+        
+        var w3RowClassText = 'w3-row scoutingTableRow tableBorders';
+        var innerDivClassText = `w3-col ${widthString} question w3-center tableBorder-right`;
+        
+        var initialTeamDiv = `<div class='${innerDivClassText}'><h4>${team}</h4></div>`;
+        var newRowHTML = `<div class='${w3RowClassText}'> ${initialTeamDiv}`;
         var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
         var innerKeys = Object.keys(pitObjValue);
 
+        var innerRowHTML = '';
         for (var k = 0; k < innerKeys.length; k++)
         {
             var key = innerKeys[k];
             var answer = pitObjValue[key];
-            newRowHTML += `<td class='allTeamsRow'>${answer}</td>`;
+            innerRowHTML += `<div class='${innerDivClassText}'><h4>${answer}</h4></div>`; //both divs
         }
 
-        $('#allTeamsPitAnswers').append(newRowHTML);
+        newRowHTML += `${innerRowHTML}</div>`;
+        $('#allTeamsPitAnswers-Body').append(newRowHTML);
     }
 }
 

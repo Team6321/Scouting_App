@@ -138,6 +138,11 @@ table, th, td
   border: 2px solid maroon;
 }
 
+.tableBorder-right:not(:last-child)
+{
+  border-right: 2px solid maroon;
+}
+
 table .tableBorders-NoTop:not(:first-child)
 {
   border-top:none;
