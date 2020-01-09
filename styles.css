@@ -153,6 +153,11 @@ table .tableBorders-NoTop:not(:first-child)
   text-align: center;
 }
 
+.constrainWidth
+{
+  overflow-wrap: break-word;
+}
+
 #configExportLink
 {
   color: gold;

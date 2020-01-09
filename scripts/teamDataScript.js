@@ -247,7 +247,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     
     for (var i = 0; i < questionsArr.length; i++)
     {
-        tableHeader += `<div class="w3-col ${widthString} w3-center"> <h4>${questionsArr[i]}</h4> </div>`;
+        tableHeader += `<div class="w3-col ${widthString} w3-center constrainWidth"> <h4>${questionsArr[i]}</h4> </div>`;
     }
     $('#allTeamsPitAnswers-Header').html(tableHeader); //default start of table
 
@@ -259,8 +259,8 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
 
         var team = keys[j].split('/')[3]; //based on structure of pitStorageObjName
         
-        var w3RowClassText = 'w3-row scoutingTableRow tableBorders';
-        var innerDivClassText = `w3-col ${widthString} question w3-center tableBorder-right`;
+        var w3RowClassText = 'w3-row scoutingTableRow tableBorders constrainWidth';
+        var innerDivClassText = `w3-col ${widthString} question w3-center tableBorder-right constrainWidth`;
         
         var initialTeamDiv = `<div class='${innerDivClassText}'><h4>${team}</h4></div>`;
         var newRowHTML = `<div class='${w3RowClassText}'> ${initialTeamDiv}`;
