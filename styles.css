@@ -133,10 +133,15 @@ table, th, td
   padding-top: 12px;
 }
 
-#allTeamsPitAnswers .allPitTableHeader
+.allPitTableHeader
 {
   background-color:maroon;
   color:gold;
+}
+
+.allPitTableHeader:not(:last-child)
+{
+  border-bottom: 2px solid gold;
 }
 
 .tableBorders

@@ -242,17 +242,24 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     $('#allTeamsPitAnswers').html('');
     $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
-    var w3ColClassText = 'w3-col scoutingTableRow w3-center tableBorders constrainWidth';
-    var tableHeaderHTML = `<div class="w3-center w3-row"> <h4>Team #</h4> </div>`; //top-left most cell
+    var w3RowClassText = 'w3-row w3-center tableBorders constrainWidth'; //classes for each row
+    var innerDivClassText = `w3-col scoutingTableRow question w3-center constrainWidth tableBorder-right`; //classes for each cell inside
     
-    var widthCounter = 1; //for the initial table header column: use to style column widths
-    for (var i = 0; i < questionsArr.length; i++)
-    {
-        tableHeaderHTML += `<div class="w3-row w3-center constrainWidth"> <h4>${questionsArr[i]}</h4> </div>`;
-    }
-    var tableHeaderCol = `<div class='${w3ColClassText} allPitTableHeader'>${tableHeaderHTML}</div>`;
-    $('#allTeamsPitAnswers').html(tableHeaderCol);
+    //adding initial rows and initial column values for those rows
+    var teamHeaderCell = `<div class='${innerDivClassText} allPitTableHeader'><h4>Team #</h4></div>`;
+    var teamRow = `<div class='${w3RowClassText} teamRow'>${teamHeaderCell}</div>`;
+    $('#allTeamsPitAnswers').append(teamRow);
 
+    for (var i = 0; i < questionsArr.length; i++) //for each question
+    {
+        var questionWithNoSpaces = stripAlphaNumerics(questionsArr[i]);
+        var headerCell = `<div class='${innerDivClassText} allPitTableHeader'><h4>${questionsArr[i]}</h4></div>`;
+        var newRow = `<div class="${w3RowClassText} ${questionWithNoSpaces}"> ${headerCell}</div>`; //the question is one of the classes (w/o whitespaces), will help with adding team data
+        $('#allTeamsPitAnswers').append(newRow);
+    }
+
+
+    //adding team data
     var keys = Object.keys(localStorage);
     var pitNameStarter = `/${season}/${event}/`; //ensures that only teams in curr season/event appear
     for (var j = 0; j < keys.length; j++) //iterate through localStorage objects
@@ -260,30 +267,41 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
         if (!keys[j].endsWith('pit') || !keys[j].startsWith(pitNameStarter)) continue;
 
         var team = keys[j].split('/')[3]; //based on structure of pitStorageObjName
-        
-        var innerDivClassText = `w3-row question w3-center constrainWidth`;
-        
+                
+        //add the team # to the team row
         var initialTeamDiv = `<div class='${innerDivClassText}'><h4>Team ${team}</h4></div>`;
-        var newColHTML = `<div class='${w3ColClassText}'> ${initialTeamDiv}`;
-        
+        $('#allTeamsPitAnswers .teamRow').append(initialTeamDiv);
+
+        //add rest of team values in current object
         var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
         var innerKeys = Object.keys(pitObjValue);
-
+        
         for (var k = 0; k < innerKeys.length; k++)
         {
-            var key = innerKeys[k];
-            var answer = pitObjValue[key];
-            newColHTML += `<div class='${innerDivClassText}'><h4>${answer}</h4></div>`; //both divs
+            var question = innerKeys[k];
+            var answer = pitObjValue[question];
+            newCellHTML = `<div class='${innerDivClassText}'> <h4>${answer}</h4> </div>`;
+
+            //row class is the question
+            var questionWithNoSpaces = stripAlphaNumerics(question);
+            console.log(questionWithNoSpaces);
+            $(`#allTeamsPitAnswers .${questionWithNoSpaces}`).append(newCellHTML);
         }
-        newColHTML += '</div>';
-        
-        $('#allTeamsPitAnswers').append(newColHTML);
-        widthCounter++;
     }
 
-        //setting all columns to be the same width
-        var widthString = `s${parseInt(12/widthCounter)}`;
-        $('#allTeamsPitAnswers').children().addClass(widthString);
+    //setting all columns to be the same width
+    var numColumns = $('.teamRow').children().length; //# of columns + 1, for the team# column
+    var widthString = `s${parseInt(12/numColumns)}`;
+    $('#allTeamsPitAnswers').children().children().each(function()
+    {
+        $(this).addClass(widthString);
+    });
+}
+
+//removes all whitespace inside a string and returns the result
+function stripAlphaNumerics(string)
+{
+    return string.replace(/\W/g, '');
 }
 
 
