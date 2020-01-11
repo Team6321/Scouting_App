@@ -133,6 +133,12 @@ table, th, td
   padding-top: 12px;
 }
 
+#allTeamsPitAnswers .allPitTableHeader
+{
+  background-color:maroon;
+  color:gold;
+}
+
 .tableBorders
 {
   border: 2px solid maroon;
@@ -154,7 +160,7 @@ table .tableBorders-NoTop:not(:first-child)
 }
 
 .constrainWidth
-{
+{ 
   overflow-wrap: break-word;
 }
 

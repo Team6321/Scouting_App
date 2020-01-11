@@ -231,7 +231,7 @@ function savePitAnswers() //onclick for save pit button
     
     $('#pitTableConfirmation').text('Answers saved.');
     showAllPitDataTable();
-}
+}   
 
 function showAllPitDataTable() //shows pit stats of all teams for the current event in one table
 {
@@ -239,17 +239,19 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     var event = getCurrEvent();
     var cname = season + ' pitQuestions';
     var questionsArr = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //first element to second to last element of .split arr
-    $('#allTeamsPitAnswers-Body').html('');
+    $('#allTeamsPitAnswers').html('');
     $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
-    var widthString = `s${parseInt(12/(questionsArr.length+1))}`; //+1 for the Team# column
-    var tableHeader = `<div class="w3-col ${widthString} w3-center"> <h4>Team #</h4> </div>`; //top-left most cell
+    var w3ColClassText = 'w3-col scoutingTableRow w3-center tableBorders constrainWidth';
+    var tableHeaderHTML = `<div class="w3-center w3-row"> <h4>Team #</h4> </div>`; //top-left most cell
     
+    var widthCounter = 1; //for the initial table header column: use to style column widths
     for (var i = 0; i < questionsArr.length; i++)
     {
-        tableHeader += `<div class="w3-col ${widthString} w3-center constrainWidth"> <h4>${questionsArr[i]}</h4> </div>`;
+        tableHeaderHTML += `<div class="w3-row w3-center constrainWidth"> <h4>${questionsArr[i]}</h4> </div>`;
     }
-    $('#allTeamsPitAnswers-Header').html(tableHeader); //default start of table
+    var tableHeaderCol = `<div class='${w3ColClassText} allPitTableHeader'>${tableHeaderHTML}</div>`;
+    $('#allTeamsPitAnswers').html(tableHeaderCol);
 
     var keys = Object.keys(localStorage);
     var pitNameStarter = `/${season}/${event}/`; //ensures that only teams in curr season/event appear
@@ -259,25 +261,29 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
 
         var team = keys[j].split('/')[3]; //based on structure of pitStorageObjName
         
-        var w3RowClassText = 'w3-row scoutingTableRow tableBorders constrainWidth';
-        var innerDivClassText = `w3-col ${widthString} question w3-center tableBorder-right constrainWidth`;
+        var innerDivClassText = `w3-row question w3-center constrainWidth`;
         
-        var initialTeamDiv = `<div class='${innerDivClassText}'><h4>${team}</h4></div>`;
-        var newRowHTML = `<div class='${w3RowClassText}'> ${initialTeamDiv}`;
+        var initialTeamDiv = `<div class='${innerDivClassText}'><h4>Team ${team}</h4></div>`;
+        var newColHTML = `<div class='${w3ColClassText}'> ${initialTeamDiv}`;
+        
         var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
         var innerKeys = Object.keys(pitObjValue);
 
-        var innerRowHTML = '';
         for (var k = 0; k < innerKeys.length; k++)
         {
             var key = innerKeys[k];
             var answer = pitObjValue[key];
-            innerRowHTML += `<div class='${innerDivClassText}'><h4>${answer}</h4></div>`; //both divs
+            newColHTML += `<div class='${innerDivClassText}'><h4>${answer}</h4></div>`; //both divs
         }
-
-        newRowHTML += `${innerRowHTML}</div>`;
-        $('#allTeamsPitAnswers-Body').append(newRowHTML);
+        newColHTML += '</div>';
+        
+        $('#allTeamsPitAnswers').append(newColHTML);
+        widthCounter++;
     }
+
+        //setting all columns to be the same width
+        var widthString = `s${parseInt(12/widthCounter)}`;
+        $('#allTeamsPitAnswers').children().addClass(widthString);
 }
 
 
