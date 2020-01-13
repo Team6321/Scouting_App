@@ -133,24 +133,30 @@ table, th, td
   padding-top: 12px;
 }
 
-.allPitTableHeader
+.allPitTableHeader, .allMatchTableHeader
 {
   background-color:maroon;
   color:gold;
 }
 
-#allTeamsPitAnswers-Div
+#allTeamsPitAnswers-Div, #allMatchAnswers-Div
 {
   max-width: 800px;
 }
 
-#allTeamsPitAnswers
+#allTeamsPitAnswers, #allMatchAnswers
 {
   display:block;
   overflow-x:auto;
 }
 
-.allPitTableHeader:not(:last-child)
+#allTeamsPitAnswers *, #allMatchAnswers *
+{
+  padding-bottom: 12px;
+  padding-top: 12px;
+}
+
+.allPitTableHeader, .allMatchTableHeader
 {
   border-bottom: 2px solid gold;
 }

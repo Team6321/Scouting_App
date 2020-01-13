@@ -296,6 +296,7 @@ function stripAlphaNumerics(string)
 //Match Stuff
 function loadMatch()
 {
+    showAllMatchDataTable();
     $('#currMatchHeader').text('');
     var season = getCurrSeason();
     var event = getCurrEvent();
@@ -335,7 +336,6 @@ function loadMatch()
     var customNotesInputHTML = `<input type="text" class="match-frequency js_clear_on_load">`; //for custom notes each match
     var customNotesRow = `<tr> <td class="match-element scoutingTableRow">Custom Notes</td> <td class="scoutingTableRow">${customNotesInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(customNotesRow);
-    showAllMatchDataTable();
 }
 
 function saveMatchAnswers()
@@ -408,14 +408,16 @@ function showAllMatchDataTable()
     }
 
     //default the table (make it blank and start with the header)
-    var tableHeader = '<tr><th class="allTeamsRow">Team #</th> <th>Match #</th>'
+    var startOfTable = '<tr class="teamRow"><th class="allMatchTableHeader">Team #</th></tr> <tr class="matchRow"><th class="allMatchTableHeader">Match #</th></tr>';
+    $('#allMatchAnswers').html(startOfTable);
+
     for (var i = 0; i < questionsArr.length; i++)
     {
-        tableHeader += `<th>${questionsArr[i]}</th>`;
+        var elementWithNoSpaces = stripAlphaNumerics(questionsArr[i]);
+        var newRow = `<tr class='${elementWithNoSpaces}'><th class="allMatchTableHeader">${questionsArr[i]}</th></tr>`;
+        $('#allMatchAnswers').append(newRow);
     }
-    tableHeader += '<th>Custom Notes</th>'; //for custom notes
-    tableHeader += '</tr>';
-    $('#allMatchAnswers').html(tableHeader);
+    $('#allMatchAnswers').append('<tr class="customNotesRow"><th class="allMatchTableHeader">Custom Notes</th></tr>'); //for custom notes
 
     //add match data from all saved teams, for the curr checked match
     var keys = Object.keys(localStorage);
@@ -442,21 +444,32 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
             if (!currKey.includes('Match Data')) continue;
 
             if (!currKey.includes(currTeam)) continue;
-
+            
             //now, since the team matches, display each one
             var currValue = JSON.parse(localStorage.getItem(currKey));
             var innerKeys = Object.keys(currValue);
 
-            var newRowHTML = `<tr><td class="allTeamsRow">${currTeam}</td>`;
+            var newCellHTML = `<td>${currTeam}</td>`;
+            $('#allMatchAnswers .teamRow').append(newCellHTML);
 
             for (var k = 0; k < innerKeys.length; k++) //displaying answers to each question
             {
                 var element = innerKeys[k];
                 var freq = currValue[element];
-                newRowHTML += `<td class="allTeamsRow">${freq}</td>`
-            }
 
-            $('#allMatchAnswers').append(newRowHTML);
+                if (element == 'Match #') //if its reading a match num
+                {
+                    $(`#allMatchAnswers .matchRow`).append(`<td>${freq}</td>`);    
+                } else if (element == 'Custom Notes') //if its reading a custom notes section
+                {
+                    $(`#allMatchAnswers .customNotesRow`).append(`<td>${freq}</td>`);    
+                } else //just a regular element/answer
+                {
+                    var elementOnlyAlphaNum = stripAlphaNumerics(element);
+                    newCellHTML = `<td>${freq}</td>`;
+                    $(`#allMatchAnswers .${elementOnlyAlphaNum}`).append(newCellHTML);
+                }
+            }
         }
     }
     $('#allMatchAnswersTableTitle').text(`All Match Data for the ${event} event.`);
