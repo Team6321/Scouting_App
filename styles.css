@@ -139,6 +139,17 @@ table, th, td
   color:gold;
 }
 
+#allTeamsPitAnswers-Div
+{
+  max-width: 800px;
+}
+
+#allTeamsPitAnswers
+{
+  display:block;
+  overflow-x:auto;
+}
+
 .allPitTableHeader:not(:last-child)
 {
   border-bottom: 2px solid gold;

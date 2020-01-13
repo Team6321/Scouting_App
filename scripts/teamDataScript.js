@@ -12,6 +12,7 @@ function loadTDataPage()
         displayTabContent(event,'matchTabContent');
         showAllMatchDataTable();
     });
+    showAllPitDataTable();
     $('#matchTab').trigger('click');
 }
 
@@ -239,23 +240,18 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     var event = getCurrEvent();
     var cname = season + ' pitQuestions';
     var questionsArr = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //first element to second to last element of .split arr
-    $('#allTeamsPitAnswers').html('');
+    
+    var initialTableHTML = '<tr class="teamRow"><th class="allPitTableHeader">Team #</th></tr>';
+    $('#allTeamsPitAnswers').html(initialTableHTML);
     $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
-    var w3RowClassText = 'w3-row w3-center tableBorders constrainWidth'; //classes for each row
-    var innerDivClassText = `w3-col scoutingTableRow question w3-center constrainWidth tableBorder-right`; //classes for each cell inside
-    
-    //adding initial rows and initial column values for those rows
-    var teamHeaderCell = `<div class='${innerDivClassText} allPitTableHeader'><h4>Team #</h4></div>`;
-    var teamRow = `<div class='${w3RowClassText} teamRow'>${teamHeaderCell}</div>`;
-    $('#allTeamsPitAnswers').append(teamRow);
-
+    //adding initial rows with question headers
     for (var i = 0; i < questionsArr.length; i++) //for each question
     {
         var questionWithNoSpaces = stripAlphaNumerics(questionsArr[i]);
-        var headerCell = `<div class='${innerDivClassText} allPitTableHeader'><h4>${questionsArr[i]}</h4></div>`;
-        var newRow = `<div class="${w3RowClassText} ${questionWithNoSpaces}"> ${headerCell}</div>`; //the question is one of the classes (w/o whitespaces), will help with adding team data
-        $('#allTeamsPitAnswers').append(newRow);
+        var questionHeaderHTML = `<th class="allPitTableHeader">${questionsArr[i]}</th>`;
+        var newRowHTML = `<tr class='${questionWithNoSpaces}'>${questionHeaderHTML}</tr>`; //the question is one of the classes (w/o whitespaces), will help with adding team data
+        $('#allTeamsPitAnswers').append(newRowHTML);
     }
 
 
@@ -269,8 +265,8 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
         var team = keys[j].split('/')[3]; //based on structure of pitStorageObjName
                 
         //add the team # to the team row
-        var initialTeamDiv = `<div class='${innerDivClassText}'><h4>Team ${team}</h4></div>`;
-        $('#allTeamsPitAnswers .teamRow').append(initialTeamDiv);
+        var initialTeamCell = `<td>Team ${team}</td>`;
+        $('#allTeamsPitAnswers .teamRow').append(initialTeamCell);
 
         //add rest of team values in current object
         var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
@@ -280,22 +276,13 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
         {
             var question = innerKeys[k];
             var answer = pitObjValue[question];
-            newCellHTML = `<div class='${innerDivClassText}'> <h4>${answer}</h4> </div>`;
+            newCellHTML = `<td>${answer}</td>`;
 
             //row class is the question
             var questionWithNoSpaces = stripAlphaNumerics(question);
-            console.log(questionWithNoSpaces);
             $(`#allTeamsPitAnswers .${questionWithNoSpaces}`).append(newCellHTML);
         }
     }
-
-    //setting all columns to be the same width
-    var numColumns = $('.teamRow').children().length; //# of columns + 1, for the team# column
-    var widthString = `s${parseInt(12/numColumns)}`;
-    $('#allTeamsPitAnswers').children().children().each(function()
-    {
-        $(this).addClass(widthString);
-    });
 }
 
 //removes all whitespace inside a string and returns the result
