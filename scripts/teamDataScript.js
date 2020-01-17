@@ -475,6 +475,16 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
     $('#allMatchAnswersTableTitle').text(`All Match Data for the ${event} event.`);
 }
 
+//takes in a html line and sanitizes it (see github comment on it in PR 7)
+function sanitizeHTMLLine(HTML)
+{
+    var result = HTML;
+    result.replace('&','&amp'); //dealing with & characters
+    result.replace('<','&alt;'); //dealing with < characters so they don't get confused with html code
+    result.replace(/(\r\n|\n|\r)/gm, "<br/>"); //dealing with new lines/carriage returns
+
+    return result;
+}
 
 $(document).ready(function(){
     loadTDataPage();
