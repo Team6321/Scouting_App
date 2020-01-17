@@ -3,7 +3,7 @@
 function loadTDataPage()
 {
     show_TDataModal_Or_IntroText();
-    displayTeamRadioList();
+    displayTeamSelectList();
     setCookie('currCheckedTeam','',750);
 
     $('.js_clear_on_load').val("").html("");
@@ -12,6 +12,7 @@ function loadTDataPage()
         displayTabContent(event,'matchTabContent');
         showAllMatchDataTable();
     });
+    showAllPitDataTable();
     $('#matchTab').trigger('click');
 }
 
@@ -65,7 +66,7 @@ function closeTDataModal() //onclick for x button in modal
     $('#teamDataAlertModal').hide();
 }
 
-function displayTeamRadioList()
+function displayTeamSelectList()
 {
     var season = getCurrSeason();
     var event = getCurrEvent();
@@ -78,21 +79,21 @@ function displayTeamRadioList()
         var teamNumber = keys[i];
         var teamName = teamsJSON[teamNumber];
 
-        var newItem = `<label><input type='radio' name='teamListItem' value='${teamNumber}'>${teamNumber}: ${teamName}</label><br>`;
-        $("#teamRadioList").append(newItem); //add to radiolist
+        var newItem = `<option value='${teamNumber}'>${teamNumber}: ${teamName}</option>`
+        $("#teamSelectList").append(newItem); //add to selectlist
     }
 }
 
-//onchange for the team radio list
+//onchange for the team select list
 function changeCurrTeam()
 {
-    var currTeamNumber = $("input[name=teamListItem]:checked","#teamRadioList").val(); //in prev method, val of each radio item is the tNum
+    var currTeamNumber = $('#teamSelectList').val();
     var currSeason = getCurrSeason();
     var currEvent = getCurrEvent();
     var cname = 'currCheckedTeam';
     var currTeamName = getTeams(currSeason,currEvent)[currTeamNumber];
 
-    if (currSeason.trim().length == 0 || currEvent.trim().length==0 || currTeamNumber == 0)
+    if (currSeason.trim().length == 0 || currEvent.trim().length==0 || currTeamNumber == 0) //0 if select text is 'Choose a team:'
     {
         $("#teamStatsTitle").text('');
         return;
@@ -135,76 +136,82 @@ function loadPit()
     var season = getCurrSeason();
     var cname = season + ' pitQuestions';
     var event = getCurrEvent();
-    var questions = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR);
+    var questions = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1);
     var currTeam = getCurrTeamNumber();
 
     showAllPitDataTable();
     if (currTeam == 0)
     {
-        $('#pitQuestionTable').html('');
+        $('#pitQuestionTableHeader').html('');
+        $('#pitQuestionTableBody').html('');
         $('#pitTableConfirmation').text('No team selected.');
         return;
     }
 
-    var tableHeader = '<tr> <th><b>Question</b></th> <th><b>Answer</b></th> </tr>';
-    $('#pitQuestionTable').html(tableHeader); //default start of table
+    var tableHeader = '<div class="w3-col m6 s12 w3-center"> <h4>Question</h4> </div>'+
+                        '<div class="w3-col m6 s12 w3-center"> <h4>Answer</h4> </div>';
+    $('#pitQuestionTableHeader').html(tableHeader); //default start of table
 
+    $('#pitQuestionTableBody').html('');
     var localStorageObjName = pitAnswerObjName(season,event,currTeam);
     var team_QA_pairs = JSON.parse(localStorage.getItem(localStorageObjName)); //get QA pairs that may/may not have already been stored
-    var teamsAlreadyStoredBool = false;
-    if (checkForNull(team_QA_pairs))
+    
+    var alreadyStored = false;
+    var QA_keys = [];
+    if (checkForNull(team_QA_pairs)) //if data is stored
     {
-        teamsAlreadyStoredBool = true;
+        alreadyStored = true;
+        QA_keys = Object.keys(team_QA_pairs);
     }
 
-    for (var i = 0; i < questions.length;i++)
+    for (var i = 0; i < questions.length; i++) //iterate through questions array in cookie
     {
         var question = questions[i];
-        if (question.trim().length == 0) return;
-        
-        //loop through already stored local object: if question has an answer already stored then put that in the input box. Else, leave it empty (to fill in)
-        var potentialAnswer = '';
-        if (teamsAlreadyStoredBool == false) //len of loc storage obj == 0, nothing stored yet
+        var answer = ''; //default, in case something is stored
+        if (alreadyStored)
         {
-            potentialAnswer = '';
-        } else //len of loc storage obj = 1, something stored inside, now find answer to curr question
-        {
-            for (var j = 0; j < team_QA_pairs.length; j++)
+            if (QA_keys.includes(question)) //if answer is saved for it yet
             {
-                var pair = team_QA_pairs[j];
-                var answer = pair[question];
-                if (!checkForNull(answer))
-                {
-                    continue;
-                }
-                potentialAnswer = answer;
+                answer = team_QA_pairs[question];
             }
         }
 
-        var inputHTML = `<input type="text" value="${potentialAnswer}" class="answer">`; //pot answer is either '' or what is stored
-        var newTRHtml = `<tr><td class='question scoutingTableRow'>${question}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
+        var classText = 'w3-col l6 w6 s12 question'; 
+        var inputHTML = `<textarea width='80%' style='resize:vertical' value='${answer}' class='answer'>${answer}</textarea>`; //textarea
+        var insideHtml = `<div class='${classText}'><h4>${question}</h4></div> <div class='${classText}'>${inputHTML}</div>`; //both divs
         
-        $('#pitQuestionTable').append(newTRHtml);
+        var w3RowClassText = 'w3-row scoutingTableRow tableBorders tableBorders-NoTop';
+
+        //only put a top border on the first question row for styling: making sure top/bottom borders dont overlap for non-first rows
+        var newTRHtml = `<div class='${w3RowClassText}'> ${insideHtml} </div>`;
+
+        $('#pitQuestionTableBody').append(newTRHtml);
     }
+
+    //update size of pit textareas based on text height
+    autosize($('.answer'));
 }
 
 function savePitAnswers() //onclick for save pit button
 {
-    //using local storage to save pit answers, one localStorage obj per team per event
-    // { '/{season}/{event}/{team}/pit answers' : {{question1}:{answer1}, {question2}:{answer2}...} }
-    //local storage obj will hold an array of q/a object pairs
+    //dictionary with key:value being question:answer
 
     $('#pitTableConfirmation').text('Saving...');
     var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
 
-    var all_team_QA_pairs_obj = [];
+    var all_team_QA_pairs_obj = {};
     var areAnyFieldsBlank = false;
 
-    $('#pitQuestionTable tr').each(function(){ //for each row
+    $('#pitQuestionTableBody .w3-row').each(function(){ //each w3-row has 2 divs with a h4 and a textarea underneath them, respectively
         var question = $(this).find('.question').text();
         var answer = $(this).find('.answer').val();
+
+        if (question === 'Question') //if current row is a header
+        {
+            return true;
+        }
 
         if (typeof(answer) != 'undefined') //if its not the header and is really blank
         {
@@ -213,12 +220,8 @@ function savePitAnswers() //onclick for save pit button
                 areAnyFieldsBlank = true;
             }
         }
-        var pair = {};
-        pair[question] = answer;
-        if (JSON.stringify(pair) != '{}') //first row reads {} as its reading the table header
-        {
-            all_team_QA_pairs_obj.push(pair);
-        }
+        
+        all_team_QA_pairs_obj[question] = answer;
     });
 
     if (areAnyFieldsBlank)
@@ -232,26 +235,29 @@ function savePitAnswers() //onclick for save pit button
     
     $('#pitTableConfirmation').text('Answers saved.');
     showAllPitDataTable();
-}
+}   
 
 function showAllPitDataTable() //shows pit stats of all teams for the current event in one table
 {
     var season = getCurrSeason();
     var event = getCurrEvent();
     var cname = season + ' pitQuestions';
-    var questionsArr = getCookie(cname).split('Ω').slice(0,-1); //first element to second to last element of .split arr
-    $('#allTeamsPitAnswers').html('');
+    var questionsArr = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //first element to second to last element of .split arr
+    
+    var initialTableHTML = '<tr question="pitTeamRow"><th class="allPitTableHeader">Team #</th></tr>';
+    $('#allTeamsPitAnswers').html(sanitizeHTMLLine(initialTableHTML));
     $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
-    var tableHeader = '<tr><th class="allTeamsRow">Team #</th>'; //top-left most cell
-    for (var i = 0; i < questionsArr.length; i++)
+    //adding initial rows with question headers
+    for (var i = 0; i < questionsArr.length; i++) //for each question
     {
-
-        tableHeader += `<th>${questionsArr[i]}</th>`;
+        var questionHeaderHTML = `<th class="allPitTableHeader">${questionsArr[i]}</th>`;
+        var newRowHTML = `<tr question='${questionsArr[i]}'>${questionHeaderHTML}</tr>`; //the question attribute will help with adding team data
+        $('#allTeamsPitAnswers').append(sanitizeHTMLLine(newRowHTML));
     }
-    tableHeader += '</tr>'; //end of row
-    $('#allTeamsPitAnswers').html(tableHeader); //default start of table
 
+
+    //adding team data
     var keys = Object.keys(localStorage);
     var pitNameStarter = `/${season}/${event}/`; //ensures that only teams in curr season/event appear
     for (var j = 0; j < keys.length; j++) //iterate through localStorage objects
@@ -259,21 +265,31 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
         if (!keys[j].endsWith('pit') || !keys[j].startsWith(pitNameStarter)) continue;
 
         var team = keys[j].split('/')[3]; //based on structure of pitStorageObjName
-        var newRowHTML = `<tr><td class='allTeamsRow'>${team}</td>`;
+                
+        //add the team # to the team row
+        var initialTeamCell = `<td>Team ${team}</td>`;
+        $(`tr[question='pitTeamRow']`).append(sanitizeHTMLLine(initialTeamCell));
+
+        //add rest of team values in current object
         var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
         var innerKeys = Object.keys(pitObjValue);
-
-        for (var k = 0; k < innerKeys.length; k++) //starts at 1 because first value is blank, it reads the table header
+        
+        for (var k = 0; k < innerKeys.length; k++)
         {
-            var pair = pitObjValue[k];
-            var key = Object.keys(pair)[0];
-            var answer = pair[key];
-            newRowHTML += `<td class='allTeamsRow'>${answer}</td>`;
-        }
-        //newRowHTML += '</tr>' //end of row
+            var question = innerKeys[k];
+            var answer = pitObjValue[question];
+            newCellHTML = `<td>${answer}</td>`;
 
-        $('#allTeamsPitAnswers').append(newRowHTML);
+            //row 'question' attribute is the question
+            $(`tr[question='${question}']`).append(sanitizeHTMLLine(newCellHTML));
+        }
     }
+}
+
+//removes all whitespace inside a string and returns the result
+function stripAlphaNumerics(string)
+{
+    return string.replace(/\W/g, '');
 }
 
 
@@ -281,6 +297,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
 //Match Stuff
 function loadMatch()
 {
+    showAllMatchDataTable();
     $('#currMatchHeader').text('');
     var season = getCurrSeason();
     var event = getCurrEvent();
@@ -293,7 +310,7 @@ function loadMatch()
     }
 
     var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency/Answer</b></th> </tr>';
-    $('#matchQuestionTable').html(tableHeader); //default start of table
+    $('#matchQuestionTable').html(sanitizeHTMLLine(tableHeader)); //default start of table
 
     //retrieve elements for current season
     var cname = `/season_config/${season}/` //starter bit of season_config_name
@@ -301,7 +318,7 @@ function loadMatch()
 
     var matchInputHTML = `<input type="number" class="matchNumInput match-frequency js_clear_on_load">`;
     var matchRow = `<tr> <td class="match-element scoutingTableRow">Match #</td> <td class="scoutingTableRow">${matchInputHTML}</td> </tr>`;
-    $('#matchQuestionTable').append(matchRow); //default for all teams: row for inputting what match it was
+    $('#matchQuestionTable').append(sanitizeHTMLLine(matchRow)); //default for all teams: row for inputting what match it was
     for (var i = 0; i < cookieList.length; i++)
     {
         var currCName = cookieList[i].trim().split('=')[0];
@@ -315,9 +332,11 @@ function loadMatch()
         var elementText = `${element}`;
         var newTRHtml = `<tr><td class='match-element scoutingTableRow'>${elementText}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
         
-        $('#matchQuestionTable').append(newTRHtml);   
+        $('#matchQuestionTable').append(sanitizeHTMLLine(newTRHtml));   
     }
-    showAllMatchDataTable();
+    var customNotesInputHTML = `<input type="text" class="match-frequency js_clear_on_load">`; //for custom notes each match
+    var customNotesRow = `<tr> <td class="match-element scoutingTableRow">Custom Notes</td> <td class="scoutingTableRow">${customNotesInputHTML}</td> </tr>`;
+    $('#matchQuestionTable').append(sanitizeHTMLLine(customNotesRow));
 }
 
 function saveMatchAnswers()
@@ -328,7 +347,7 @@ function saveMatchAnswers()
     var team = getCurrTeamNumber();
 
     var match = 0;
-    var element_answer_pairs = [];
+    var element_answer_pairs = {};
     var areAnyFieldsBlank = false;
 
     $('#matchQuestionTable tr').each(function(){ //for each row
@@ -343,16 +362,15 @@ function saveMatchAnswers()
 
         if (typeof(answer) != 'undefined') //if its not the header and is really blank
         {
-            if (answer.trim().length == 0)
+            if (answer.trim().length == 0 && element != 'Custom Notes') //custom notes is not a required answer, just a feature
             {
                 areAnyFieldsBlank = true;
             }
         }
-        var pair = {};
-        pair[element] = answer;
-        if (JSON.stringify(pair) != '{}') //first row reads {} as its reading the table header
+
+        if (element != 'Element') //first row reads 'Element' as its reading the table header
         {
-            element_answer_pairs.push(pair);
+            element_answer_pairs[element] = answer;
         }
     });
 
@@ -364,7 +382,6 @@ function saveMatchAnswers()
 
     //same thing as pit answers: {'/season/event/team/match' : '{ball:2},{hatch:3}...'}
     var locStrObjName = matchAnswerObjName(season,event,team,match);
-    var objVal = JSON.stringify(element_answer_pairs); //arr to string conversion
     localStorage.setItem(locStrObjName,JSON.stringify(element_answer_pairs));
 
     $('#matchTableConfirmation').text('Answers saved.');
@@ -392,13 +409,16 @@ function showAllMatchDataTable()
     }
 
     //default the table (make it blank and start with the header)
-    var tableHeader = '<tr><th class="allTeamsRow">Team #</th> <th>Match #</th>'
+    var startOfTable = '<tr element="matchTeamRow"><th class="allMatchTableHeader">Team #</th></tr> <tr element="matchRow"><th class="allMatchTableHeader">Match #</th></tr>';
+    $('#allMatchAnswers').html(sanitizeHTMLLine(startOfTable));
+
+    //using element attribute to help finding which row to add the cell to
     for (var i = 0; i < questionsArr.length; i++)
     {
-        tableHeader += `<th>${questionsArr[i]}</th>`;
+        var newRow = `<tr element='${questionsArr[i]}'><th class="allMatchTableHeader">${questionsArr[i]}</th></tr>`;
+        $('#allMatchAnswers').append(sanitizeHTMLLine(newRow));
     }
-    tableHeader += '</tr>';
-    $('#allMatchAnswers').html(tableHeader);
+    $('#allMatchAnswers').append(sanitizeHTMLLine('<tr element="customNotesRow"><th class="allMatchTableHeader">Custom Notes</th></tr>')); //for custom notes
 
     //add match data from all saved teams, for the curr checked match
     var keys = Object.keys(localStorage);
@@ -425,27 +445,46 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
             if (!currKey.includes('Match Data')) continue;
 
             if (!currKey.includes(currTeam)) continue;
-
+            
             //now, since the team matches, display each one
             var currValue = JSON.parse(localStorage.getItem(currKey));
             var innerKeys = Object.keys(currValue);
 
-            var newRowHTML = `<tr><td class="allTeamsRow">${currTeam}</td>`;
+            var newCellHTML = `<td>${currTeam}</td>`;
+            $('tr[element="matchTeamRow"]').append(sanitizeHTMLLine(newCellHTML));
 
             for (var k = 0; k < innerKeys.length; k++) //displaying answers to each question
             {
-                var pair = currValue[k];
-                var element = Object.keys(pair)[0]; //pair has only 1 element/value
-                var freq = pair[element];
-                newRowHTML += `<td class="allTeamsRow">${freq}</td>`
-            }
+                var element = innerKeys[k];
+                var freq = currValue[element];
 
-            $('#allMatchAnswers').append(newRowHTML);
+                if (element == 'Match #') //if its reading a match num
+                {
+                    $(`tr[element='matchRow']`).append(sanitizeHTMLLine(`<td>${freq}</td>`));    
+                } else if (element == 'Custom Notes') //if its reading a custom notes section
+                {
+                    $(`tr[element='customNotesRow']`).append(sanitizeHTMLLine(`<td>${freq}</td>`));    
+                } else //just a regular element/answer
+                {
+                    newCellHTML = `<td>${freq}</td>`;
+                    $(`tr[element='${element}']`).append(sanitizeHTMLLine(newCellHTML));
+                }
+            }
         }
     }
     $('#allMatchAnswersTableTitle').text(`All Match Data for the ${event} event.`);
 }
 
+//takes in a html line and sanitizes it (see github comment on it in PR 7)
+function sanitizeHTMLLine(HTML)
+{
+    var result = HTML;
+    result.replace('&','&amp'); //dealing with & characters
+    result.replace('<','&lt;'); //dealing with < characters so they don't get confused with html code
+    result.replace(/(\r\n|\n|\r)/gm, "<br/>"); //dealing with new lines/carriage returns
+
+    return result;
+}
 
 $(document).ready(function(){
     loadTDataPage();
