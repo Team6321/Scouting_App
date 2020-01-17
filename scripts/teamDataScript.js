@@ -176,8 +176,8 @@ function loadPit()
             }
         }
 
-        var classText = 'w3-col l6 w6 s12 question w3-center'; 
-        var inputHTML = `<textarea width='50em' style='resize:vertical' value='${answer}' class='answer'>${answer}</textarea>`; //textarea
+        var classText = 'w3-col l6 w6 s12 question'; 
+        var inputHTML = `<textarea width='80%' style='resize:vertical' value='${answer}' class='answer'>${answer}</textarea>`; //textarea
         var insideHtml = `<div class='${classText}'><h4>${question}</h4></div> <div class='${classText}'>${inputHTML}</div>`; //both divs
         
         var w3RowClassText = 'w3-row scoutingTableRow tableBorders tableBorders-NoTop';
@@ -208,6 +208,11 @@ function savePitAnswers() //onclick for save pit button
         var question = $(this).find('.question').text();
         var answer = $(this).find('.answer').val();
 
+        if (question == 'Question') //if first row is the table Header
+        {
+            continue;
+        }
+
         if (typeof(answer) != 'undefined') //if its not the header and is really blank
         {
             if (answer.trim().length == 0)
@@ -215,10 +220,8 @@ function savePitAnswers() //onclick for save pit button
                 areAnyFieldsBlank = true;
             }
         }
-        if (question != 'Question') //first row reads 'Question' as its a table header
-        {
-            all_team_QA_pairs_obj[question] = answer;
-        }
+        
+        all_team_QA_pairs_obj[question] = answer;
     });
 
     if (areAnyFieldsBlank)
