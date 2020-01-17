@@ -245,7 +245,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     var questionsArr = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //first element to second to last element of .split arr
     
     var initialTableHTML = '<tr question="pitTeamRow"><th class="allPitTableHeader">Team #</th></tr>';
-    $('#allTeamsPitAnswers').html(initialTableHTML);
+    $('#allTeamsPitAnswers').html(sanitizeHTMLLine(initialTableHTML));
     $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
     //adding initial rows with question headers
@@ -253,7 +253,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     {
         var questionHeaderHTML = `<th class="allPitTableHeader">${questionsArr[i]}</th>`;
         var newRowHTML = `<tr question='${questionsArr[i]}'>${questionHeaderHTML}</tr>`; //the question attribute will help with adding team data
-        $('#allTeamsPitAnswers').append(newRowHTML);
+        $('#allTeamsPitAnswers').append(sanitizeHTMLLine(newRowHTML));
     }
 
 
@@ -268,7 +268,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
                 
         //add the team # to the team row
         var initialTeamCell = `<td>Team ${team}</td>`;
-        $(`tr[question='pitTeamRow']`).append(initialTeamCell);
+        $(`tr[question='pitTeamRow']`).append(sanitizeHTMLLine(initialTeamCell));
 
         //add rest of team values in current object
         var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
@@ -281,7 +281,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
             newCellHTML = `<td>${answer}</td>`;
 
             //row 'question' attribute is the question
-            $(`tr[question='${question}']`).append(newCellHTML);
+            $(`tr[question='${question}']`).append(sanitizeHTMLLine(newCellHTML));
         }
     }
 }
@@ -310,7 +310,7 @@ function loadMatch()
     }
 
     var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency/Answer</b></th> </tr>';
-    $('#matchQuestionTable').html(tableHeader); //default start of table
+    $('#matchQuestionTable').html(sanitizeHTMLLine(tableHeader)); //default start of table
 
     //retrieve elements for current season
     var cname = `/season_config/${season}/` //starter bit of season_config_name
@@ -318,7 +318,7 @@ function loadMatch()
 
     var matchInputHTML = `<input type="number" class="matchNumInput match-frequency js_clear_on_load">`;
     var matchRow = `<tr> <td class="match-element scoutingTableRow">Match #</td> <td class="scoutingTableRow">${matchInputHTML}</td> </tr>`;
-    $('#matchQuestionTable').append(matchRow); //default for all teams: row for inputting what match it was
+    $('#matchQuestionTable').append(sanitizeHTMLLine(matchRow)); //default for all teams: row for inputting what match it was
     for (var i = 0; i < cookieList.length; i++)
     {
         var currCName = cookieList[i].trim().split('=')[0];
@@ -332,11 +332,11 @@ function loadMatch()
         var elementText = `${element}`;
         var newTRHtml = `<tr><td class='match-element scoutingTableRow'>${elementText}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
         
-        $('#matchQuestionTable').append(newTRHtml);   
+        $('#matchQuestionTable').append(sanitizeHTMLLine(newTRHtml));   
     }
     var customNotesInputHTML = `<input type="text" class="match-frequency js_clear_on_load">`; //for custom notes each match
     var customNotesRow = `<tr> <td class="match-element scoutingTableRow">Custom Notes</td> <td class="scoutingTableRow">${customNotesInputHTML}</td> </tr>`;
-    $('#matchQuestionTable').append(customNotesRow);
+    $('#matchQuestionTable').append(sanitizeHTMLLine(customNotesRow));
 }
 
 function saveMatchAnswers()
@@ -410,15 +410,15 @@ function showAllMatchDataTable()
 
     //default the table (make it blank and start with the header)
     var startOfTable = '<tr element="matchTeamRow"><th class="allMatchTableHeader">Team #</th></tr> <tr element="matchRow"><th class="allMatchTableHeader">Match #</th></tr>';
-    $('#allMatchAnswers').html(startOfTable);
+    $('#allMatchAnswers').html(sanitizeHTMLLine(startOfTable));
 
     //using element attribute to help finding which row to add the cell to
     for (var i = 0; i < questionsArr.length; i++)
     {
         var newRow = `<tr element='${questionsArr[i]}'><th class="allMatchTableHeader">${questionsArr[i]}</th></tr>`;
-        $('#allMatchAnswers').append(newRow);
+        $('#allMatchAnswers').append(sanitizeHTMLLine(newRow));
     }
-    $('#allMatchAnswers').append('<tr element="customNotesRow"><th class="allMatchTableHeader">Custom Notes</th></tr>'); //for custom notes
+    $('#allMatchAnswers').append(sanitizeHTMLLine('<tr element="customNotesRow"><th class="allMatchTableHeader">Custom Notes</th></tr>')); //for custom notes
 
     //add match data from all saved teams, for the curr checked match
     var keys = Object.keys(localStorage);
@@ -451,7 +451,7 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
             var innerKeys = Object.keys(currValue);
 
             var newCellHTML = `<td>${currTeam}</td>`;
-            $('tr[element="matchTeamRow"]').append(newCellHTML);
+            $('tr[element="matchTeamRow"]').append(sanitizeHTMLLine(newCellHTML));
 
             for (var k = 0; k < innerKeys.length; k++) //displaying answers to each question
             {
@@ -460,14 +460,14 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
 
                 if (element == 'Match #') //if its reading a match num
                 {
-                    $(`tr[element='matchRow']`).append(`<td>${freq}</td>`);    
+                    $(`tr[element='matchRow']`).append(sanitizeHTMLLine(`<td>${freq}</td>`));    
                 } else if (element == 'Custom Notes') //if its reading a custom notes section
                 {
-                    $(`tr[element='customNotesRow']`).append(`<td>${freq}</td>`);    
+                    $(`tr[element='customNotesRow']`).append(sanitizeHTMLLine(`<td>${freq}</td>`));    
                 } else //just a regular element/answer
                 {
                     newCellHTML = `<td>${freq}</td>`;
-                    $(`tr[element='${element}']`).append(newCellHTML);
+                    $(`tr[element='${element}']`).append(sanitizeHTMLLine(newCellHTML));
                 }
             }
         }
@@ -480,7 +480,7 @@ function sanitizeHTMLLine(HTML)
 {
     var result = HTML;
     result.replace('&','&amp'); //dealing with & characters
-    result.replace('<','&alt;'); //dealing with < characters so they don't get confused with html code
+    result.replace('<','&lt;'); //dealing with < characters so they don't get confused with html code
     result.replace(/(\r\n|\n|\r)/gm, "<br/>"); //dealing with new lines/carriage returns
 
     return result;
