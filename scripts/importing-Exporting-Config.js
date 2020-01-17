@@ -156,13 +156,13 @@ function returnTeamData(season,eventsArr) //returns array to be the value of a t
 
                 if (curr_loc_Strg_key.includes('Match Data')) //add to match_Obj
                 {
-                    var match_Data_Arr = JSON.parse(localStorage[curr_loc_Strg_key]); //is an array of smaller element/frequency object pairs
+                    var match_Data_Arr = JSON.parse(localStorage[curr_loc_Strg_key]); //is a dictionary of element/frequency object pairs
                     match_Obj_Value.push(match_Data_Arr);
                 }
 
                 if (curr_loc_Strg_key.includes('pit')) //add to pit_Obj
                 {
-                    var pit_Data_Arr = JSON.parse(localStorage[curr_loc_Strg_key]); //is an array of smaller Q/A object pairs
+                    var pit_Data_Arr = JSON.parse(localStorage[curr_loc_Strg_key]); //is a dictionary of Q/A object pairs
                     pit_Obj_Value = pit_Data_Arr;
                 }
             }

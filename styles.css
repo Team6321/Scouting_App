@@ -133,9 +133,57 @@ table, th, td
   padding-top: 12px;
 }
 
+.allPitTableHeader, .allMatchTableHeader
+{
+  background-color:maroon;
+  color:gold;
+}
+
+#allTeamsPitAnswers-Div, #allMatchAnswers-Div
+{
+  max-width: 800px;
+}
+
+#allTeamsPitAnswers, #allMatchAnswers
+{
+  display:block;
+  overflow-x:auto;
+}
+
+#allTeamsPitAnswers *, #allMatchAnswers *
+{
+  padding-bottom: 12px;
+  padding-top: 12px;
+}
+
+.allPitTableHeader, .allMatchTableHeader
+{
+  border-bottom: 2px solid gold;
+}
+
+.tableBorders
+{
+  border: 2px solid maroon;
+}
+
+.tableBorder-right:not(:last-child)
+{
+  border-right: 2px solid maroon;
+}
+
+table .tableBorders-NoTop:not(:first-child)
+{
+  border-top:none;
+}
+
 .question, .match-element, .allTeamsRow
 {
   text-align: center;
+}
+
+.constrainWidth
+{ 
+  overflow-wrap: break-word;
 }
 
 #configExportLink

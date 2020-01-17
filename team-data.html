@@ -12,9 +12,9 @@ layout: basic
 <h3 style='text-align:center' id='tDataIntroText'></h3><br>
 
 <h3 style='text-align:left' id='fieldsetTitle'></h3>
-<fieldset>
-    <form id="teamRadioList" style="font-size:18px" onchange="changeCurrTeam()"></form>
-</fieldset>
+<select id='teamSelectList' onchange = 'changeCurrTeam()'>
+    <option value = '0' selected>Choose a Team:</option selected>
+</select>
 
 <h3 style='text-align:center;text-decoration:underline' id='teamStatsTitle'></h3>
 </body>
@@ -40,18 +40,15 @@ layout: basic
         </h4>
 
         <h3 id='pitScoutingTitle' class='js_clear_on_load'></h3>
-        <table id='pitQuestionTable'>
         
-        </table>
+        <div style = 'background-color:maroon; color:gold' id='pitQuestionTableHeader' class='w3-row w3-hide-small w3-hide-medium'></div>
+
+        <div id='pitQuestionTableBody'></div>
+
         <i>
             <h4 id='pitTableConfirmation' class='js_clear_on_load'></h4>
         </i>
         <button class = "r3-button" id="savePitAnswers">Save</button>
-
-        <br><br>
-        <h3 id='allPitAnswersTitle'></h3>
-        <table id='allTeamsPitAnswers'>
-        </table>
     </div>
 
     
@@ -69,12 +66,23 @@ layout: basic
             <h4 id='matchTableConfirmation' class='js_clear_on_load'></h4>
         </i>
         <button id = 'matchTableSubmit' class = "r3-button">Save</button>
-
-
-        <h3 id='allMatchAnswersTableTitle' class='js_clear_on_load'></h3>
-        <table id='allMatchAnswers' class='js_clear_on_load'>
-
-        </table>
-
     </div>
 </fieldset>
+
+<br><br>
+<h3 id='allPitAnswersTitle'></h3>
+<div id = 'allTeamsPitAnswers-Div'>
+    <table id='allTeamsPitAnswers'>
+        <tr class='teamRow'>
+            <th>Team #</th>
+        </tr>
+    </table>
+</div>
+
+<br><br><br>
+<h3 id='allMatchAnswersTableTitle'></h3>
+<div id='allMatchAnswers-Div'>
+    <table id='allMatchAnswers'>
+        
+    </table>
+</div>
