@@ -208,9 +208,9 @@ function savePitAnswers() //onclick for save pit button
         var question = $(this).find('.question').text();
         var answer = $(this).find('.answer').val();
 
-        if (question == 'Question') //if first row is the table Header
+        if (question === 'Question') //if current row is a header
         {
-            continue;
+            return true;
         }
 
         if (typeof(answer) != 'undefined') //if its not the header and is really blank
@@ -244,16 +244,15 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
     var cname = season + ' pitQuestions';
     var questionsArr = getCookie(cname).split(COOKIE_QUESTION_SEPARATOR).slice(0,-1); //first element to second to last element of .split arr
     
-    var initialTableHTML = '<tr class="teamRow"><th class="allPitTableHeader">Team #</th></tr>';
+    var initialTableHTML = '<tr question="pitTeamRow"><th class="allPitTableHeader">Team #</th></tr>';
     $('#allTeamsPitAnswers').html(initialTableHTML);
     $('#allPitAnswersTitle').text(`All Pit Scouting Data for the ${event} event.`);
 
     //adding initial rows with question headers
     for (var i = 0; i < questionsArr.length; i++) //for each question
     {
-        var questionWithNoSpaces = stripAlphaNumerics(questionsArr[i]);
         var questionHeaderHTML = `<th class="allPitTableHeader">${questionsArr[i]}</th>`;
-        var newRowHTML = `<tr class='${questionWithNoSpaces}'>${questionHeaderHTML}</tr>`; //the question is one of the classes (w/o whitespaces), will help with adding team data
+        var newRowHTML = `<tr question='${questionsArr[i]}'>${questionHeaderHTML}</tr>`; //the question attribute will help with adding team data
         $('#allTeamsPitAnswers').append(newRowHTML);
     }
 
@@ -269,7 +268,7 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
                 
         //add the team # to the team row
         var initialTeamCell = `<td>Team ${team}</td>`;
-        $('#allTeamsPitAnswers .teamRow').append(initialTeamCell);
+        $(`tr[question='pitTeamRow']`).append(initialTeamCell);
 
         //add rest of team values in current object
         var pitObjValue = JSON.parse(localStorage.getItem(keys[j])); //value is an object with more objects inside
@@ -281,9 +280,8 @@ function showAllPitDataTable() //shows pit stats of all teams for the current ev
             var answer = pitObjValue[question];
             newCellHTML = `<td>${answer}</td>`;
 
-            //row class is the question
-            var questionWithNoSpaces = stripAlphaNumerics(question);
-            $(`#allTeamsPitAnswers .${questionWithNoSpaces}`).append(newCellHTML);
+            //row 'question' attribute is the question
+            $(`tr[question='${question}']`).append(newCellHTML);
         }
     }
 }
@@ -411,16 +409,16 @@ function showAllMatchDataTable()
     }
 
     //default the table (make it blank and start with the header)
-    var startOfTable = '<tr class="teamRow"><th class="allMatchTableHeader">Team #</th></tr> <tr class="matchRow"><th class="allMatchTableHeader">Match #</th></tr>';
+    var startOfTable = '<tr element="matchTeamRow"><th class="allMatchTableHeader">Team #</th></tr> <tr element="matchRow"><th class="allMatchTableHeader">Match #</th></tr>';
     $('#allMatchAnswers').html(startOfTable);
 
+    //using element attribute to help finding which row to add the cell to
     for (var i = 0; i < questionsArr.length; i++)
     {
-        var elementWithNoSpaces = stripAlphaNumerics(questionsArr[i]);
-        var newRow = `<tr class='${elementWithNoSpaces}'><th class="allMatchTableHeader">${questionsArr[i]}</th></tr>`;
+        var newRow = `<tr element='${questionsArr[i]}'><th class="allMatchTableHeader">${questionsArr[i]}</th></tr>`;
         $('#allMatchAnswers').append(newRow);
     }
-    $('#allMatchAnswers').append('<tr class="customNotesRow"><th class="allMatchTableHeader">Custom Notes</th></tr>'); //for custom notes
+    $('#allMatchAnswers').append('<tr element="customNotesRow"><th class="allMatchTableHeader">Custom Notes</th></tr>'); //for custom notes
 
     //add match data from all saved teams, for the curr checked match
     var keys = Object.keys(localStorage);
@@ -453,7 +451,7 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
             var innerKeys = Object.keys(currValue);
 
             var newCellHTML = `<td>${currTeam}</td>`;
-            $('#allMatchAnswers .teamRow').append(newCellHTML);
+            $('tr[element="matchTeamRow"]').append(newCellHTML);
 
             for (var k = 0; k < innerKeys.length; k++) //displaying answers to each question
             {
@@ -462,15 +460,14 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
 
                 if (element == 'Match #') //if its reading a match num
                 {
-                    $(`#allMatchAnswers .matchRow`).append(`<td>${freq}</td>`);    
+                    $(`tr[element='matchRow']`).append(`<td>${freq}</td>`);    
                 } else if (element == 'Custom Notes') //if its reading a custom notes section
                 {
-                    $(`#allMatchAnswers .customNotesRow`).append(`<td>${freq}</td>`);    
+                    $(`tr[element='customNotesRow']`).append(`<td>${freq}</td>`);    
                 } else //just a regular element/answer
                 {
-                    var elementOnlyAlphaNum = stripAlphaNumerics(element);
                     newCellHTML = `<td>${freq}</td>`;
-                    $(`#allMatchAnswers .${elementOnlyAlphaNum}`).append(newCellHTML);
+                    $(`tr[element='${element}']`).append(newCellHTML);
                 }
             }
         }
