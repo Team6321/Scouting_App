@@ -160,34 +160,55 @@ function getElementValue(str)
 //updates table based on cookies from checked season
 function setTable(season)
 {
-    $("#scoringTable").html('<tr><th><b>Scoring Method</b></th> <th><b>Points Worth</b></th> </tr>');
-    var cookieList = document.cookie.split(';');
-    for (var i = 0; i < cookieList.length; i++)
+    $("#scoringTable").html('<tr><th><b>Scoring Method</b></th> <th><b>Points Worth</b></th> </tr>'); //default the table to the header
+    var cookieName = season_config_cookie_name(season);
+    var cookieValueObject = JSON.parse(getCookie(cookieName)); //parse object with element/points key/value pairs
+    var elementKeys = Object.keys(cookieValueObject);
+
+    for (var i = 0; i < elementKeys.length; i++) //iterate through elements
     {
-        if (cookieList[i].trim().startsWith('/season_config/' + season))
-        {
-            var elementName = getElementName(cookieList[i]);
-            var elementPoints = getElementValue(cookieList[i]);
-            //console.log('elementName: ' + elementName);
-            //console.log('elementVal: ' + elementPoints);
+        var currElement = elementKeys[i];
+        var currPoints = cookieValueObject[currElement];
 
-            var newTRHtml = "<tr><td>" + elementName + 
-            "</td><td>" + elementPoints + "</td></tr>";
-
-            if ($('#scoringTable').html().indexOf(newTRHtml) < 0)
-            {
-                $('#scoringTable').append(newTRHtml);
-            }
-        } else
-        {
-            $('#scoringTable').val(" ");
-        }
+        var newTRHtml = `<tr><td>${currElement}</td><td>${currPoints}</td></tr>`;
+        $('#scoringTable').append(newTRHtml);
     }
 }
 
-function season_config_cookie_name(season,element)
+function season_config_cookie_name(season)
 {
-    return `/season_config/${ season }/${ element }`;
+    return `/season_config/${ season }/elements`;
+}
+
+function saveElement()
+{
+    var newElementName = $("#elementKey").val().trim();
+    var newElementPoints = $("#elementPoints").val().trim();
+    var season = getCurrSeason();
+    
+    if (newElementName === "" || newElementPoints === "") //if either fields are blank
+    {
+        $('#elementConfirmationBox').html("<i>Please fill in both fields.<\i>");
+        return;
+    } else if (season.trim().length == 0) //if season isn't checked
+    {
+        $("#elementConfirmationBox").html("<i>Please check a season.<\i>");
+        return;
+    }
+
+    var cookieName = season_config_cookie_name(season); //get cookie name
+    var cookieValueString = getCookie(cookieName);
+    //empty object if string is empty, if not, JSON parse it \/ \/ 
+    var cookieValueObject = (cookieValueString.trim().length==0) ? {}:JSON.parse(cookieValueString);
+    cookieValueObject[newElementName] = newElementPoints; //assign new key/value pair to object
+
+    $("#elementConfirmationBox").text(" ");
+    setCookie(cookieName,JSON.stringify(cookieValueObject),750);
+    setTable(season);
+    $("#elementConfirmationBox").html('<i>Element "' + newElementName + '" added.<\i>');
+
+    $("#elementKey").val("").focus();
+    $("#elementPoints").val("");
 }
 
 
@@ -218,52 +239,8 @@ $(document).ready(function()
         if (e.keyCode == Enter_key_code) deleteSpecificElement();
     });
 
-    //adds new element to table, handles things like element already exists and season not checked
-    $("#scoringSaveButton").click(function()
-    {
-        var newElementName = $("#elementKey").val().trim();
-        var newElementPoints = $("#elementPoints").val().trim();
-        
-        if (newElementName !== "" || newElementPoints !== "")
-        {
-            var season = getCurrSeason();
-            if (season.trim().length > 0)
-            {
-                var cookieName = season_config_cookie_name(season,newElementName);
-                var cookieValue = newElementPoints;
-                
-                var cookieList = document.cookie.split(";");
-                var elementAlreadyStored = false;
-                for (var i = 0; i < cookieList.length;i++)
-                {
-                    if (cookieList[i].trim().startsWith('/season_config/' + season))
-                    {
-                        var str = cookieList[i];
-                        var checkerName = str.substring(str.lastIndexOf('/')+1,str.indexOf('='));
-                        if (checkerName == newElementName)
-                        {
-                            elementAlreadyStored = true;
-                            break;
-                        }
-                    }
-                }
-
-                $("#elementConfirmationBox").text(" ");
-                setCookie(cookieName,cookieValue,750);
-                setTable(season);
-                $("#elementConfirmationBox").html('<i>Element "' + newElementName + '" added.<\i>');
-
-                $("#elementKey").val("").focus();
-                $("#elementPoints").val("");
-            } else
-            {
-                $("#elementConfirmationBox").html("<i>Please check a season.<\i>");
-            }
-        } else
-        {
-            $('#elementConfirmationBox').html("<i>Please fill in both fields.<\i>");
-        }      
-    });
+    //adds new element to object stored in cookie and updates the table
+    $("#scoringSaveButton").click(saveElement);
 
 
     //reads questions from text box and overwrites whatever is stored
