@@ -312,28 +312,24 @@ function loadMatch()
     var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency/Answer</b></th> </tr>';
     $('#matchQuestionTable').html(sanitizeHTMLLine(tableHeader)); //default start of table
 
-    //retrieve elements for current season
-    var cname = `/season_config/${season}/` //starter bit of season_config_name
-    var cookieList = document.cookie.split(';');
-
     var matchInputHTML = `<input type="number" class="matchNumInput match-frequency js_clear_on_load">`;
     var matchRow = `<tr> <td class="match-element scoutingTableRow">Match #</td> <td class="scoutingTableRow">${matchInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(sanitizeHTMLLine(matchRow)); //default for all teams: row for inputting what match it was
-    for (var i = 0; i < cookieList.length; i++)
+    
+    //retrieve elements for current season
+    var elementsObj = JSON.parse(getCookie(season_config_cookie_name(season)));
+    var elementKeys = Object.keys(elementsObj);
+    for (var i = 0; i < elementKeys.length; i++)
     {
-        var currCName = cookieList[i].trim().split('=')[0];
-
-        if (!(currCName.startsWith(cname))) continue;
-
-        var element = currCName.substring(currCName.lastIndexOf('/')+1);
-        var value = getCookie(currCName);
+        var element = elementKeys[i];
 
         var inputHTML = `<input type="number" class="match-frequency js_clear_on_load">`;
         var elementText = `${element}`;
         var newTRHtml = `<tr><td class='match-element scoutingTableRow'>${elementText}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
         
-        $('#matchQuestionTable').append(sanitizeHTMLLine(newTRHtml));   
+        $('#matchQuestionTable').append(sanitizeHTMLLine(newTRHtml));
     }
+
     var customNotesInputHTML = `<input type="text" class="match-frequency js_clear_on_load">`; //for custom notes each match
     var customNotesRow = `<tr> <td class="match-element scoutingTableRow">Custom Notes</td> <td class="scoutingTableRow">${customNotesInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(sanitizeHTMLLine(customNotesRow));
@@ -395,27 +391,19 @@ function showAllMatchDataTable()
     var season = getCurrSeason();
     var event = getCurrEvent();
     var team = getCurrTeamNumber();
-    
-    //get all elements in an array
-    var questionsArr = [];
-    var cNameStart = `/season_config/${ season }/`;
-    var cookieList = document.cookie.split(';');
-    for (var i = 0; i < cookieList.length; i++)
-    {
-        if (!cookieList[i].trim().startsWith(cNameStart)) continue;
-        var currCName = cookieList[i].trim().split('=')[0];
-        var element = currCName.substring(currCName.lastIndexOf('/')+1);
-        questionsArr.push(element);
-    }
 
     //default the table (make it blank and start with the header)
     var startOfTable = '<tr element="matchTeamRow"><th class="allMatchTableHeader">Team #</th></tr> <tr element="matchRow"><th class="allMatchTableHeader">Match #</th></tr>';
     $('#allMatchAnswers').html(sanitizeHTMLLine(startOfTable));
 
+    //get all elements in an array
+    var elementsObject = JSON.parse(getCookie(season_config_cookie_name(season)));
+    var elementsArr = Object.keys(elementsObject);
+    
     //using element attribute to help finding which row to add the cell to
-    for (var i = 0; i < questionsArr.length; i++)
+    for (var i = 0; i < elementsArr.length; i++)
     {
-        var newRow = `<tr element='${questionsArr[i]}'><th class="allMatchTableHeader">${questionsArr[i]}</th></tr>`;
+        var newRow = `<tr element='${elementsArr[i]}'><th class="allMatchTableHeader">${elementsArr[i]}</th></tr>`;
         $('#allMatchAnswers').append(sanitizeHTMLLine(newRow));
     }
     $('#allMatchAnswers').append(sanitizeHTMLLine('<tr element="customNotesRow"><th class="allMatchTableHeader">Custom Notes</th></tr>')); //for custom notes
