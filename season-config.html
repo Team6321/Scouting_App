@@ -15,16 +15,23 @@ layout: basic
 <br><br><br><br>
 <h3 id = "seasonQuestionsTitle" style = "text-align: center"></h3>
 
-<h3>Enter in any scoring opportunities in the first text box
-    and how many points that scoring opportunity is
-    worth in the second text box. <br><br>
-    Please enter only phrases for the element name and
-    integers for the points.<br><br>
+<h3>Enter in any scoring opportunities in the first text box and how many points that scoring opportunity is worth in the second text box.
+    <br><br>
+    Also, please enter the type of answer to be expected when answering questions about the scoring opportunity in 
+    the Match Data section of <a href='/event-data.html'>Team Data</a>.<br>
+    For example, if the scoring opportunity was 'ball,' the input type would probably be numeric. <br>
+    However, if the scoring opportunity was 'endgame climb,' the input type would probably be text ('yes the team can', 'no the team can't').
 </h3>
-
+<br><br>
 <fieldset id = "scoringOpportunities">
     <input type="text" id="elementKey" class='js_clear_on_load' placeholder="ball">
     <input type="number" id="elementPoints" class='js_clear_on_load' placeholder = "10">
+    <br>
+    <select>
+        <option value = '0' selected>Input Type:</option selected>
+        <option value = '1'>Numeric</option>
+        <option value = '2'>Text</option>
+    </select>
     <button id="scoringSaveButton" class="r3-button">Save</button>             
 
     <br>
