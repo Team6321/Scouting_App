@@ -322,8 +322,10 @@ function loadMatch()
     for (var i = 0; i < elementKeys.length; i++)
     {
         var element = elementKeys[i];
+        var nestedObject = elementsObj[element]; //input type is in a nested object
+        var inputType = nestedObject['inputType'];
 
-        var inputHTML = `<input type="number" class="match-frequency js_clear_on_load">`;
+        var inputHTML = `<input type="${(inputType==='numeric')?'number':'text'}" class="match-frequency js_clear_on_load">`;
         var elementText = `${element}`;
         var newTRHtml = `<tr><td class='match-element scoutingTableRow'>${elementText}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
         
