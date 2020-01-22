@@ -26,11 +26,10 @@ layout: basic
 <fieldset id = "scoringOpportunities">
     <input type="text" id="elementKey" class='js_clear_on_load' placeholder="ball">
     <input type="number" id="elementPoints" class='js_clear_on_load' placeholder = "10">
-    <br>
-    <select>
+    <select id='elementInputTypeSelect'>
         <option value = '0' selected>Input Type:</option selected>
-        <option value = '1'>Numeric</option>
-        <option value = '2'>Text</option>
+        <option value = 'numeric'>Numeric</option>
+        <option value = 'text'>Text</option>
     </select>
     <button id="scoringSaveButton" class="r3-button">Save</button>             
 
@@ -39,7 +38,8 @@ layout: basic
     <table id = "scoringTable">
         <tr>
             <th><b>Scoring Method</b></th> 
-            <th><b>Points Worth</b></th> 
+            <th><b>Points Worth</b></th>
+            <th><b>Input Type</b></th> 
         </tr>
     </table>
     <h3 id="elementConfirmationBox" class='js_clear_on_load'></h3> <br>

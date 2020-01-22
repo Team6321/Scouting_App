@@ -160,7 +160,7 @@ function getElementValue(str)
 //updates table based on cookies from checked season
 function setTable(season)
 {
-    $("#scoringTable").html('<tr><th><b>Scoring Method</b></th> <th><b>Points Worth</b></th> </tr>'); //default the table to the header
+    $("#scoringTable").html('<tr><th><b>Scoring Method</b></th> <th><b>Points Worth</b></th> <th><b>Input Type</b></th> </tr>'); //default the table to the header
     var cookieName = season_config_cookie_name(season);
     var cookieValueObject = JSON.parse(getCookie(cookieName)); //parse object with element/points key/value pairs
     var elementKeys = Object.keys(cookieValueObject);
@@ -168,9 +168,12 @@ function setTable(season)
     for (var i = 0; i < elementKeys.length; i++) //iterate through elements
     {
         var currElement = elementKeys[i];
-        var currPoints = cookieValueObject[currElement];
+        var nestedObject = cookieValueObject[currElement]; //points and input value are in a nested object
+        
+        var currPoints = nestedObject['points'];
+        var inputType = nestedObject['inputType'];
 
-        var newTRHtml = `<tr><td>${currElement}</td><td>${currPoints}</td></tr>`;
+        var newTRHtml = `<tr><td>${currElement}</td><td>${currPoints}</td><td>${inputType}</td></tr>`;
         $('#scoringTable').append(newTRHtml);
     }
 }
@@ -184,11 +187,12 @@ function saveElement()
 {
     var newElementName = $("#elementKey").val().trim();
     var newElementPoints = $("#elementPoints").val().trim();
+    var elementInputType = $('#elementInputTypeSelect').val();
     var season = getCurrSeason();
     
-    if (newElementName === "" || newElementPoints === "") //if either fields are blank
+    if (newElementName === "" || newElementPoints === "" || elementInputType == '0') //if any fields are blank
     {
-        $('#elementConfirmationBox').html("<i>Please fill in both fields.<\i>");
+        $('#elementConfirmationBox').html("<i>Please fill in all fields and select the proper input type.<\i>");
         return;
     } else if (season.trim().length == 0) //if season isn't checked
     {
@@ -197,13 +201,17 @@ function saveElement()
     }
 
     var cookieName = season_config_cookie_name(season); //get cookie name
-    var cookieValueString = getCookie(cookieName);
-    //empty object if string is empty, if not, JSON parse it \/ \/ 
-    var cookieValueObject = (cookieValueString.trim().length==0) ? {}:JSON.parse(cookieValueString);
-    cookieValueObject[newElementName] = newElementPoints; //assign new key/value pair to object
+    var cookieValueString = getCookie(cookieName); 
+    var storedObject = (cookieValueString.trim().length==0) ? {}:JSON.parse(cookieValueString); //empty object if string is empty, if not, JSON parse it
+    
+    //object needs to have points AND input type, solved with a nested object
+    var objValue = {};
+    objValue['points'] = newElementPoints;
+    objValue['inputType'] = $('#elementInputTypeSelect').val(); //will say 'numeric' or 'text'
+    storedObject[newElementName] = objValue; //assign new key/value pair to object
 
     $("#elementConfirmationBox").text(" ");
-    setCookie(cookieName,JSON.stringify(cookieValueObject),750);
+    setCookie(cookieName,JSON.stringify(storedObject),750);
     setTable(season);
     $("#elementConfirmationBox").html('<i>Element "' + newElementName + '" added.<\i>');
 
