@@ -51,21 +51,16 @@ function getExportData() //returns prettified (tabbed) json.stringify version of
         var questionsArr = []; //for pit questions of a season
         var eventsArr = []; //for events of a season
         
-        var elementStart = `/season_config/${season}/`;
         var pitStart = `${season} pitQuestions`;
         var eventStart = `${season} events`;
         
+        //we know the name of the elements cookie, we can set the object without having to iterating through cookieList
+        elementsObj = JSON.parse(getCookie(season_config_cookie_name(season)));
+
         for (var j = 0; j < cookieList.length; j++)
         {
             var cookie = cookieList[j].trim();
             var cvalue = cookie.substring(cookie.indexOf('=')+1);
-            
-            if (cookie.startsWith(elementStart)) //if cookie contains an element
-            {
-                var elementName = getElementName(cookie);
-                var elementValue = getElementValue(cookie);
-                elementsObj[elementName] = elementValue;
-            }
 
             if (cookie.startsWith(pitStart)) //if cookie contains the pit question list
             {
@@ -237,17 +232,9 @@ function processImportData(obj) //goes through inner objects and assigns values 
         //the seaon object in JSON file
         var seasonObjValues = obj[season]; //has keys like 'elements' and 'pit questions'...
     
-        //set element/value cookies
+        //set cookie with element/points key value pairs
         var elementsObj = seasonObjValues[EXPORT_CONFIG_ELEMENTS_KEY];
-        var elementKeys = Object.keys(elementsObj);
-        for (var j = 0; j < elementKeys.length; j++)
-        {
-            var elementName = elementKeys[j]; //only has one kv pair
-            var elementValue = elementsObj[elementName];
-
-            var cookieName = season_config_cookie_name(season,elementName);
-            setCookie(cookieName,elementValue,750);
-        }
+        setCookie(season_config_cookie_name(season),JSON.stringify(elementsObj),750);
 
         //set pitQuestion cookie
         var pitObjArray = seasonObjValues[EXPORT_CONFIG_PIT_QUESTIONS_KEY];
