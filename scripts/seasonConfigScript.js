@@ -71,7 +71,6 @@ function loadSeasons()
 //onchange function for season radio list
 function seasonSubmit()
 {
-    //var season = $(`input[name=seasonListItem][value="${ currentSeason }"]`).attr('checked', true);
     var season = $("input[name=seasonListItem]:checked","#seasonRadioList").val();
     $("#seasonQuestionsTitle").text("Season specific data for \'" + 
     season + "\'.");
@@ -107,20 +106,13 @@ function deleteCheckedSeason()
 //onclick for delete specific element
 function deleteSpecificElement()
 {
-    var elementToDelete = $('#elementToDelete').val().trim();
-    var cookieList = document.cookie.split(';');
-    if (elementToDelete === '') return;
-
-    var cnameToDelete = '';
-    for (var i = 0; i < cookieList.length; i++)
-    {
-        var currCname = cookieList[i].split('=')[0];
-        if (!currCname.endsWith(elementToDelete)) continue;
-
-        cnameToDelete = currCname;
-    }
-    deleteCookie(cnameToDelete);
     var season = getCurrSeason();
+    var elementToDelete = $('#elementToDelete').val().trim();
+    var elementsCookieName = season_config_cookie_name(season);
+    var elementsObj = JSON.parse(getCookie(elementsCookieName)); //retrieve obj from cookie
+
+    delete elementsObj[elementToDelete]; //delete key and related value
+    setCookie(elementsCookieName,JSON.stringify(elementsObj),750);
     setTable(season);
     $('#elementToDelete').val('').focus();
 }
@@ -217,6 +209,43 @@ function saveElement()
 
     $("#elementKey").val("").focus();
     $("#elementPoints").val("");
+    $('#elementInputTypeSelect').val('0');
+}
+
+function savePitQuestions()
+{
+    var allQuestions = $("#pitScoutingTextBox").val().split(/\r?\n/);
+
+    var currSeason = getCurrSeason();
+    
+    if (currSeason.trim().length == 0)
+    {
+        $("#pitScoutConfirmationBox").html("<i>Please check a season.<\i>");
+        return;
+    }
+    var cookieName = currSeason + " pitQuestions";
+
+    //overwrite whatever is there already
+    setCookie(cookieName,"");
+    
+    var resultString = '';
+    for (var i = 0; i < allQuestions.length;i++) //iterate over all questions
+    {
+        var question = allQuestions[i].toString();
+        if (question.trim().length == 0) //if question is blank
+        {
+            continue;
+        }
+        
+        //cookie --> {season} questions = {q1}Ω{q2}Ω{q3}
+    
+        //Ω is a character that most users can't enter,separator
+        resultString += question + COOKIE_QUESTION_SEPARATOR;
+    }
+
+    setCookie(cookieName,resultString,750);
+    var confirmationText = '<i>Questions saved.<\i><br>';
+    $("#pitScoutConfirmationBox").html(confirmationText);
 }
 
 
@@ -229,8 +258,7 @@ $(document).ready(function()
         if (typeof(currCheckedSeason) !== "undefined")
         {
             setCookie('currCheckedSeason',currCheckedSeason,750);
-            //document.cookie = "currCheckedSeason="+currCheckedSeason+
-            //"; expires=Wed, 1 Jan 2038 12:00:00 UTC; path=/";
+            setPitQuestionTextBox(currCheckedSeason);
         }
     };
 
@@ -239,7 +267,7 @@ $(document).ready(function()
         if (e.keyCode == Enter_key_code) addNewSeason();
     });
 
-    $('#elementPoints').keypress(function(e){
+    $('#elementInputTypeSelect').keypress(function(e){
         if (e.keyCode == Enter_key_code) $('#scoringSaveButton').click();
     });
     
