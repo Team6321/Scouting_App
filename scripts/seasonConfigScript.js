@@ -8,19 +8,15 @@ function addNewSeason()
     if (newSeason == '') return;
 
     var isAlreadyStored = false;
-    if (document.cookie.length > 0) //if cookies are stored at all
+    if (getCookie("seasonList").trim().length == 0) //if nothing is stored yet
     {
-        if (getCookie("seasonList").trim().length > 0)
+        var seasonNames = getCookie("seasonList").split(SEASON_LIST_SEPARATOR);
+        for (var i=0;i<seasonNames.length;i++)
         {
-            var seasonNames = getCookie("seasonList").split(SEASON_LIST_SEPARATOR);
-            for (var i=0;i<seasonNames.length;i++)
+            if (newSeason === seasonNames[i].trim())
             {
-                var val = seasonNames[i].trim();
-                if (newSeason==val.toString())
-                {
-                    isAlreadyStored = true;
-                    break;
-                }
+                isAlreadyStored = true;
+                break;
             }
         }
     }
@@ -46,20 +42,19 @@ function addNewSeason()
 //meant for only the startup of the page
 function loadSeasons()
 {
-    if (document.cookie.length > 0)
+    if (getCookie("seasonList").trim().length==0) //if nothing is stored in that cookie yet
     {
-        if (getCookie("seasonList") !== " ")
+        return;
+    }
+
+    var seasonList = getCookie('seasonList').split(SEASON_LIST_SEPARATOR);
+    //console.log('seasonList:' + seasonList);
+    for (var i=0;i<seasonList.length-1;i++) //length-1 because last will always be "" because name,name,
+    {
+        var cookieVal = seasonList[i];
+        if (!$('#seasonRadioList').html().includes(cookieVal))
         {
-            var seasonList = getCookie('seasonList').split(SEASON_LIST_SEPARATOR);
-            //console.log('seasonList:' + seasonList);
-            for (var i=0;i<seasonList.length-1;i++) //length-1 because last will always be "" because name,name,
-            {
-                var cookieVal = seasonList[i];
-                if (!$('#seasonRadioList').html().includes(cookieVal))
-                {
-                    $("#seasonRadioList").append("<label><input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal + "</label><br>");
-                }
-            }
+            $("#seasonRadioList").append("<label><input type=\"radio\" name=\"seasonListItem\" value=\"" +cookieVal + "\">"+cookieVal + "</label><br>");
         }
     }
 
@@ -281,38 +276,5 @@ $(document).ready(function()
 
     //reads questions from text box and overwrites whatever is stored
     //in the cookie by what is read from the box
-    $("#pitScoutingSubmit").click(function(){
-        var allQuestions = $("#pitScoutingTextBox").val().split(/\r?\n/);
-
-        console.log(allQuestions);
-        var currSeason = getCurrSeason();
-        
-        if (currSeason === "null" || currSeason ===" ")
-        {
-            $("#pitScoutConfirmationBox").html("<i>Please check a season.<\i>");
-        } else
-        {
-            var cookieName = currSeason + " pitQuestions";
-
-            //overwrite whatever is there already
-            setCookie(cookieName,"");
-            for (var i = 0; i < allQuestions.length;i++)
-            {
-                var question = allQuestions[i].toString();
-                if (question != "")
-                {
-                    if (!cookieName.includes(question))
-                    {
-                        //cookie --> {season} questions = {q1}Ω{q2}Ω{q3}
-                    
-                        //Ω is a character that most users can't enter,separator
-                        setCookie(cookieName,getCookie(cookieName) + question + COOKIE_QUESTION_SEPARATOR);
-                        
-                        var confirmationText = '<i>Questions saved.<\i><br>';
-                        $("#pitScoutConfirmationBox").html(confirmationText);
-                    }
-                }
-            }
-        }
-    });
+    $("#pitScoutingSubmit").click(savePitQuestions);
 });
