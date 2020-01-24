@@ -312,10 +312,14 @@ function loadMatch()
     var tableHeader = '<tr> <th><b>Element</b></th> <th><b>Frequency/Answer</b></th> </tr>';
     $('#matchQuestionTable').html(sanitizeHTMLLine(tableHeader)); //default start of table
 
+    //retrieve elements for current season
+    var cname = `/season_config/${season}/` //starter bit of season_config_name
+    var cookieList = document.cookie.split(';');
+
     var matchInputHTML = `<input type="number" class="matchNumInput match-frequency js_clear_on_load">`;
     var matchRow = `<tr> <td class="match-element scoutingTableRow">Match #</td> <td class="scoutingTableRow">${matchInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(sanitizeHTMLLine(matchRow)); //default for all teams: row for inputting what match it was
-    
+
     //retrieve elements for current season
     var elementsObj = JSON.parse(getCookie(season_config_cookie_name(season)));
     var elementKeys = Object.keys(elementsObj);
@@ -397,6 +401,7 @@ function showAllMatchDataTable()
     //default the table (make it blank and start with the header)
     var startOfTable = '<tr element="matchTeamRow"><th class="allMatchTableHeader">Team #</th></tr> <tr element="matchRow"><th class="allMatchTableHeader">Match #</th></tr>';
     $('#allMatchAnswers').html(sanitizeHTMLLine(startOfTable));
+
 
     //get all elements in an array
     var elementsObject = JSON.parse(getCookie(season_config_cookie_name(season)));
