@@ -316,7 +316,7 @@ function loadMatch()
     var cname = `/season_config/${season}/` //starter bit of season_config_name
     var cookieList = document.cookie.split(';');
 
-    var matchInputHTML = `<input type="number" class="matchNumInput match-frequency js_clear_on_load">`;
+    var matchInputHTML = `<input style = "width: 80%" type="number" class="matchNumInput match-frequency js_clear_on_load">`;
     var matchRow = `<tr> <td class="match-element scoutingTableRow">Match #</td> <td class="scoutingTableRow">${matchInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(sanitizeHTMLLine(matchRow)); //default for all teams: row for inputting what match it was
 
@@ -332,7 +332,7 @@ function loadMatch()
         var inputHTML='';
         if (inputType==='numeric') //a number is expected
         {
-            inputHTML = `<input type="number" class="match-frequency js_clear_on_load">`;
+            inputHTML = `<input style = "width: 80%" type="number" class="match-frequency js_clear_on_load">`;
         } else //use a textarea instead
         {
             inputHTML = `<textarea class="match-textAreas match-frequency js_clear_on_load"></textarea>`;
@@ -343,13 +343,12 @@ function loadMatch()
         $('#matchQuestionTable').append(sanitizeHTMLLine(newTRHtml));
     }
 
-    var customNotesInputHTML = `<input type="text" class="match-frequency js_clear_on_load">`; //for custom notes each match
+    var customNotesInputHTML = `<textarea class="match-textAreas match-frequency js_clear_on_load"></textarea>`; //for custom notes each match
     var customNotesRow = `<tr> <td class="match-element scoutingTableRow">Custom Notes</td> <td class="scoutingTableRow">${customNotesInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(sanitizeHTMLLine(customNotesRow));
 
     //set up autosizing for match text areas
     autosize($('.match-textAreas'));
-
 }
 
 function saveMatchAnswers()
