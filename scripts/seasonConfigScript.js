@@ -48,7 +48,6 @@ function loadSeasons()
     }
 
     var seasonList = getCookie('seasonList').split(SEASON_LIST_SEPARATOR);
-    //console.log('seasonList:' + seasonList);
     for (var i=0;i<seasonList.length-1;i++) //length-1 because last will always be "" because name,name,
     {
         var cookieVal = seasonList[i];
@@ -87,12 +86,24 @@ function seasonSubmit()
 function deleteCheckedSeason()
 {
     var currCheckedSeason = getCurrSeason();
-    var seasonList = getCookie('seasonList').trim();
-    var startIndex = seasonList.indexOf(currCheckedSeason);
-    var endIndex = startIndex + currCheckedSeason.length;
-    var newText = seasonList.substring(0,startIndex) + seasonList.substring(endIndex+1);
+
+    if (currCheckedSeason.trim().length == 0)
+    {
+        return;
+    }
+    var seasonList = getCookie('seasonList').trim().split(SEASON_LIST_SEPARATOR).slice(0,-1); //all seasons are in an array
+    var newSeasonString = '';
+    for (var i = 0; i<seasonList.length; i++)
+    {
+        if (seasonList[i] === currCheckedSeason) //skip the current season
+        {
+            continue;
+        }
+
+        newSeasonString += seasonList[i] + SEASON_LIST_SEPARATOR; //append to newSeasonString
+    }
     
-    setCookie('seasonList',newText,750); //update season list cookie
+    setCookie('seasonList',newSeasonString,750); //update season list cookie
     setCookie('currCheckedSeason','',750); //last checked season was deleted, restart that cookie
     deleteCookie(currCheckedSeason + ' pitQuestions'); //clear pit questions cookie
     document.location.reload();
@@ -202,9 +213,9 @@ function saveElement()
     setTable(season);
     $("#elementConfirmationBox").html('<i>Element "' + newElementName + '" added.<\i>');
 
-    $("#elementKey").val("").focus();
     $("#elementPoints").val("");
     $('#elementInputTypeSelect').val('0');
+    $("#elementKey").val("").focus();
 }
 
 function savePitQuestions()

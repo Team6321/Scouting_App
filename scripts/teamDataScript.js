@@ -329,7 +329,14 @@ function loadMatch()
         var nestedObject = elementsObj[element]; //input type is in a nested object
         var inputType = nestedObject['inputType'];
 
-        var inputHTML = `<input type="${(inputType==='numeric')?'number':'text'}" class="match-frequency js_clear_on_load">`;
+        var inputHTML='';
+        if (inputType==='numeric') //a number is expected
+        {
+            inputHTML = `<input type="number" class="match-frequency js_clear_on_load">`;
+        } else //use a textarea instead
+        {
+            inputHTML = `<textarea class="match-textAreas match-frequency js_clear_on_load"></textarea>`;
+        }
         var elementText = `${element}`;
         var newTRHtml = `<tr><td class='match-element scoutingTableRow'>${elementText}</td><td class='scoutingTableRow'>${inputHTML}</td></tr>`;
         
@@ -339,6 +346,10 @@ function loadMatch()
     var customNotesInputHTML = `<input type="text" class="match-frequency js_clear_on_load">`; //for custom notes each match
     var customNotesRow = `<tr> <td class="match-element scoutingTableRow">Custom Notes</td> <td class="scoutingTableRow">${customNotesInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(sanitizeHTMLLine(customNotesRow));
+
+    //set up autosizing for match text areas
+    autosize($('.match-textAreas'));
+
 }
 
 function saveMatchAnswers()
