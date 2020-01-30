@@ -177,7 +177,7 @@ function loadPit()
         }
 
         var classText = 'w3-col l6 w6 s12 question'; 
-        var inputHTML = `<textarea width='80%' style='resize:vertical' value='${answer}' class='answer'>${answer}</textarea>`; //textarea
+        var inputHTML = `<textarea style='resize:vertical; width:80%' value='${answer}' class='answer'>${answer}</textarea>`; //textarea
         var insideHtml = `<div class='${classText}'><h4>${question}</h4></div> <div class='${classText}'>${inputHTML}</div>`; //both divs
         
         var w3RowClassText = 'w3-row scoutingTableRow tableBorders tableBorders-NoTop';
