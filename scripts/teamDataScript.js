@@ -345,7 +345,10 @@ function loadMatch()
 
     var customNotesInputHTML = `<textarea class="match-textAreas match-frequency js_clear_on_load"></textarea>`; //for custom notes each match
     var customNotesRow = `<tr> <td class="match-element scoutingTableRow">Custom Notes</td> <td class="scoutingTableRow">${customNotesInputHTML}</td> </tr>`;
+    var RPInputHTML = `<input style = "width: 80%" type="number" class="match-frequency js_clear_on_load">`; //for ranking points each match
+    var RPRow = `<tr> <td class="match-element scoutingTableRow">Ranking Points</td> <td class="scoutingTableRow">${RPInputHTML}</td> </tr>`;
     $('#matchQuestionTable').append(sanitizeHTMLLine(customNotesRow));
+    $('#matchQuestionTable').append(sanitizeHTMLLine(RPRow));
 
     //set up autosizing for match text areas
     autosize($('.match-textAreas'));
@@ -424,6 +427,7 @@ function showAllMatchDataTable()
         $('#allMatchAnswers').append(sanitizeHTMLLine(newRow));
     }
     $('#allMatchAnswers').append(sanitizeHTMLLine('<tr element="customNotesRow"><th class="allMatchTableHeader">Custom Notes</th></tr>')); //for custom notes
+    $('#allMatchAnswers').append(sanitizeHTMLLine('<tr element="RPRow"><th class="allMatchTableHeader">Ranking Points</th></tr>')); //for ranking points
 
     //add match data from all saved teams, for the curr checked match
     var keys = Object.keys(localStorage);
@@ -469,6 +473,9 @@ function sortMatchOutputTable(savedLocStrKeys) //sorts the table by team and the
                 } else if (element == 'Custom Notes') //if its reading a custom notes section
                 {
                     $(`tr[element='customNotesRow']`).append(sanitizeHTMLLine(`<td>${freq}</td>`));    
+                } else if (element == 'Ranking Points') //if its reading ranking points input
+                {
+                    $(`tr[element='RPRow']`).append(sanitizeHTMLLine(`<td>${freq}</td>`));
                 } else //just a regular element/answer
                 {
                     newCellHTML = `<td>${freq}</td>`;
