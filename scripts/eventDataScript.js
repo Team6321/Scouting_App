@@ -124,33 +124,28 @@ function addNewEvent()
 function deleteCheckedEvent()
 {
     var currCheckedSeason = getCurrSeason();
+    var currCheckedEvent = getCurrEvent();
+    if (currCheckedEvent.trim().length == 0)
+    {
+        return;
+    }
+
     //cookie --> 'deep space events=austinΔfit champsΔ...'
     var cookieName = currCheckedSeason + ' events';
-    var cookieVal = getCookie(cookieName);
-    var currCheckedEvent = getCurrEvent();
-    var cnameEnding = currCheckedSeason + '/' + currCheckedEvent;
-    
-    //splices the eventList cookie and gets rid of the event to be deleted
-    var eventList = cookieVal.trim();
-    var startIndex = eventList.indexOf(currCheckedEvent);
-    var endIndex = startIndex + currCheckedEvent.length;
-    var newText = eventList.substring(0,startIndex) + eventList.substring(endIndex+1);
-    
-    setCookie(cookieName,newText,750); //updates event data cookie
-    setCookie('currCheckedEvent','',750); //last checked event was deleted, restart cookie
-    
-    //delete team names for that event
-    var cname = '';
-    var cookieList = document.cookie.split(';');
-    for (var i = 0; i < cookieList.length;i++)
+    var eventList = getCookie(cookieName).trim().split(EVENT_LIST_COOKIE_SEPARATOR).slice(0,-1);
+    var newEventString = '';
+    for (var i = 0; i < eventList.length; i++)
     {
-        var currCname = cookieList[i].trim().split('=')[0];
-        if (currCname.endsWith(cnameEnding))
+        if (currCheckedEvent === eventList[i]) //skip chosen event to delete
         {
-            cname = currCname;
+            continue;
         }
+
+        newEventString += eventList[i] + EVENT_LIST_COOKIE_SEPARATOR;
     }
-    deleteCookie(cname);
+    
+    setCookie(cookieName,newEventString,750); //updates event data cookie
+    setCookie('currCheckedEvent','',750); //last checked event was deleted, restart cookie
 
     document.location.reload();
 }
