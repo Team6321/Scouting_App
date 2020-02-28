@@ -15,16 +15,20 @@ layout: basic
 <br><br><br><br>
 <h3 id = "seasonQuestionsTitle" style = "text-align: center"></h3>
 
-<h3>Enter in any scoring opportunities in the first text box
-    and how many points that scoring opportunity is
-    worth in the second text box. <br><br>
-    Please enter only phrases for the element name and
-    integers for the points.<br><br>
+<h3>Enter in any things to record actively when watching matches in 
+    the Match Data section of <a href='/event-data.html'>Team Data</a>. <br><br>
+    ● For scoring opportunities like elements and end game actions, enter in their name in the first box and how many points the action is worth in the second box.<br>
+    ● For the input type, choose 'Numeric' to allow users to enter a number value and 'Text' to allow users to enter arbitrary text. Elements and scoring opportunities
+     should be numeric.<br><br>
 </h3>
-
 <fieldset id = "scoringOpportunities">
     <input type="text" id="elementKey" class='js_clear_on_load' placeholder="ball">
     <input type="number" id="elementPoints" class='js_clear_on_load' placeholder = "10">
+    <select id='elementInputTypeSelect'>
+        <option value = '0' selected>Input Type:</option selected>
+        <option value = 'numeric'>Numeric</option>
+        <option value = 'text'>Text</option>
+    </select>
     <button id="scoringSaveButton" class="r3-button">Save</button>             
 
     <br>
@@ -32,7 +36,8 @@ layout: basic
     <table id = "scoringTable">
         <tr>
             <th><b>Scoring Method</b></th> 
-            <th><b>Points Worth</b></th> 
+            <th><b>Points Worth</b></th>
+            <th><b>Input Type</b></th> 
         </tr>
     </table>
     <h3 id="elementConfirmationBox" class='js_clear_on_load'></h3> <br>
