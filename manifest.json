@@ -1,0 +1,18 @@
+---
+---
+{
+    "name": "{{site.title}}",
+    "short_name": "{{site.short_title}}",
+    "icons": [
+        {
+            "src": "{{site.logo}}",
+            "sizes": "560x560",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#800000",
+    "theme_color": "#ffd700",
+    "timestamp": "{{ site.time | date: "%Y-%m-%d %H:%M" | url_encode }}"
+}

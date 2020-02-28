@@ -2,6 +2,32 @@
 
 <head>
     <link rel="shortcut icon" href="images/club_logo.png" type="image/x-icon"/>
+    <link rel="manifest" href="manifest.json"/>
+    <meta name="theme-color" content="#800000" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="{{site.title}}">
+    <meta name="apple-mobile-web-app-title" content="{{site.short_title}}">
+    <meta name="msapplication-navbutton-color" content="#FF9800">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="msapplication-starturl" content="index.html">
+    <link rel="icon" sizes="560x560" href="/{{site.logo}}">
+    <link rel="apple-touch-icon" href="{{site.logo}}">
+    <script>
+        // Register service worker.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('SW registered with scope:', registration.scope);
+                    })
+                    .catch(err => {
+                        console.error('Registration failed:', err);
+                    });
+            });
+        }
+    </script>
+
     <title>FRC 6321 Scouting</title>
     <meta charset="UTF-8">
     <meta name='viewport' content="width=device-width, initial-scale=1.0">
