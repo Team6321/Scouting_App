@@ -4,10 +4,19 @@
     background-image: url('images/background.jpg');
 }
 
-html body
+html, body
 {
   font-family: 'Ubuntu';
   color: maroon;
+  margin: 5px;
+}
+
+html {
+  height: 95%;
+}
+
+body {
+  min-height: 90%;
 }
 
 code
